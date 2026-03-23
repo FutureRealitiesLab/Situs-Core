@@ -1,0 +1,31 @@
+# Godot – generierte Dateien (nicht committen)
+.godot/
+*.uid
+
+# Android – Build-Artefakte
+android/build/
+android/.gradle/
+
+# Export-Artefakte
+*.apk
+*.apk.idsig
+*.aab
+
+# Export-Presets (enthalten lokale Pfade + Keystore-Daten)
+export_presets.cfg
+
+# Lokale Konfiguration (jeder trägt seine eigene IP ein)
+server_ip.txt
+
+# Claude Code (lokale IDE-Einstellungen)
+.claude/
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor-Backups
+*.tmp
+*.bak
+*~

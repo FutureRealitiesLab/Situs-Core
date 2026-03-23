@@ -1,0 +1,49 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Hyper-Irrealismus-III"
+run/main_scene="uid://cbmain0001"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/main_scene="res://main.tscn"
+
+[autoload]
+
+GameState="*res://networking/game_state.gd"
+NetworkManager="*res://networking/network_manager.gd"
+SceneManager="*res://scene_manager.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+
+[input]
+
+scene_next={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":78,"physical_keycode":78,"key_label":0,"unicode":110,"location":0,"echo":false,"script":null)
+]
+}
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true
+
+[xr]
+
+openxr/enabled=true
+openxr/form_factor=0
+openxr/view_configuration=1
+openxr/reference_space=1
+shaders/enabled=true
+openxr/extensions/meta/color_space/starting_color_space=3
