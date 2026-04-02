@@ -39,7 +39,6 @@ scene_next={
 
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_3d=1
-vrs/mode=0
 
 [xr]
 
@@ -48,6 +47,5 @@ openxr/form_factor=0
 openxr/view_configuration=1
 openxr/reference_space=1
 openxr/foveation_level=0
-openxr/foveation_dynamic=false
 shaders/enabled=true
 openxr/extensions/meta/color_space/starting_color_space=3
