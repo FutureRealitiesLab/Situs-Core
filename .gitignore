@@ -2,9 +2,11 @@
 .godot/
 *.uid
 
-# Android – Build-Artefakte
+# Android – Build-Artefakte (Gradle-Output und generierte Dateien)
 android/build/
 android/.gradle/
+# Ausnahme: Manifest manuell gepflegt (enthält VR-Deklarationen für HTC Focus 3)
+!android/build/src/main/AndroidManifest.xml
 
 # Export-Artefakte
 *.apk
