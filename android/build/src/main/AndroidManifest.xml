@@ -25,6 +25,13 @@
         android:required="true"
         android:version="1" />
 
+    <!-- Netzwerk-Permissions: ohne INTERNET blockiert Android alle UDP-Sockets.
+         Explizit hier eingetragen damit Gradle-Build (Focus 3) sie zuverlässig enthält,
+         unabhängig von export_presets.cfg. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:label="@string/godot_project_name_string"
         android:allowBackup="false"
