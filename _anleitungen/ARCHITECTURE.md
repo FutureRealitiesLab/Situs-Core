@@ -15,15 +15,15 @@ type:          Multiplayer VR Exhibition Template
 status:        active development
 main_branch:   master
 last_updated:  2026-04-27
-last_commit:   8752f2a  "milestone: GL-Compat+VRS läuft, Performance OK – Ring/Overlay/Shadow Fixes"
+last_commit:   c80c0a5  "refactor: folder cleanup, _scenes/ rename, docs split into _anleitungen/"
 ```
 
 ### Roles
-| Role | Person | Responsibility |
-|------|--------|----------------|
-| Developer | Pablo | Template core, CI/CD, APK builds |
-| Exhibitor / Operator | Cassiopeia | Exhibition day startup, hardware, monitoring |
-| Teams | Students (Design/Art) | Create one team scene each; register in scene_registry.gd |
+| Role | Responsibility |
+|------|----------------|
+| Dev Team | Template core, CI/CD, APK builds, scene_registry.gd |
+| Venue Team | Exhibition day startup, hardware, monitoring |
+| Design Teams | Create one team scene each; submit via Git or ZIP |
 
 ---
 
@@ -94,7 +94,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 | `player/xr_player.gd` | OpenXR tracking controller (physical locomotion) | ~60 |
 | `player/xr_player.tscn` | XR player scene | — |
 | `avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
-| `avatar/remote_avatar.tscn` | Default capsule+sphere avatar | — |
+| `avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
 | `avatar/variants/avatar_dynamic_cone.gd` | DynamicCone avatar script | ~196 |
 | `avatar/variants/avatar_dynamic_cone.tscn` | DynamicCone scene | — |
 | `avatar/variants/avatar_box.tscn` | Box avatar variant | — |
@@ -107,20 +107,27 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 | `.gitignore` | Git ignore rules | — |
 | `export_presets.cfg.template` | APK export config template (tracked) | — |
 
-### Team-editable (students modify these)
+### Team-editable
 | File | Role |
 |------|------|
-| `scenes/scene_registry.gd` | **Pablo only** — ordered folder-path list; no metadata |
-| `scenes/team_X/scene_info.cfg` | Per-team metadata: name, duration, scene_file, avatar, … |
-| `scenes/team_template/team_scene.gd` | Team scene base script — duplicate per team |
-| `scenes/team_template/team_scene.tscn` | Team scene base — duplicate per team |
+| `_scenes/scene_registry.gd` | **Dev Team only** — ordered folder-path list; no metadata |
+| `_scenes/team_X/scene_info.cfg` | **Design Teams** — per-team metadata: name, duration, scene_file, avatar, … |
+| `_scenes/team_template/team_scene.gd` | Team scene base script — duplicate per team |
+| `_scenes/team_template/team_scene.tscn` | Team scene base — duplicate per team |
+
+### Documentation
+| File | Role |
+|------|------|
+| `_anleitungen/ARCHITECTURE.md` | Technical reference (this file) |
+| `_anleitungen/design_teams.md` | Guide for Design Teams: scenes, assets, Git workflow |
+| `_anleitungen/venue_team.md` | Guide for Venue Team: server start, headsets, troubleshooting |
+| `_anleitungen/dev_team.md` | Guide for Dev Team: integration, APK builds, exhibition prep |
 
 ### Build / Ops (local only, gitignored except template)
 | File | Role |
 |------|------|
 | `export_presets.cfg` | Local APK export config (copy from .template) |
 | `android/build/src/main/AndroidManifest.xml` | VR manifest (tracked via .gitignore exception) |
-| `BETRIEB_UND_WORKFLOW.md` | German ops guide for teams + Cassiopeia |
 
 ---
 
@@ -237,7 +244,7 @@ If Focus 3 performance degrades, can re-enable by calling it in `_load_scene_loc
 
 **Avatar selection priority:**
 1. `scenes_list[current_index]["avatar"]` if set and valid
-2. `DEFAULT_AVATAR` = `res://avatar/remote_avatar.tscn`
+2. Default from `_load_scene_info()`: `res://avatar/variants/avatar_dynamic_cone.tscn`
 
 ---
 
@@ -428,25 +435,25 @@ Passes exactly through all three control values at t=0, 0.5, 1.
 #### Avatar Variants Summary
 | File | Shape | set_self_mode | Notes |
 |------|-------|---------------|-------|
-| `remote_avatar.tscn` | CapsuleMesh + SphereMesh | ✗ | Default |
+| `remote_avatar.tscn` | CapsuleMesh + SphereMesh | ✗ | Legacy (not default) |
 | `avatar_capsule.tscn` | CapsuleMesh + SphereMesh | ✗ | Humanoid |
 | `avatar_box.tscn` | BoxMesh + SphereMesh | ✗ | Cubic |
 | `avatar_sphere.tscn` | Single SphereMesh | ✗ | Minimal |
 | `avatar_ghost.tscn` | Transparent spheres | ✗ | Ghostly |
-| `avatar_dynamic_cone.tscn` | Procedural tori | ✓ | Full FP self-body |
+| `avatar_dynamic_cone.tscn` | Procedural tori | ✓ | **Default**; full FP self-body |
 
 ---
 
-### `scenes/scene_registry.gd`
+### `_scenes/scene_registry.gd`
 
-**Purpose:** Ordered list of scene folder paths. **Only Pablo edits this file.**
+**Purpose:** Ordered list of scene folder paths. **Only Dev Team edits this file.**
 Metadata (name, duration, avatar, …) lives in each team's `scene_info.cfg` — no merge conflicts.
 
 **Format:**
 ```gdscript
 func get_scenes() -> Array:
   return [
-    "res://_scenes/team_a/",   # Pablo controls order here
+    "res://_scenes/team_a/",   # Dev Team controls order here
     "res://_scenes/team_b/",
     # "res://_scenes/team_c/",  # commented out = disabled
   ]
@@ -454,13 +461,13 @@ func get_scenes() -> Array:
 
 `SceneManager.initialize()` calls `_load_scene_info(folder_path)` for each entry and builds `scenes_list`.
 
-**Current state (2026-04-27):** Three placeholder entries; student scenes added by Pablo before exhibition.
+**Current state (2026-04-27):** Three placeholder entries; Design Team scenes added by Dev Team before exhibition.
 
 ---
 
-### `scenes/team_X/scene_info.cfg`
+### `_scenes/team_X/scene_info.cfg`
 
-**Purpose:** Per-team metadata file. Each team only edits their own. No shared file → no merge conflicts.
+**Purpose:** Per-team metadata file. Each Design Team only edits their own. No shared file → no merge conflicts.
 
 **Format (Godot ConfigFile):**
 ```ini
@@ -479,13 +486,13 @@ player_color = Color(1.0, 1.0, 1.0, 1)          ; optional: forces all players t
 **Default avatar:** `res://avatar/variants/avatar_dynamic_cone.tscn` (if `avatar` not set).
 **player_color not set** → each player keeps their server-assigned color from the 8-color palette.
 
-**Files:** `scenes/team_template/scene_info.cfg` (student template), `scenes/placeholder_b/scene_info.cfg`, `scenes/placeholder_c/scene_info.cfg`
+**Files:** `_scenes/team_template/scene_info.cfg` (Design Team template), `_scenes/placeholder_b/scene_info.cfg`, `_scenes/placeholder_c/scene_info.cfg`
 
 ---
 
-### `scenes/team_template/team_scene.gd` + `team_scene.tscn`
+### `_scenes/team_template/team_scene.gd` + `team_scene.tscn`
 
-**Purpose:** Base template for student teams. Duplicate the entire `team_template/` folder per team.
+**Purpose:** Base template for Design Teams. Duplicate the entire `team_template/` folder per team.
 
 **Scene tree:**
 ```
@@ -653,13 +660,19 @@ pending:
 ## EXTENSION GUIDE
 
 ### Adding a new team scene
-1. Duplicate `scenes/team_template/` → `scenes/team_yourname/`
+1. Duplicate `_scenes/team_template/` → `_scenes/team_yourname/`
 2. Rename `.gd` and `.tscn` files appropriately
-3. In `team_yourname.gd`: extend from `team_scene.gd` or copy content
-4. Add entry to `scenes/scene_registry.gd`:
+3. Edit `_scenes/team_yourname/scene_info.cfg`:
+   ```ini
+   [scene]
+   name       = "Team X – Title"
+   duration   = 120.0
+   scene_file = "team_yourname.tscn"
+   team       = "Team X"
+   ```
+4. Add folder path to `_scenes/scene_registry.gd`:
    ```gdscript
-   { "name": "Team X – Title", "path": "res://_scenes/team_yourname/team_yourname.tscn",
-	 "duration": 120.0, "avatar": "res://avatar/variants/avatar_dynamic_cone.tscn" }
+   "res://_scenes/team_yourname/",
    ```
 
 ### Adding a new avatar variant
@@ -708,7 +721,8 @@ interaction_zone.gd
 
 | Date | Change | Files |
 |------|--------|-------|
-| 2026-04-27 | scene_info.cfg per team folder: registry now path-list only (Pablo), metadata in cfg files (teams) | `scene_registry.gd`, `scene_manager.gd`, `scenes/*/scene_info.cfg` |
+| 2026-04-27 | Folder cleanup: `scenes/` → `_scenes/`, deleted `world/` and `assets/`; docs split into `_anleitungen/` (design_teams, venue_team, dev_team); roles renamed Dev Team / Venue Team / Design Teams | multiple |
+| 2026-04-27 | scene_info.cfg per team folder: registry now path-list only (Dev Team), metadata in cfg files (Design Teams) | `_scenes/scene_registry.gd`, `scene_manager.gd`, `_scenes/*/scene_info.cfg` |
 | 2026-04-27 | Default avatar changed to avatar_dynamic_cone.tscn (was remote_avatar.tscn) | `scene_manager.gd` |
 | 2026-04-27 | Fix Label3D outline_modulate not animated: outline no longer visible when text is transparent | `main.gd` |
 | 2026-04-27 | Directional shadow atlas size.mobile 2048→4096; soft_shadow_filter_quality.mobile=2 | `project.godot` |
