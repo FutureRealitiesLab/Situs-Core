@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://cbteamtpl1"]
+
+[ext_resource type="Script" uid="uid://bc6p2ktivwstq" path="res://_scenes/team_template/team_scene.gd" id="1_teamgd"]
+[ext_resource type="PackedScene" uid="uid://b4uxjpy7s36ni" path="res://_scenes/team_template/22.1.2026.glb" id="2_lhad2"]
+[ext_resource type="AudioStream" uid="uid://ci0dwxx3rd4a" path="res://_scenes/team_template/time_for_adventure.mp3" id="3_m0r6x"]
+
+[sub_resource type="Environment" id="Env_team"]
+background_mode = 1
+background_color = Color(0.08, 0.08, 0.1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.2, 0.2, 0.24, 1)
+ambient_light_energy = 0.45
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_team"]
+size = Vector2(3.5, 6)
+
+[sub_resource type="StandardMaterial3D" id="MatFloor_team"]
+albedo_color = Color(0.3, 0.3, 0.32, 1)
+roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="BoxShape_floor"]
+size = Vector3(3.5, 0.2, 6)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8tlum"]
+
+[node name="TeamScene" type="Node3D" unique_id=1252040837]
+script = ExtResource("1_teamgd")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=921589750]
+environment = SubResource("Env_team")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1090470022]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 8, 0)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=1946611216]
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor" unique_id=304040404]
+mesh = SubResource("PlaneMesh_team")
+surface_material_override/0 = SubResource("MatFloor_team")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=305050505]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape_floor")
+
+[node name="ServerCamera" type="Camera3D" parent="." unique_id=310000001]
+transform = Transform3D(1, 0, 0, 0, 0.6632212, 0.74842364, 0, -0.74842364, 0.6632212, 0, 5, 5)
+current = true
+fov = 65.0
+
+[node name="----------" type="Node" parent="." unique_id=310000002]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=577791822]
+mesh = SubResource("CylinderMesh_8tlum")
+
+[node name="22_1_2026" parent="." unique_id=1576897622 instance=ExtResource("2_lhad2")]
+transform = Transform3D(1, 0, 0, 0, -0.18065648, 0.98354626, 0, -0.98354626, -0.18065648, 0.37878942, 0.5344486, 1.4024386)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="22_1_2026" unique_id=708321695]
+stream = ExtResource("3_m0r6x")
+max_distance = 1.0

@@ -1,8 +1,9 @@
 # Hyper-Irrealismus III
 
-Multiplayer VR exhibition template. Up to 8 XR clients (Meta Quest 2/3/Pro, HTC Focus 3) + desktop server, connected over LAN via ENet UDP.
+Multiplayer VR Ausstellungstemplate. Bis zu 8 XR-Clients (Meta Quest 2/3/Pro, HTC Vive Focus 3)
++ Desktop-Server, verbunden über LAN via ENet UDP.
 
-Built with **Godot 4.6** — GL Compatibility renderer, OpenXR.
+Gebaut mit **Godot 4.6** — GL Compatibility Renderer, OpenXR.
 
 ---
 
@@ -10,8 +11,10 @@ Built with **Godot 4.6** — GL Compatibility renderer, OpenXR.
 
 | Dokument | Für wen |
 |----------|---------|
-| [BETRIEB_UND_WORKFLOW.md](BETRIEB_UND_WORKFLOW.md) | Design-Teams, Pablo (Developer), Cassiopeia (Operator) |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Developer — vollständige technische Referenz (Dateien, Module, Einstellungen, Changelog) |
+| [Design Teams](_anleitungen/design_teams.md) | Szenen erstellen, Assets importieren, Git-Workflow |
+| [Venue Team](_anleitungen/venue_team.md) | Server starten, Brillen starten, Troubleshooting |
+| [Dev Team](_anleitungen/dev_team.md) | Team-Szenen integrieren, APK bauen, Ausstellungsvorbereitung |
+| [ARCHITECTURE.md](_anleitungen/ARCHITECTURE.md) | Technische Vollreferenz: Module, Einstellungen, Changelog |
 
 ---
 
@@ -20,28 +23,41 @@ Built with **Godot 4.6** — GL Compatibility renderer, OpenXR.
 **Lokal testen (PC, kein Headset):**
 ```
 1. project.godot in Godot 4.6 öffnen
-2. F5 → Startmenü → "Als Server starten"
-3. Zweite Instanz: Debug → Run Multiple Instances → "Als Spieler starten (First Person)"
+2. F5 → Startmenü → „Als Server starten"
+3. Zweite Instanz: Debug → Run Multiple Instances → „Als Spieler starten (First Person)"
+```
+
+**Einzelne Szene testen (F6 Solo):**
+```
+_scenes/team_X/team_X.tscn im Editor öffnen → F6
 ```
 
 **Server-IP konfigurieren** (vor APK-Build):
 ```
 server_ip.txt  →  IP des Server-PCs eintragen, z. B.  192.168.1.100
 ```
-`network_manager.gd` **nicht** anfassen — die IP wird automatisch aus `server_ip.txt` geladen.
 
 **APK bauen:**
 ```
-Project → Export → "Android – Meta Quest"   → Hyper-Irrealismus-III-Quest.apk
-Project → Export → "Android – HTC Focus 3"  → Hyper-Irrealismus-III-Focus3.apk
+Project → Export → „Android – Meta Quest"   → Hyper-Irrealismus-III-Quest.apk
+Project → Export → „Android – HTC Focus 3"  → Hyper-Irrealismus-III-Focus3.apk
 ```
-Export-Presets einrichten: `export_presets.cfg.template` als `export_presets.cfg` kopieren (gitignored, lokal).
 
 ---
 
-## Für Design-Teams
+## Ordnerstruktur
 
-Ihr arbeitet ausschließlich in `scenes/team_X/` und tragt euren Eintrag in `scenes/scene_registry.gd` ein.
-Alle anderen Dateien sind mit `# TEMPLATE CORE – nicht verändern` markiert.
-
-→ Vollständige Anleitung: [BETRIEB_UND_WORKFLOW.md → Abschnitt 1](BETRIEB_UND_WORKFLOW.md)
+```
+_anleitungen/       ← Dokumentation für alle Gruppen
+_scenes/            ← Alle Szenen — nur Design Teams arbeiten hier
+  team_template/    ← Vorlage: duplizieren für jeden Team-Ordner
+  team_X/           ← Team-Ordner: scene_info.cfg + Szene + Assets
+  scene_registry.gd ← Ausstellungsreihenfolge (nur Dev Team)
+avatar/             ← Avatar-Varianten (Core)
+networking/         ← Netzwerk-Autoloads (Core)
+player/             ← FPS + XR Player (Core)
+triggers/           ← Trigger-Vorlage (Design Teams kopieren in _scenes/team_X/)
+main.gd / main.tscn ← Root (Core)
+scene_manager.gd    ← Autoload (Core)
+project.godot       ← Godot Projektdatei
+```
