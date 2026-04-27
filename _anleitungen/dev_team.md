@@ -115,17 +115,17 @@ Es gibt **zwei separate APKs** (Quest und Focus 3 haben unterschiedliche Plugins
 Godot → Project → Export
 
 Preset „Android – Meta Quest":
-  → Export Project → Hyper-Irrealismus-III-Quest.apk
+  → Export Project → _apks/Hyper-Irrealismus-III-Quest.apk
 
 Preset „Android – HTC Focus 3":
-  → Export Project → Hyper-Irrealismus-III-Focus3.apk
+  → Export Project → _apks/Hyper-Irrealismus-III-Focus3.apk
 ```
 
 ### Installation
 
 **Meta Quest (2 / 3 / Pro):**
 ```bash
-adb install -r Hyper-Irrealismus-III-Quest.apk
+adb install -r _apks/Hyper-Irrealismus-III-Quest.apk
 # oder per SideQuest (Drag & Drop)
 ```
 Auf dem Headset: **Apps → Alle Apps → „Unbekannte Quellen"**
@@ -133,7 +133,7 @@ Auf dem Headset: **Apps → Alle Apps → „Unbekannte Quellen"**
 **HTC Focus 3:**
 ```bash
 adb devices                                         # Headset per USB verbinden
-adb install -r Hyper-Irrealismus-III-Focus3.apk
+adb install -r _apks/Hyper-Irrealismus-III-Focus3.apk
 ```
 Auf dem Headset: **Apps → Alle Apps → „Unbekannte Quellen"**
 
@@ -165,8 +165,8 @@ hyper3_server.exe
 - [ ] Alle Team-Szenen in `_scenes/scene_registry.gd` eingetragen, Platzhalter entfernt
 - [ ] Reihenfolge in `scene_registry.gd` korrekt, `duration` mit Teams abgestimmt
 - [ ] Alle Szenen einzeln getestet (kein Importfehler, Sounds hörbar)
-- [ ] Quest-APK auf alle Meta Quest Headsets installiert (`Hyper-Irrealismus-III-Quest.apk`)
-- [ ] Focus3-APK auf alle HTC Focus 3 Headsets installiert (`Hyper-Irrealismus-III-Focus3.apk`)
+- [ ] Quest-APK auf alle Meta Quest Headsets installiert (`_apks/Hyper-Irrealismus-III-Quest.apk`)
+- [ ] Focus3-APK auf alle HTC Focus 3 Headsets installiert (`_apks/Hyper-Irrealismus-III-Focus3.apk`)
 - [ ] `hyper3_server.exe` + `start_server.bat` auf Server-PC Desktop
 - [ ] Headsets voll geladen
 - [ ] Venue Team eingewiesen (→ `_anleitungen/venue_team.md`)

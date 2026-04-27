@@ -9,6 +9,7 @@ android/.gradle/
 !android/build/src/main/AndroidManifest.xml
 
 # Export-Artefakte
+_apks/
 *.apk
 *.apk.idsig
 *.aab
