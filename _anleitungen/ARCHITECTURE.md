@@ -14,8 +14,8 @@ language:      GDScript
 type:          Multiplayer VR Exhibition Template
 status:        active development
 main_branch:   master
-last_updated:  2026-04-27
-last_commit:   c80c0a5  "refactor: folder cleanup, _scenes/ rename, docs split into _anleitungen/"
+last_updated:  2026-04-28
+last_commit:   c63a69a  "docs: restructure design_teams.md, move triggers to _deprecated/"
 ```
 
 ### Roles
@@ -23,7 +23,7 @@ last_commit:   c80c0a5  "refactor: folder cleanup, _scenes/ rename, docs split i
 |------|----------------|
 | Dev Team | Template core, CI/CD, APK builds, scene_registry.gd |
 | Venue Team | Exhibition day startup, hardware, monitoring |
-| Design Teams | Create one team scene each; submit via Git or ZIP |
+| Design Teams | Create one team scene each; submit via Git |
 
 ---
 
@@ -721,6 +721,7 @@ interaction_zone.gd
 
 | Date | Change | Files |
 |------|--------|-------|
+| 2026-04-28 | triggers/ → _deprecated/triggers/ (deactivated; design teams use animations only); design_teams.md restructured: index, "Euer Toolkit" intro, ZIP + GitHub setup removed | `_deprecated/triggers/`, `_anleitungen/design_teams.md`, `_anleitungen/ARCHITECTURE.md` |
 | 2026-04-27 | Folder cleanup: `scenes/` → `_scenes/`, deleted `world/` and `assets/`; docs split into `_anleitungen/` (design_teams, venue_team, dev_team); roles renamed Dev Team / Venue Team / Design Teams | multiple |
 | 2026-04-27 | scene_info.cfg per team folder: registry now path-list only (Dev Team), metadata in cfg files (Design Teams) | `_scenes/scene_registry.gd`, `scene_manager.gd`, `_scenes/*/scene_info.cfg` |
 | 2026-04-27 | Default avatar changed to avatar_dynamic_cone.tscn (was remote_avatar.tscn) | `scene_manager.gd` |
