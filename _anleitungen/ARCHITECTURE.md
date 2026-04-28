@@ -101,8 +101,8 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 | `avatar/variants/avatar_capsule.tscn` | Capsule avatar variant | — |
 | `avatar/variants/avatar_sphere.tscn` | Sphere avatar variant | — |
 | `avatar/variants/avatar_ghost.tscn` | Ghost avatar variant | — |
-| `triggers/interaction_zone.gd` | Area3D trigger template | 178 |
-| `triggers/interaction_zone.tscn` | Trigger zone scene | — |
+| `_deprecated/triggers/interaction_zone.gd` | Area3D trigger template (deaktiviert) | 178 |
+| `_deprecated/triggers/interaction_zone.tscn` | Trigger zone scene (deaktiviert) | — |
 | `project.godot` | Engine configuration | — |
 | `.gitignore` | Git ignore rules | — |
 | `export_presets.cfg.template` | APK export config template (tracked) | — |

@@ -1,14 +1,32 @@
 # Hyper-Irrealismus III — Anleitung für Design Teams
 
+## Inhalt
+
+1. [Euer Toolkit](#euer-toolkit)
+2. [Godot installieren & Projekt öffnen](#godot-installieren-und-projekt-öffnen)
+3. [Team-Ordner anlegen](#euren-team-ordner-anlegen)
+4. [scene\_info.cfg ausfüllen](#scene_infocfg--pflichtdatei)
+5. [Szene testen (F6)](#eure-szene-testen--f6-solo-test)
+6. [3D-Scans importieren](#eigene-3d-scans-importieren)
+7. [Sounds hinzufügen](#sounds-hinzufügen)
+8. [Atmosphäre einstellen](#hintergrundfarbe--atmosphäre-einstellen)
+9. [Stand hochladen](#euren-stand-hochladen)
+10. [Abgabe-Checkliste](#abgabe-checkliste)
+
 ---
 
-## Was ihr bekommt
+## Euer Toolkit
 
-Pablo gibt euch Zugang zum **Git-Repository** oder eine **ZIP des Projekts**.
+| Tool | Wozu |
+|------|------|
+| **Dieses Projekt** (GitHub) | Euer Arbeitsbereich — Pablo schickt euch die Einladung |
+| **Godot 4.6 Standard** | Szene bauen, testen, Assets platzieren |
+| **Blender** | 3D-Modellierung und Sculpting |
+| **Meshy** | KI-generierte 3D-Modelle |
+| **Polycam** | 3D-Scans mit dem Smartphone |
+
 Ihr arbeitet ausschließlich in eurem eigenen Ordner: `_scenes/team_X/`
-
-Alle anderen Ordner und Dateien sind Systemdateien — **bitte nicht anfassen**.
-Sie sind mit `# TEMPLATE CORE – nicht verändern` markiert.
+Alle anderen Dateien sind Systemdateien — **bitte nicht anfassen**.
 
 ---
 
@@ -139,57 +157,15 @@ In `team_a.tscn`: **WorldEnvironment** anklicken → im Inspector auf **Environm
 
 ---
 
-## ★ Fortgeschritten: Trigger-Zonen (optional)
-
-Trigger reagieren wenn ein anderer Spieler in eine Zone tritt — z. B. Sound an/aus, Licht wechseln.
-
-1. Im FileSystem: `triggers/interaction_zone.tscn` → Rechtsklick → **Duplicate**
-   → Zielordner: `_scenes/team_a/` → Name: z. B. `mein_trigger.tscn`
-2. `triggers/interaction_zone.gd` ebenfalls duplizieren → `_scenes/team_a/mein_trigger.gd`
-3. `mein_trigger.tscn` öffnen → Script-Feld auf `mein_trigger.gd` umstellen
-4. In `mein_trigger.gd` anpassen:
-
-```gdscript
-func _on_avatar_entered(avatar: Node3D) -> void:
-    $Ambience.play()
-
-func _on_avatar_exited(avatar: Node3D) -> void:
-    $Ambience.stop()
-```
-
-5. Trigger-Instanz in eure Szene einbauen → im 3D-Viewport positionieren
-
----
-
 ## Euren Stand hochladen
 
-### ⭐ Bevorzugt: Git mit GitHub Desktop
-
-**Was ihr braucht:**
-1. **GitHub-Account erstellen** (kostenlos): [github.com/join](https://github.com/join)
-2. Pablo schickt euch eine Einladungs-E-Mail → Link anklicken und annehmen
-3. **GitHub Desktop herunterladen**: [desktop.github.com](https://desktop.github.com)
-
-**Einmalige Einrichtung:**
-1. GitHub Desktop → **Sign in to GitHub.com**
-2. **File → Clone Repository** → „Hyper-Irrealismus-III" suchen → **Clone**
-3. Lokalen Zielordner wählen → `project.godot` in Godot öffnen
-
-**Täglicher Workflow:**
-1. GitHub Desktop → **Fetch origin** (immer zuerst — neusten Stand holen)
+1. **Fetch origin** (immer zuerst — neuesten Stand holen)
 2. Dateien in `_scenes/team_a/` bearbeiten
-3. In GitHub Desktop: eure geänderten Dateien erscheinen links
+3. Geänderte Dateien erscheinen in GitHub Desktop links
 4. Nur Dateien in `_scenes/team_a/` abhaken
 5. Kurze Notiz schreiben → **Commit to main** → **Push origin**
 
 > Nur euren eigenen Ordner committen. Template-Core-Dateien nicht anfassen.
-
----
-
-### Fallback: ZIP-Abgabe
-
-Euren Ordner `_scenes/team_a/` als ZIP packen und an Pablo schicken.
-Die `scene_info.cfg` muss in der ZIP enthalten sein.
 
 ---
 
@@ -198,4 +174,4 @@ Die `scene_info.cfg` muss in der ZIP enthalten sein.
 - [ ] `scene_info.cfg` ausgefüllt (name, duration, scene_file, team)
 - [ ] Szene läuft mit F6 ohne Fehler
 - [ ] 3D-Assets und Sounds sind im Team-Ordner (nicht in einem anderen Ordner)
-- [ ] Stand via Git gepusht oder ZIP abgegeben
+- [ ] Stand via Git gepusht
