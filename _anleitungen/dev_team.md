@@ -17,36 +17,27 @@ Aufgaben:
 
 ## A) Projekt an Design Teams weitergeben
 
-Design Teams bekommen **Git-Zugang** (bevorzugt) oder eine **ZIP des Projekts**.
-
-### Git (bevorzugt)
+Design Teams bekommen **Git-Zugang** — Einladung via GitHub.
 
 1. GitHub-Repo → **Settings → Collaborators → Add people**
    → Jedes Team per GitHub-Username oder E-Mail einladen (Write-Zugriff)
 2. Jedes Team bekommt eine Einladungs-E-Mail von GitHub
-3. Repo-Link an Teams schicken
+3. Repo-Link + `_anleitungen/design_teams.md` an Teams schicken
 
-Teams pushen nur in `_scenes/team_X/` und `_scenes/scene_info.cfg` — kein Merge-Konflikt möglich.
+Teams arbeiten ausschließlich in `_scenes/team_X/` — ihre `scene_info.cfg` liegt darin.
 
-### ZIP (Fallback)
-
-1. Projektordner kopieren → `.godot/` Ordner löschen (Cache, ~200 MB)
-2. In `_scenes/scene_registry.gd`: Platzhalter-Einträge stehen lassen
-3. Als `hyper3_projekt.zip` verpacken → alle Teams bekommen dieselbe ZIP
+> **Ruleset aktiv:** Write-Zugang erlaubt kein direktes Pushen auf master.
+> Teams öffnen einen Pull Request — du reviewst und mergst (→ Abschnitt B).
 
 ---
 
 ## B) Abgegebene Team-Szenen integrieren
 
-Für jede Abgabe (Git-Push oder ZIP):
+### Schritt 1 — Pull Request prüfen und mergen
 
-### Schritt 1 — Team-Ordner einpflegen (ZIP-Weg)
-
-```
-[entpackte Abgabe]/team_a/  →  [Projekt]/_scenes/team_a/
-```
-
-Godot reimportiert automatisch.
+1. GitHub → **Pull Requests** → PR des Teams öffnen
+2. Geänderte Dateien prüfen: nur `_scenes/team_X/` betroffen?
+3. **Merge pull request** → lokal `git pull` → Godot reimportiert automatisch
 
 ### Schritt 2 — scene_registry.gd aktualisieren
 

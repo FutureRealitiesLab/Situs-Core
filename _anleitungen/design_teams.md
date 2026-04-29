@@ -195,10 +195,13 @@ In `team_a.tscn`: **WorldEnvironment** anklicken → im Inspector auf **Environm
 ## Euren Stand hochladen
 
 1. **Fetch origin** (immer zuerst — neuesten Stand holen)
-2. Dateien in `_scenes/team_a/` bearbeiten
-3. Geänderte Dateien erscheinen in GitHub Desktop links
+2. **Neuen Branch erstellen**: Current Branch → „New Branch" → z. B. `team-a-update`
+3. Dateien in `_scenes/team_a/` bearbeiten
 4. Nur Dateien in `_scenes/team_a/` abhaken
-5. Kurze Notiz schreiben → **Commit to main** → **Push origin**
+5. Kurze Notiz schreiben → **Commit to `team-a-update`**
+6. **Push origin**
+7. GitHub Desktop zeigt oben: **„Create Pull Request"** → anklicken → Browser öffnet sich
+8. PR erstellen → Pablo reviewed und merged
 
 > Nur euren eigenen Ordner committen. Template-Core-Dateien nicht anfassen.
 
@@ -213,4 +216,4 @@ In `team_a.tscn`: **WorldEnvironment** anklicken → im Inspector auf **Environm
 - [ ] `scene_info.cfg` ausgefüllt (name, duration, scene_file, team)
 - [ ] Szene läuft mit F6 ohne Fehler
 - [ ] 3D-Assets und Sounds sind im Team-Ordner (nicht in einem anderen Ordner)
-- [ ] Stand via Git gepusht
+- [ ] Pull Request auf GitHub erstellt
