@@ -194,20 +194,19 @@ In `team_a.tscn`: **WorldEnvironment** anklicken → im Inspector auf **Environm
 
 ## Euren Stand hochladen
 
-1. **Fetch origin** (immer zuerst — neuesten Stand holen)
-2. **Neuen Branch erstellen**: Current Branch → „New Branch" → z. B. `team-a-update`
+**Einmalig zu Beginn:** In GitHub Desktop oben „Current Branch" → „New Branch" → Namen eingeben: `team-a` (euer Teamname, ohne Leerzeichen)
+
+**Danach jeden Tag:**
+
+1. **Fetch origin** — immer zuerst
+2. Sicherstellen dass oben `team-a` steht (nicht `main`)
 3. Dateien in `_scenes/team_a/` bearbeiten
-4. Nur Dateien in `_scenes/team_a/` abhaken
-5. Kurze Notiz schreiben → **Commit to `team-a-update`**
-6. **Push origin**
-7. GitHub Desktop zeigt oben: **„Create Pull Request"** → anklicken → Browser öffnet sich
-8. PR erstellen → Pablo reviewed und merged
+4. In GitHub Desktop: nur Dateien in `_scenes/team_a/` abhaken
+5. Kurze Notiz schreiben → **Commit to `team-a`** → **Push origin**
 
-> Nur euren eigenen Ordner committen. Template-Core-Dateien nicht anfassen.
+Pablo reviewed die Branches und merged in main — ihr müsst euch darum nicht kümmern.
 
-> **Wichtig:** Godot erzeugt für jede importierte Datei eine `.import`-Datei (z. B. `scan.glb.import`).
-> Diese Dateien **müssen mit committed werden** — ohne sie kann Godot die Assets nicht laden.
-> GitHub Desktop zeigt sie automatisch an; einfach zusammen mit euren Dateien abhaken.
+> Godot erzeugt für jede importierte Datei eine `.import`-Datei (z. B. `scan.glb.import`). Diese Dateien **müssen mit committed werden** — GitHub Desktop zeigt sie automatisch an, einfach zusammen mit euren Dateien abhaken.
 
 ---
 
