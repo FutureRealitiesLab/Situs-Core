@@ -8,10 +8,11 @@
 4. [scene\_info.cfg ausfüllen](#scene_infocfg--pflichtdatei)
 5. [Szene testen (F6)](#eure-szene-testen--f6-solo-test)
 6. [3D-Scans importieren](#eigene-3d-scans-importieren)
-7. [Sounds hinzufügen](#sounds-hinzufügen)
-8. [Atmosphäre einstellen](#hintergrundfarbe--atmosphäre-einstellen)
-9. [Stand hochladen](#euren-stand-hochladen)
-10. [Abgabe-Checkliste](#abgabe-checkliste)
+7. [Animationen](#animationen)
+8. [Sounds hinzufügen](#sounds-hinzufügen)
+9. [Atmosphäre einstellen](#hintergrundfarbe--atmosphäre-einstellen)
+10. [Stand hochladen](#euren-stand-hochladen)
+11. [Abgabe-Checkliste](#abgabe-checkliste)
 
 ---
 
@@ -55,6 +56,13 @@ Alles was ihr macht, lebt in **einem einzigen Ordner**: `_scenes/team_X/`
 
 > Ab jetzt arbeitet ihr ausschließlich in `_scenes/team_a/` — dieser Ordner ist eure Abgabe.
 
+> **Was ist schon in der Szene?**
+> - **WorldEnvironment + DirectionalLight3D** — Licht und Himmel sind voreingestellt
+> - **Floor** — Boden mit Kollision; kann behalten, verschoben oder gelöscht werden
+> - **ServerCamera** — wird automatisch positioniert; nicht anfassen
+>
+> Alles unterhalb des Trennstrich-Nodes ist euer Arbeitsbereich.
+
 ---
 
 ## scene_info.cfg — Pflichtdatei
@@ -67,9 +75,15 @@ name       = "Team A – Euer Titel"    ← Anzeigename in der Ausstellung
 duration   = 120.0                     ← Wie viele Sekunden läuft eure Szene?
 scene_file = "team_a.tscn"            ← Dateiname eurer Hauptszene
 team       = "Team A"                  ← Euer Teamname
+
+; Optional:
+info         = "Kurzbeschreibung der Installation"    ← erscheint im Fade-Overlay
+avatar       = "res://avatar/variants/avatar_box.tscn" ← Standard: avatar_dynamic_cone
+player_color = Color(1.0, 0.0, 0.5, 1)               ← alle Spieler gleiche Farbe
+                                                      ;  weglassen = individuelle Farben
 ```
 
-Mehr ist nicht nötig. Pablo trägt euren Ordner dann in die Ausstellungsreihenfolge ein.
+Die Pflichtfelder reichen für die Abgabe. Die optionalen Felder kann Pablo auch nachträglich setzen.
 
 ---
 
@@ -114,6 +128,37 @@ Empfehlung: maximal **500.000 Polygone** exportieren.
 
 ---
 
+## Animationen
+
+### Export mit Animationen
+
+| Software | Export |
+|----------|--------|
+| Blender | File → Export → glTF 2.0 (.glb) → „Include: Animations" aktiv lassen |
+| Meshy | Download → GLB — Animationen bereits eingebettet |
+
+### In Godot importieren
+
+Gleich wie bei 3D-Scans: GLB in euren Team-Ordner ziehen → automatisch importiert → aus FileSystem in den 3D-Viewport ziehen.
+
+### Animation abspielen — kein Code nötig
+
+1. Importierte GLB in der Szene anklicken → Scene-Baum aufklappen
+2. `AnimationPlayer`-Node darin anklicken
+3. Im **Inspector**: **Autoplay** → Animationsname eintragen (z. B. `Idle`, `Walk`)
+4. F6 → Animation läuft automatisch
+
+**Optional — via Code steuern:**
+
+```gdscript
+func _ready() -> void:
+    $MeinModell/AnimationPlayer.play("Idle")
+```
+
+> Animationsname muss exakt dem Namen im AnimationPlayer entsprechen (Groß-/Kleinschreibung beachten).
+
+---
+
 ## Sounds hinzufügen
 
 Sounddateien kommen ebenfalls direkt in euren Team-Ordner.
@@ -132,16 +177,6 @@ Sounddateien kommen ebenfalls direkt in euren Team-Ordner.
 - **Stream** → eure `.ogg`-Datei (oder andere Audiodatei) zuweisen
 - **Autoplay** → ein (für Dauerton)
 - **Max Distance** → Reichweite in Metern
-
-**Schritt 4** — In `team_a.gd`:
-
-```gdscript
-func _ready() -> void:
-    $Ambience.play()
-
-func _exit_tree() -> void:
-    $Ambience.stop()
-```
 
 ---
 
@@ -166,6 +201,10 @@ In `team_a.tscn`: **WorldEnvironment** anklicken → im Inspector auf **Environm
 5. Kurze Notiz schreiben → **Commit to main** → **Push origin**
 
 > Nur euren eigenen Ordner committen. Template-Core-Dateien nicht anfassen.
+
+> **Wichtig:** Godot erzeugt für jede importierte Datei eine `.import`-Datei (z. B. `scan.glb.import`).
+> Diese Dateien **müssen mit committed werden** — ohne sie kann Godot die Assets nicht laden.
+> GitHub Desktop zeigt sie automatisch an; einfach zusammen mit euren Dateien abhaken.
 
 ---
 
