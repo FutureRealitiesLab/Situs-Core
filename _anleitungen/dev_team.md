@@ -35,15 +35,12 @@ Teams arbeiten ausschließlich in `_scenes/team_X/` — ihre `scene_info.cfg` li
 
 ### Schritt 1 — Branch prüfen und mergen
 
-1. GitHub → **Branches** → Branch des Teams öffnen (z. B. `team-a`)
-2. Geänderte Dateien prüfen: nur `_scenes/team_X/` betroffen?
-3. Lokal mergen und pushen:
-   ```bash
-   git fetch
-   git merge origin/team-a
-   git push
-   ```
-   → Godot reimportiert automatisch beim nächsten Öffnen
+1. GitHub → **Branches** → Branch des Teams anklicken (z. B. `team-a`)
+2. GitHub zeigt: *„This branch is X commits ahead of master"* → **„Compare & pull request"** klicken
+3. Im Diff prüfen: sind **ausschließlich** Dateien in `_scenes/team_X/` geändert?
+   - Ja → **Merge pull request**
+   - Nein → nicht mergen, Team kontaktieren und Korrektur anfordern
+4. Lokal: `git pull` → Godot reimportiert automatisch beim nächsten Öffnen
 
 ### Schritt 2 — scene_registry.gd aktualisieren
 
