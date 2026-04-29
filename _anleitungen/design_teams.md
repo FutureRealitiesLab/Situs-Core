@@ -215,4 +215,4 @@ Pablo reviewed die Branches und merged in main — ihr müsst euch darum nicht k
 - [ ] `scene_info.cfg` ausgefüllt (name, duration, scene_file, team)
 - [ ] Szene läuft mit F6 ohne Fehler
 - [ ] 3D-Assets und Sounds sind im Team-Ordner (nicht in einem anderen Ordner)
-- [ ] Pull Request auf GitHub erstellt
+- [ ] Stand auf Branch gepusht (Pablo merged)

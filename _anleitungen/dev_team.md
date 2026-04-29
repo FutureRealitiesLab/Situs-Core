@@ -27,17 +27,23 @@ Design Teams bekommen **Git-Zugang** — Einladung via GitHub.
 Teams arbeiten ausschließlich in `_scenes/team_X/` — ihre `scene_info.cfg` liegt darin.
 
 > **Ruleset aktiv:** Write-Zugang erlaubt kein direktes Pushen auf master.
-> Teams öffnen einen Pull Request — du reviewst und mergst (→ Abschnitt B).
+> Teams pushen auf ihren Branch (`team-a`, `team-b`, …) — du mergst (→ Abschnitt B).
 
 ---
 
 ## B) Abgegebene Team-Szenen integrieren
 
-### Schritt 1 — Pull Request prüfen und mergen
+### Schritt 1 — Branch prüfen und mergen
 
-1. GitHub → **Pull Requests** → PR des Teams öffnen
+1. GitHub → **Branches** → Branch des Teams öffnen (z. B. `team-a`)
 2. Geänderte Dateien prüfen: nur `_scenes/team_X/` betroffen?
-3. **Merge pull request** → lokal `git pull` → Godot reimportiert automatisch
+3. Lokal mergen und pushen:
+   ```bash
+   git fetch
+   git merge origin/team-a
+   git push
+   ```
+   → Godot reimportiert automatisch beim nächsten Öffnen
 
 ### Schritt 2 — scene_registry.gd aktualisieren
 
