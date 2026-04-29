@@ -120,7 +120,7 @@ Sounddateien kommen ebenfalls direkt in euren Team-Ordner.
 
 ### Dateiformat
 - `.ogg` bevorzugen (gut komprimiert, ideal für Loops)
-- `.wav` funktioniert auch
+- `.wav` + `.mp3` funktionieren auch
 
 ### In Godot einbauen
 
@@ -129,7 +129,7 @@ Sounddateien kommen ebenfalls direkt in euren Team-Ordner.
 **Schritt 2** — In `team_a.tscn`: **+** (Kind hinzufügen) → `AudioStreamPlayer3D` → Name z. B. `Ambience`
 
 **Schritt 3** — Im **Inspector**:
-- **Stream** → eure `.ogg`-Datei zuweisen
+- **Stream** → eure `.ogg`-Datei (oder andere Audiodatei) zuweisen
 - **Autoplay** → ein (für Dauerton)
 - **Max Distance** → Reichweite in Metern
 
