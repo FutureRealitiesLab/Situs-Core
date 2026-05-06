@@ -14,8 +14,8 @@ language:      GDScript
 type:          Multiplayer VR Exhibition Template
 status:        active development
 main_branch:   master
-last_updated:  2026-04-29
-last_commit:   a8b566e  "fix: remove redundant _ready() from xr_player.gd"
+last_updated:  2026-05-06
+last_commit:   (pending)  "fix: xr_player – XRCamera3D.make_current() in _ready()"
 ```
 
 ### Roles
@@ -354,8 +354,10 @@ XRPlayer (XROrigin3D, xr_player.gd)
 └── RightHand (XRController3D)
 ```
 
-**No `_ready()` override** — XR is fully initialized by `main.gd` before XRPlayer is ever
-instantiated. `xr_player.gd` only runs `_physics_process` to broadcast position.
+**`_ready()`** calls `$XRCamera3D.make_current()` — macht XRCamera3D zur aktiven Viewport-Kamera.
+Analog zu `fps_player.gd`'s `camera.current = true`. Ohne diesen Aufruf bleibt
+`ServerCamera` (current=true in team_scene.tscn) aktiv → OpenXR-Compositor sieht
+falsche Frames → grauer Viewport auf Focus 3.
 
 **Sends:** `NetworkManager.send_player_state()` every 0.05s
 ```gdscript
@@ -724,7 +726,8 @@ interaction_zone.gd
 
 | Date | Change | Files |
 |------|--------|-------|
-| 2026-04-29 | fix: xr_player.gd _ready() removed — redundant double viewport.use_xr=true caused potential render-target realloc on GL Compat; main.gd handles XR init before XRPlayer spawns | `player/xr_player.gd` |
+| 2026-05-06 | fix: xr_player – _ready() mit XRCamera3D.make_current() hinzugefügt; ohne diesen Aufruf bleibt ServerCamera (current=true) aktiv → OpenXR-Compositor sieht falsche Frames → grauer Viewport auf Focus 3 | `player/xr_player.gd` |
+| 2026-04-29 | fix: xr_player.gd _ready() entfernt — redundanter zweiter viewport.use_xr=true-Aufruf (Nebeneffekt: hatte XRCamera3D aktiviert; führte auf GL Compat zu Render-Target-Realloc) | `player/xr_player.gd` |
 | 2026-04-28 | triggers/ → _deprecated/triggers/ (deactivated; design teams use animations only); design_teams.md restructured: index, "Euer Toolkit" intro, ZIP + GitHub setup removed | `_deprecated/triggers/`, `_anleitungen/design_teams.md`, `_anleitungen/ARCHITECTURE.md` |
 | 2026-04-27 | Folder cleanup: `scenes/` → `_scenes/`, deleted `world/` and `assets/`; docs split into `_anleitungen/` (design_teams, venue_team, dev_team); roles renamed Dev Team / Venue Team / Design Teams | multiple |
 | 2026-04-27 | scene_info.cfg per team folder: registry now path-list only (Dev Team), metadata in cfg files (Design Teams) | `_scenes/scene_registry.gd`, `scene_manager.gd`, `_scenes/*/scene_info.cfg` |
