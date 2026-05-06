@@ -107,3 +107,14 @@ doppler_tracking = 2
 [node name="AnimationPlayer" type="AnimationPlayer" parent="StartObjekte/22_1_2026" unique_id=295522739]
 libraries/ = SubResource("AnimationLibrary_64iop")
 autoplay = &"rotate"
+
+[node name="ManuelsObjekte" type="Node3D" parent="." unique_id=1609780457]
+
+[node name="22_1_2026" parent="ManuelsObjekte" unique_id=46452965 instance=ExtResource("2_lhad2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3634402, -1.1920929e-07, -0.80696416)
+
+[node name="22_1_2027" parent="ManuelsObjekte" unique_id=119560375 instance=ExtResource("2_lhad2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.086441, 0, -4.7847824)
+
+[node name="22_1_2028" parent="ManuelsObjekte" unique_id=1159723479 instance=ExtResource("2_lhad2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0975556, 0)
