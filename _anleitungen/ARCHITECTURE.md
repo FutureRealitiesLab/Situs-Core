@@ -15,7 +15,7 @@ type:          Multiplayer VR Exhibition Template
 status:        active development
 main_branch:   master
 last_updated:  2026-04-29
-last_commit:   (pending)
+last_commit:   a8b566e  "fix: remove redundant _ready() from xr_player.gd"
 ```
 
 ### Roles
