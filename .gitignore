@@ -5,8 +5,10 @@
 # Android – Build-Artefakte (Gradle-Output und generierte Dateien)
 android/build/
 android/.gradle/
-# Ausnahme: Manifest manuell gepflegt (enthält VR-Deklarationen für HTC Focus 3)
+# Ausnahmen: manuell gepflegte Dateien im Build-Template
 !android/build/src/main/AndroidManifest.xml
+# Daemon + Cache deaktiviert – verhindert Einbetten veralteter PCK (grauer Viewport auf Focus 3)
+!android/build/gradle.properties
 
 # Export-Artefakte
 _apks/
