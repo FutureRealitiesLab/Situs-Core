@@ -15,6 +15,10 @@ run/main_scene="uid://cbmain0001"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/main_scene="res://main.tscn"
 
+[audio]
+
+buses/default_bus_layout="uid://xwv7xco54cgm"
+
 [autoload]
 
 GameState="*res://networking/game_state.gd"
