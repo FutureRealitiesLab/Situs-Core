@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbteamtpl1"]
 
-[ext_resource type="Script" uid="uid://bc6p2ktivwstq" path="res://_scenes/team_template/team_scene.gd" id="1_teamgd"]
+[ext_resource type="Script" uid="uid://bcr2oluy2vwua" path="res://_scenes/team_template/team_scene.gd" id="1_teamgd"]
 [ext_resource type="PackedScene" uid="uid://b4uxjpy7s36ni" path="res://_scenes/team_template/material/22.1.2026.glb" id="2_lhad2"]
 [ext_resource type="AudioStream" uid="uid://c444shtgtdey6" path="res://_scenes/team_template/material/Wave-Master 24bit-CircuitMinds.wav" id="3_74cgg"]
 
@@ -82,11 +82,6 @@ surface_material_override/0 = SubResource("MatFloor_team")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=305050505]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 shape = SubResource("BoxShape_floor")
-
-[node name="ServerCamera" type="Camera3D" parent="." unique_id=310000001]
-transform = Transform3D(1, 0, 0, 0, 0.6632212, 0.74842364, 0, -0.74842364, 0.6632212, 0, 5, 5)
-current = true
-fov = 65.0
 
 [node name="----------" type="Node" parent="." unique_id=310000002]
 
