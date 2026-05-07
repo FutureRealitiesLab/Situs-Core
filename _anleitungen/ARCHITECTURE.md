@@ -14,8 +14,8 @@ language:      GDScript
 type:          Multiplayer VR Exhibition Template
 status:        active development
 main_branch:   master
-last_updated:  2026-05-06
-last_commit:   (pending)  "fix: xr_player – XRCamera3D.make_current() in _ready()"
+last_updated:  2026-05-07
+last_commit:   09423bb  "steflie final / Cam rotation gelöst. funktioniert"
 ```
 
 ### Roles
@@ -93,6 +93,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 | `player/fps_player.tscn` | FPS player scene | — |
 | `player/xr_player.gd` | OpenXR tracking controller (physical locomotion) | ~60 |
 | `player/xr_player.tscn` | XR player scene | — |
+| `cam_dolly.gd` | Rotations-Node (Y-Achse, 2°/s) — rotiert ServerCamera in main.tscn | ~11 |
 | `avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
 | `avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
 | `avatar/variants/avatar_dynamic_cone.gd` | DynamicCone avatar script | ~196 |
@@ -128,6 +129,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 |------|------|
 | `export_presets.cfg` | Local APK export config (copy from .template) |
 | `android/build/src/main/AndroidManifest.xml` | VR manifest (tracked via .gitignore exception) |
+| `android/build/gradle.properties` | Gradle-Build-Einstellungen (daemon=false, caching=false; tracked via .gitignore exception) |
 
 ---
 
@@ -466,7 +468,8 @@ func get_scenes() -> Array:
 
 `SceneManager.initialize()` calls `_load_scene_info(folder_path)` for each entry and builds `scenes_list`.
 
-**Current state (2026-04-27):** Three placeholder entries; Design Team scenes added by Dev Team before exhibition.
+**Current state (2026-05-07):** `team_template` (Platzhalter A) + 4 Team-Szenen aktiv:
+`shatha und grecia`, `Pia Liv`, `Milena_Elizabeth`, `steflie`. Platzhalter B + C auskommentiert.
 
 ---
 
@@ -627,12 +630,6 @@ openxr/extensions/meta/color_space/starting_color_space=3
 
 ```yaml
 pending:
-  - id: student-scenes-missing
-	description: >
-	  scene_registry.gd still shows placeholder only.
-	  Student teams must add their scenes before exhibition.
-	status: waiting on student teams
-
   - id: foveation-medium-untested
 	description: >
 	  openxr/foveation_level=2 (Medium) not yet tested on Focus 3.
@@ -726,6 +723,12 @@ interaction_zone.gd
 
 | Date | Change | Files |
 |------|--------|-------|
+| 2026-05-07 | cam_dolly.gd: CamDolly-Node rotiert ServerCamera um Y-Achse (2°/s); ServerCamera-Transform angepasst; funktioniert | `cam_dolly.gd`, `main.tscn` |
+| 2026-05-07 | scene registry: steflie + Pia Liv integriert (gesamt 4 Team-Szenen aktiv) | `_scenes/scene_registry.gd` |
+| 2026-05-07 | scene registry: Milena_Elizabeth hinzugefügt | `_scenes/scene_registry.gd` |
+| 2026-05-06 | server_ip Fallback in network_manager.gd auf 192.168.50.172 aktualisiert | `networking/network_manager.gd` |
+| 2026-05-06 | fix: Gradle daemon + caching deaktiviert (android/build/gradle.properties, tracked via .gitignore exception) — verhindert Einbetten veralteter PCK in APK | `android/build/gradle.properties`, `.gitignore` |
+| 2026-05-06 | fix: *.cfg in export include_filter — scene_info.cfg fehlte in APK-PCK auf Android (ConfigFile.load() schlug lautlos fehl → falscher Szenenname, falsche Dauer) | `export_presets.cfg.template` |
 | 2026-05-06 | fix: xr_player – _ready() mit XRCamera3D.make_current() hinzugefügt; ohne diesen Aufruf bleibt ServerCamera (current=true) aktiv → OpenXR-Compositor sieht falsche Frames → grauer Viewport auf Focus 3 | `player/xr_player.gd` |
 | 2026-04-29 | fix: xr_player.gd _ready() entfernt — redundanter zweiter viewport.use_xr=true-Aufruf (Nebeneffekt: hatte XRCamera3D aktiviert; führte auf GL Compat zu Render-Target-Realloc) | `player/xr_player.gd` |
 | 2026-04-28 | triggers/ → _deprecated/triggers/ (deactivated; design teams use animations only); design_teams.md restructured: index, "Euer Toolkit" intro, ZIP + GitHub setup removed | `_deprecated/triggers/`, `_anleitungen/design_teams.md`, `_anleitungen/ARCHITECTURE.md` |

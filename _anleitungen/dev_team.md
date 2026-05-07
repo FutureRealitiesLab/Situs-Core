@@ -103,6 +103,17 @@ Es gibt **zwei separate APKs** (Quest und Focus 3 haben unterschiedliche Plugins
   ```
 - APK-Signing-Keystore eintragen
 
+> **⚠ Gradle Build-Cache (HTC Focus 3)**
+> `android/build/gradle.properties` hat `org.gradle.daemon=false` und `org.gradle.caching=false`.
+> Diese Einstellungen verhindern, dass Gradle eine veraltete PCK aus dem Build-Cache in die APK einbettet
+> (Symptom ohne Fix: schneller Build liefert falsches Ergebnis — grauer Viewport, Avatar an Nullposition).
+> Die Datei ist über eine `.gitignore`-Ausnahme im Repo getrackt — nicht manuell ändern.
+
+> **⚠ .cfg-Dateien in der APK (scene_info.cfg)**
+> `export_presets.cfg.template` enthält `include_filter="*.txt,*.cfg"`.
+> Ohne `*.cfg` fehlt `scene_info.cfg` in der APK-PCK → `ConfigFile.load()` schlägt auf Android lautlos
+> fehl → falscher Szenenname + falsche Dauer. Beim Kopieren der `.template` bleibt die Einstellung erhalten.
+
 ### Export
 
 ```
@@ -155,7 +166,8 @@ hyper3_server.exe
 
 ## Checkliste vor der Ausstellung
 
-- [ ] `server_ip.txt` auf Ausstellungs-IP gesetzt (nicht `127.0.0.1`!)
+- [ ] `server_ip.txt` auf Ausstellungs-IP gesetzt (nicht `127.0.0.1`!) — Fallback in `network_manager.gd` Zeile ~24 ebenfalls prüfen
+- [ ] `export_presets.cfg` aus Template kopiert (`include_filter` enthält `*.cfg`)
 - [ ] Alle Team-Szenen in `_scenes/scene_registry.gd` eingetragen, Platzhalter entfernt
 - [ ] Reihenfolge in `scene_registry.gd` korrekt, `duration` mit Teams abgestimmt
 - [ ] Alle Szenen einzeln getestet (kein Importfehler, Sounds hörbar)
