@@ -80,7 +80,7 @@ team       = "Team A"                  ← Euer Teamname
 info         = "Kurzbeschreibung der Installation"    ← erscheint im Fade-Overlay
 avatar       = "res://avatar/variants/avatar_box.tscn" ← Standard: avatar_dynamic_cone
 player_color = Color(1.0, 0.0, 0.5, 1)               ← alle Spieler gleiche Farbe
-                                                      ;  weglassen = individuelle Farben
+													  ;  weglassen = individuelle Farben
 ```
 
 Die Pflichtfelder reichen für die Abgabe. Die optionalen Felder kann Pablo auch nachträglich setzen.
@@ -152,7 +152,7 @@ Gleich wie bei 3D-Scans: GLB in euren Team-Ordner ziehen → automatisch importi
 
 ```gdscript
 func _ready() -> void:
-    $MeinModell/AnimationPlayer.play("Idle")
+	$MeinModell/AnimationPlayer.play("Idle")
 ```
 
 > Animationsname muss exakt dem Namen im AnimationPlayer entsprechen (Groß-/Kleinschreibung beachten).
