@@ -19,9 +19,6 @@ _apks/
 # Export-Presets (enthalten lokale Pfade + Keystore-Daten)
 export_presets.cfg
 
-# Lokale Konfiguration (jeder trägt seine eigene IP ein)
-server_ip.txt
-
 # Claude Code (lokale IDE-Einstellungen)
 .claude/
 
