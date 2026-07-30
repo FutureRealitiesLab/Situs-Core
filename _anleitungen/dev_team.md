@@ -77,16 +77,20 @@ Checkliste pro Team-Szene:
 
 **Muss vor dem APK-Build passieren — die IP wird in die APK eingebacken.**
 
+`networking/network_manager.gd` in Godot öffnen → Zeile 24:
+
+```gdscript
+var server_ip: String = "192.168.50.29"
 ```
-server_ip.txt  →  IP des Server-PCs eintragen, z. B.:  192.168.1.100
-```
+
+→ IP durch die IP des Server-PCs ersetzen → Datei speichern → APK bauen.
 
 IP des Server-PCs herausfinden (auf dem Server-PC):
 ```
 Win+R → cmd → ipconfig → „IPv4-Adresse" unter dem LAN/WLAN-Adapter ablesen
 ```
 
-> `network_manager.gd` nicht anfassen — liest `server_ip.txt` automatisch ein.
+> `server_ip.txt` im Projektordner ist veraltet und wird nicht eingelesen — ignorieren.
 
 ---
 
@@ -167,7 +171,7 @@ hyper3_server.exe
 
 ## Checkliste vor der Ausstellung
 
-- [ ] `server_ip.txt` auf Ausstellungs-IP gesetzt (nicht `127.0.0.1`!) — Fallback in `network_manager.gd` Zeile ~24 ebenfalls prüfen
+- [ ] Server-IP in `networking/network_manager.gd` Zeile 24 auf Ausstellungs-IP gesetzt (nicht `127.0.0.1`!)
 - [ ] `export_presets.cfg` aus Template kopiert (`include_filter` enthält `*.cfg`)
 - [ ] Alle Team-Szenen in `_scenes/scene_registry.gd` eingetragen, Platzhalter entfernt
 - [ ] Reihenfolge in `scene_registry.gd` korrekt, `duration` mit Teams abgestimmt

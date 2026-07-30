@@ -337,9 +337,11 @@ PORT = 7777
 MAX_CLIENTS = 8
 ```
 
-**Server IP resolution** (priority order):
-1. `res://server_ip.txt` (if valid IPv4) — gitignored, each machine sets own
-2. Hardcoded fallback: `"192.168.1.100"`
+**Server IP:** Hardcoded in `network_manager.gd` Zeile 24:
+```gdscript
+var server_ip: String = "192.168.50.29"
+```
+Vor dem APK-Build auf die IP des Server-PCs setzen. `server_ip.txt` ist veraltet und wird nicht eingelesen.
 
 **Public API:**
 ```gdscript

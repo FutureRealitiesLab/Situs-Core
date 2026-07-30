@@ -36,7 +36,7 @@ _scenes/team_X/team_X.tscn im Editor öffnen → F6
 
 **Server-IP konfigurieren** (vor APK-Build):
 ```
-server_ip.txt  →  IP des Server-PCs eintragen, z. B.  192.168.1.100
+networking/network_manager.gd  →  Zeile 24:  var server_ip: String = "192.168.1.100"
 ```
 
 **APK bauen:**
