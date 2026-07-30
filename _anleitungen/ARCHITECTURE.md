@@ -143,9 +143,9 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 |------|------|
 | `_scenes/scene_registry.gd` | **Dev Team only** — ordered folder-path list; no metadata |
 | `_scenes/team_X/scene_info.cfg` | **Design Teams** — per-team metadata: name, duration, scene_file, avatar, … |
-| `_scenes/team_template/team_scene.gd` | Team scene base script — duplicate per team |
+| `_scenes/team_template/scene_hooks.gd` | Team scene lifecycle script — duplicate per team; delegates boilerplate to SceneManager |
 | `_scenes/team_template/team_scene.tscn` | Team scene base — duplicate per team |
-| `_scenes/team_template/net_info_board.gd` | Injected at runtime into every scene (not in tscn, spawned by SceneManager) |
+| `SYSTEM/net_info_board.gd` | Injected at runtime into every scene (not in tscn, spawned by SceneManager) |
 
 ### Documentation
 | File | Role |
@@ -237,6 +237,8 @@ SceneManager.advance_scene()                                  # next scene (serv
 SceneManager.go_to_scene(index: int)                          # jump to specific scene (server only)
 SceneManager.confirm_scene_load(index: int)                   # called by main.gd after fade-out
 SceneManager.activate_standalone()                            # called by xr_player.gd on button press
+SceneManager.retreat_scene()                                  # prev scene (server OR standalone)
+SceneManager.on_team_scene_ready(scene_root: Node3D)          # called by scene_hooks.gd _ready()
 
 SceneManager.current_index     # int: index of loaded scene (-1 = none)
 SceneManager.scenes_list       # Array of scene dicts from registry
@@ -470,7 +472,7 @@ All button and thumbstick inputs are silently ignored. **Do not remove.**
 
 ### `_scenes/team_template/net_info_board.gd`
 
-**Purpose:** Connection status Label3D, spawned at runtime by `SceneManager._spawn_net_info_board()` into every team scene. Not part of any .tscn file.
+**Purpose:** Connection status Label3D, spawned at runtime by `SceneManager._spawn_net_info_board()` into every team scene. Not part of any .tscn file. Lives in `SYSTEM/` (not team template).
 
 **Visibility logic:**
 ```gdscript
@@ -503,10 +505,12 @@ FPSPlayer (CharacterBody3D, fps_player.gd)
 **Controls:**
 | Input | Action |
 |-------|--------|
-| WASD | Move (4.0 m/s) |
+| WASD / Pfeiltasten | Move (4.0 m/s) |
 | Mouse | Look (sensitivity 0.003) |
 | Space | Jump (velocity 4.5) |
 | Escape | Release mouse capture |
+| Q | Vorherige Szene (+ Standalone aktivieren) |
+| E | Nächste Szene (+ Standalone aktivieren) |
 
 ---
 
@@ -716,15 +720,17 @@ main.gd
       └── SYSTEM/avatar/*.tscn (per scene, from registry)
 
 xr_player.gd
- └── SceneManager (standalone_mode, activate_standalone, advance_scene)
+ └── SceneManager (standalone_mode, activate_standalone, advance_scene, retreat_scene)
 
-net_info_board.gd (injected at runtime, not in tscn)
+fps_player.gd
+ └── SceneManager (standalone_mode, activate_standalone, advance_scene, retreat_scene)
+
+SYSTEM/net_info_board.gd (injected at runtime, not in tscn)
  ├── NetworkManager (client_connected_flag)
  └── SceneManager (standalone_mode)
 
-team_scene.gd
- ├── SceneManager (for solo test detection)
- └── fps_player.tscn (spawned in solo mode only)
+scene_hooks.gd
+ └── SceneManager.on_team_scene_ready() (F6-Erkennung + FPS-Spawn + ServerCamera-Setup)
 ```
 
 ---
@@ -733,6 +739,10 @@ team_scene.gd
 
 | Date | Change | Files |
 |------|--------|-------|
+| 2026-07-30 | SYSTEM/-Ordner: Core-Dateien aus Root in SYSTEM/ verschoben (networking/, player/, avatar/, main.gd/.tscn, scene_manager.gd, cam_dolly.gd, openxr_action_map.tres, net_info_board.gd); alle res://-Pfade aktualisiert | multiple |
+| 2026-07-30 | scene_hooks.gd: team_scene.gd umbenannt und vereinfacht; Boilerplate (F6-Erkennung, ServerCamera) nach SceneManager.on_team_scene_ready() verschoben | `_scenes/team_template/scene_hooks.gd`, `SYSTEM/scene_manager.gd` |
+| 2026-07-30 | retreat_scene() hinzugefügt (analog advance_scene, mit leerem-Liste-Guard) | `SYSTEM/scene_manager.gd` |
+| 2026-07-30 | fps_player: Q/E → Szene vor/zurück + Standalone-Aktivierung; WASD zusätzlich zu Pfeiltasten; XRWalkArea-Clamp | `SYSTEM/player/fps_player.gd` |
 | 2026-07-30 | Standalone-Modus: XR-Client läuft ohne Server — Timer + Szenen laufen autonom durch; aktiviert via beliebigem Controller-Button | `scene_manager.gd` |
 | 2026-07-30 | xr_player: Thumbstick-Locomotion (beide Controller, max-Betrag, 1.2 m/s, bounded zu XRWalkArea); Rotation via X-Achse (60°/s, aktiviert) | `player/xr_player.gd` |
 | 2026-07-30 | xr_player: LeftHand + RightHand XRController3D hinzugefügt; button_pressed + input_vector2_changed auf beiden verbunden; SphereMesh Debug-Visuals | `player/xr_player.tscn`, `player/xr_player.gd` |

@@ -5,7 +5,7 @@ Multiplayer VR Ausstellungstemplate. Bis zu 8 XR-Clients (HTC Vive Focus Vision,
 
 Gebaut mit **Godot 4.6** — GL Compatibility Renderer, OpenXR.
 
-**Standalone-Modus:** Brillen laufen auch ohne Server — Szenenwechsel automatisch per Timer, manuell per B/Y-Button.
+**Standalone-Modus:** Alle Clients (VR-Brillen und FPS-Desktop) laufen auch ohne Server — Szenenwechsel automatisch per Timer oder manuell per Button/Taste.
 
 ---
 
@@ -48,16 +48,31 @@ Project → Export → „Android – HTC Focus 3"  → Hyper-Irrealismus-III-Fo
 
 ---
 
-## Controller-Belegung (HTC Vive Focus Vision)
+## Steuerung
+
+**VR-Controller (HTC Vive Focus Vision / Meta Quest) — beide Controller gleichwertig:**
 
 | Taste | Funktion |
 |-------|---------|
-| A oder X (Face Button Primary) | Standalone-Modus aktivieren |
-| B oder Y (Face Button Secondary) | Nächste Szene |
-| Thumbstick Y (vor/zurück) | Bewegung in Blickrichtung |
-| Thumbstick X (links/rechts) | Drehung |
+| A oder X | Standalone-Modus aktivieren |
+| B oder Y | Nächste Szene |
+| Thumbstick Y | Bewegung vor/zurück |
+| Thumbstick X | Drehung links/rechts |
 
-Beide Controller sind gleichwertig.
+**FPS-Desktop-Client (PC ohne Headset):**
+
+| Taste | Funktion |
+|-------|---------|
+| Q | Vorherige Szene (+ Standalone aktivieren) |
+| E | Nächste Szene (+ Standalone aktivieren) |
+| WASD / Pfeiltasten | Bewegung |
+| Maus | Umsehen |
+| Leertaste | Springen |
+| ESC | Maus freigeben |
+
+**Standalone-Modus** — läuft ohne Server:
+- VR: beliebigen Button drücken → Standalone aktiv, Szenen laufen per Timer durch
+- FPS: Q oder E drücken → Standalone aktiv, Szenen manuell navigierbar
 
 ---
 

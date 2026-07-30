@@ -62,8 +62,11 @@ Die **Reihenfolge** = Ausstellungsreihenfolge. Platzhalter entfernen sobald echt
 ```
 F5 → „Als Server starten"
 Zweite Instanz → „Als Spieler starten (First Person)"
-N-Taste → alle Szenen durchklicken
+N-Taste (oder E im FPS-Client) → alle Szenen durchklicken
 ```
+
+FPS-Client Steuerung: WASD / Pfeiltasten, Maus, ESC.
+Q = vorherige Szene, E = nächste Szene (beide aktivieren Standalone-Modus).
 
 Checkliste pro Team-Szene:
 - [ ] Lädt ohne Fehlermeldung
@@ -178,7 +181,8 @@ hyper3_server.exe
 - [ ] Alle Szenen einzeln getestet (kein Importfehler, Sounds hörbar)
 - [ ] Quest-APK auf alle Meta Quest Headsets installiert (`_apks/Hyper-Irrealismus-III-Quest.apk`)
 - [ ] Focus3-APK auf alle HTC Focus 3 / Focus Vision Headsets installiert (`_apks/Hyper-Irrealismus-III-Focus3.apk`)
-- [ ] Standalone-Modus getestet: Brille ohne Server starten, beliebigen Button drücken → Szenen laufen durch
+- [ ] Standalone-Modus (VR) getestet: Brille ohne Server starten, beliebigen Button drücken → Szenen laufen durch
+- [ ] Standalone-Modus (FPS) getestet: FPS-Client ohne Server starten, Q/E drücken → Szenen navigierbar
 - [ ] `hyper3_server.exe` + `start_server.bat` auf Server-PC Desktop
 - [ ] Headsets voll geladen
 - [ ] Venue Team eingewiesen (→ `_anleitungen/venue_team.md`)

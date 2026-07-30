@@ -67,6 +67,22 @@ Alle Brillen wechseln gleichzeitig.
 
 ---
 
+## PC-Client (optional — für Monitoring oder Demo)
+
+Läuft ein Desktop-PC als FPS-Client (zweites Fenster oder zweiter Rechner), kann dieser Szenen navigieren ohne das Server-Fenster anzufassen:
+
+| Taste | Funktion |
+|-------|---------|
+| **Q** | Vorherige Szene (+ Standalone-Modus aktivieren) |
+| **E** | Nächste Szene (+ Standalone-Modus aktivieren) |
+| WASD / Pfeiltasten | Bewegen |
+| Maus | Umsehen |
+| ESC | Maus freigeben |
+
+> Q und E aktivieren automatisch Standalone — der PC-Client läuft dann unabhängig vom Server.
+
+---
+
 ## Brille ohne Server betreiben (Standalone-Modus)
 
 Die Brillen können auch **ohne Server-PC** laufen — nützlich für Tests oder wenn der Server nicht verfügbar ist.

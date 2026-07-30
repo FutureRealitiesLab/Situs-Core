@@ -172,6 +172,8 @@ func _process(delta: float) -> void:
 func advance_scene() -> void:
 	if not multiplayer.is_server() and not standalone_mode:
 		return
+	if scenes_list.is_empty():
+		return
 	_timer = 0.0
 	var next: int = (current_index + 1) % scenes_list.size()
 	print("[SceneManager] Szenenwechsel → Index %d" % next)
@@ -181,6 +183,8 @@ func advance_scene() -> void:
 ## Lädt die vorherige Szene — analog zu advance_scene().
 func retreat_scene() -> void:
 	if not multiplayer.is_server() and not standalone_mode:
+		return
+	if scenes_list.is_empty():
 		return
 	_timer = 0.0
 	var prev: int = (current_index - 1 + scenes_list.size()) % scenes_list.size()

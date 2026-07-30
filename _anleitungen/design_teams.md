@@ -49,10 +49,8 @@ Alles was ihr macht, lebt in **einem einzigen Ordner**: `_scenes/team_X/`
 1. Im Godot **FileSystem-Fenster** (unten links): `_scenes/team_template/` suchen
 2. Rechtsklick auf `team_template/` → **Duplicate** → Godot erstellt `team_template2/`
 3. Den neuen Ordner umbenennen: Rechtsklick → **Rename** → z. B. `team_a`
-4. Darin die Dateien umbenennen:
-   - `team_scene.tscn` → `team_a.tscn`
-   - `team_scene.gd` → `team_a.gd`
-5. `team_a.tscn` öffnen → im **Inspector** das Script-Feld auf `team_a.gd` umstellen
+4. Hauptszene umbenennen: `team_scene.tscn` → `team_a.tscn`
+5. `scene_hooks.gd` könnt ihr umbenennen (z. B. `team_a.gd`) wenn ihr eigenen Code eintragen wollt — oder so lassen wie es ist
 
 > Ab jetzt arbeitet ihr ausschließlich in `_scenes/team_a/` — dieser Ordner ist eure Abgabe.
 
@@ -101,6 +99,9 @@ Ihr wollt sehen wie eure Szene aussieht, Objekte platzieren, Sound hören.
 
 > **F5** startet immer `SYSTEM/main.tscn` (mit Netzwerk und Menü) — das braucht ihr nicht.
 > **F6** startet die gerade geöffnete Szene direkt — das ist euer Test-Werkzeug.
+
+> Im F6-Modus erscheint automatisch ein FPS-Spieler mit eurer Kamera.
+> **WASD** oder **Pfeiltasten** → Bewegen  |  **Maus** → Umsehen  |  **ESC** → Maus freigeben
 
 ---
 
