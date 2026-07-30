@@ -409,8 +409,29 @@ func _on_client_disconnected() -> void:
 	print("[SceneManager] Alle Remote-Avatare entfernt (Verbindung verloren).")
 
 
+## Aufgerufen von scene_hooks.gd._ready() jeder Team-Szene.
+## Übernimmt F6-Testmodus-Erkennung und ServerCamera-Positionierung,
+## damit dieser Boilerplate nicht in den Team-Szenen-Scripts steht.
+func on_team_scene_ready(scene_root: Node3D) -> void:
+	if scenes_list.is_empty():
+		# F6-Modus: SceneManager wurde nicht von main.gd initialisiert.
+		var fps := FPSPlayer.instantiate()
+		scene_root.add_child(fps)
+		fps.global_position = Vector3(0, 1, 0)
+		print("[SceneManager] F6-Testmodus: FPS-Player gespawnt.")
+		print("               WASD = Bewegen  |  Maus = Umsehen  |  ESC = Maus freigeben")
+	else:
+		# Spielbetrieb: ServerCamera robust per look_at() ausrichten.
+		# look_at() verhindert Transform-Korruption die beim .tscn-Speichern auftreten kann.
+		var cam := scene_root.get_node_or_null("ServerCamera") as Camera3D
+		if cam:
+			cam.global_position = Vector3(0.0, 5.0, 5.0)
+			cam.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
+		print("[SceneManager] '%s' im Spielbetrieb geladen." % scene_root.name)
+
+
 ## Injiziert eine Label3D-Verbindungsstatusanzeige in die aktuelle Szene.
-## Das Label versteckt sich sobald die Verbindung steht (→ net_info_board.gd).
+## Das Label versteckt sich sobald die Verbindung steht (→ SYSTEM/net_info_board.gd).
 func _spawn_net_info_board() -> void:
 	if not is_instance_valid(_current_scene):
 		return
@@ -426,7 +447,7 @@ func _spawn_net_info_board() -> void:
 	board.modulate = Color(1.0, 0.45, 0.1)        # Orange – gut sichtbar im Dunkeln
 	board.outline_modulate = Color(0.0, 0.0, 0.0)  # Schwarzer Rand für Lesbarkeit
 	board.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	board.set_script(load("res://_scenes/team_template/net_info_board.gd"))
+	board.set_script(load("res://SYSTEM/net_info_board.gd"))
 	_current_scene.add_child(board)
 
 

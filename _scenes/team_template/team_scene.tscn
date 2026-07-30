@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbteamtpl1"]
 
-[ext_resource type="Script" uid="uid://bcr2oluy2vwua" path="res://_scenes/team_template/team_scene.gd" id="1_teamgd"]
+[ext_resource type="Script" uid="uid://bcr2oluy2vwua" path="res://_scenes/team_template/scene_hooks.gd" id="1_teamgd"]
 [ext_resource type="PackedScene" uid="uid://b4uxjpy7s36ni" path="res://_scenes/team_template/material/22.1.2026.glb" id="2_lhad2"]
 [ext_resource type="AudioStream" uid="uid://c444shtgtdey6" path="res://_scenes/team_template/material/Wave-Master 24bit-CircuitMinds.wav" id="3_74cgg"]
 
