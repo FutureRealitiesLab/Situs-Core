@@ -1,15 +1,15 @@
 # TEMPLATE CORE – nicht verändern
 extends CharacterBody3D
 
-## remote_avatar.gd – Vereinfachte visuelle Darstellung eines anderen Spielers.
+## remote_avatar.gd – Darstellung einer anderen Person im VR-Raum.
 ##
-## Aufbau:
-##   • Capsule  (Body)  → Körper, farbcodiert per Spieler-ID
-##   • Sphere   (Head)  → Kopf, folgt der replizierten Kameraposition
-##   • CollisionShape3D → damit Area3D-Trigger (body_entered) ausgelöst werden
+## Jede verbundene VR-Brille oder Desktop-Instanz erscheint bei anderen
+## Spielern als farbiger Körper (Capsule) mit Kopf (Kugel), die der
+## echten Kopfbewegung folgen.
+## Wird von SceneManager automatisch gespawnt — nicht manuell einbauen.
 ##
-## Wird von world.gd für jeden verbundenen Peer instanziert.
-## Positionen kommen via NetworkManager._client_receive_state() → update_transform().
+## Basis-Implementierung; für eigene Avatar-Varianten avatar_dynamic_cone
+## als Vorlage verwenden.
 
 
 ## Peer-ID dieses Avatars (wird von SceneManager gesetzt)

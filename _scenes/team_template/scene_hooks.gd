@@ -1,17 +1,15 @@
 ## scene_hooks.gd
 ## ════════════════════════════════════════════════════════════════
-##  Optionales Lifecycle-Script für Team-Szenen.
+##  Einstiegspunkt für eigenen Code in Team-Szenen.
 ##
-##  Zweck:
-##    Bietet _ready()- und _exit_tree()-Hooks für szenenspezifischen
-##    Code (Sounds starten/stoppen, Animationen, Timer usw.).
+##  Dieses Script hängt an der Root-Node der Team-Szene.
+##  Beim Laden ruft es automatisch die nötigen Systemfunktionen auf:
+##    • FPS-Player spawnen wenn die Szene per F6 solo getestet wird
+##    • ServerCamera positionieren im Ausstellungsbetrieb
 ##
-##    F6-Testmodus und ServerCamera-Positionierung werden automatisch
-##    vom SceneManager übernommen — kein Boilerplate nötig.
-##
-##  Verwendung:
-##    Script an die Root-Node der Team-Szene hängen.
-##    _ready() und _exit_tree() nach Bedarf befüllen.
+##  Eigener Code kommt in die markierten Bereiche:
+##    _ready()     → z. B. Sound starten, Animation anstoßen
+##    _exit_tree() → z. B. Sound stoppen, Zustand zurücksetzen
 ## ════════════════════════════════════════════════════════════════
 
 extends Node3D

@@ -1,8 +1,10 @@
 # TEMPLATE CORE – nicht verändern
 extends Node
 
-## game_state.gd – Globaler Singleton für Spielzustand.
-## Zugriff von überall: GameState.mode, GameState.my_id, ...
+## game_state.gd – Gemeinsamer Datenbehälter für alle anderen Scripte.
+##
+## Speichert: ob diese Instanz als Server, VR-Brille oder Desktop läuft;
+## welche Netzwerk-ID wir haben; und welche Farbe welchem Spieler gehört.
 
 
 enum Mode { XR, FPS, SERVER }

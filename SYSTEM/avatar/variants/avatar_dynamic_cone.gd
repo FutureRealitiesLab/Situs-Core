@@ -1,10 +1,13 @@
+# TEMPLATE CORE – nicht verändern
 extends CharacterBody3D
 
-## DynamicCone – gestapelte Ringe die wie eine Kette mit Dämpfung nachziehen.
+## avatar_dynamic_cone.gd – Standard-Avatar für die Ausstellung.
 ##
-## Alle @export-Werte lassen sich im Inspektor anpassen.
-## Um eine eigene Variante zu erstellen:
-##   avatar_dynamic_cone.tscn duplizieren → Script-Werte im Inspektor überschreiben.
+## Stellt einen Spieler als gestapelte Ringe dar, die weich hinter der
+## Kopfbewegung nachziehen — ähnlich einer Kette.
+## Anzahl, Größe und Nachzieh-Verhalten sind im Inspektor einstellbar.
+## Für eine eigene Variante: avatar_dynamic_cone.tscn duplizieren
+## und die Inspektor-Werte überschreiben (kein Code nötig).
 
 ## Anzahl der Ringe zwischen Boden und Kopf
 @export var num_rings: int = 8

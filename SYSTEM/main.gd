@@ -1,11 +1,12 @@
 # TEMPLATE CORE – nicht verändern
 extends Node
 
-## main.gd – Persistenter Root der Anwendung.
+## main.gd – Startpunkt und dauerhafter Rahmen der Ausstellungs-App.
 ##
-## main.tscn läuft die gesamte Laufzeit durch; Team-Szenen werden von
-## SceneManager in $SceneContainer hinein- und herausgeladen.
-## Avatare leben in $PlayersContainer und überstehen Szenenwechsel.
+## Läuft die gesamte Laufzeit durch — Team-Szenen, Spieler und Avatare
+## werden darin hinein- und herausgeladen.
+## Zuständig für: Startmenü, Einblende-Übergang beim Szenenwechsel,
+## VR-Kamera-Setup, Netzwerk-Diagnose-Overlay und Server-HUD.
 
 ## Fade-Zeiten für Szenenübergänge
 const FADE_OUT_DURATION: float = 1.0

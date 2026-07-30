@@ -1,7 +1,11 @@
 # TEMPLATE CORE – nicht verändern
 extends Node
 
-## scene_manager.gd – Persistenter Szenen-Controller für die Multiplayer-Ausstellung.
+## scene_manager.gd – Herzstück der Ausstellung.
+##
+## Entscheidet wann welche Team-Szene geladen wird, hält den Timer,
+## spawnt Spieler-Figuren und Avatare anderer Besucherinnen, und
+## schaltet bei Bedarf in den Standalone-Modus (läuft ohne Server).
 ##
 ## Architektur-Übersicht:
 ##

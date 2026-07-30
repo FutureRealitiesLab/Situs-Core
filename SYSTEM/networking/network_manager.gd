@@ -1,11 +1,12 @@
 # TEMPLATE CORE – nicht verändern
 extends Node
 
-## network_manager.gd – ENet-Multiplayer-Verwaltung (Singleton).
+## network_manager.gd – Verbindet alle Geräte über WLAN.
 ##
-## Topologie: Dedicated Server (PC) ← ENet UDP → Clients (Headsets + Desktop)
-## Der Server ist reiner Relay-Host: Er spawnt keinen Avatar und
-## registriert keine Trigger – er leitet nur Nachrichten weiter.
+## Schickt die eigene Position und Kopfbewegung an den Server;
+## empfängt dieselben Daten von anderen Spielern und aktualisiert ihre Avatare.
+## Der Server-PC leitet nur weiter — er hat keinen eigenen Avatar.
+## Vor dem APK-Build: server_ip auf die LAN-IP des Server-PCs setzen.
 ##
 ## ┌─────────────────────────────────────────────────────────────┐
 ## │  TODO: server_ip auf die LAN-IP eures Gaming-PCs setzen!    │
