@@ -36,7 +36,7 @@ _scenes/team_X/team_X.tscn im Editor öffnen → F6
 
 **Server-IP konfigurieren** (vor APK-Build):
 ```
-networking/network_manager.gd  →  Zeile 24:  var server_ip: String = "192.168.1.100"
+SYSTEM/networking/network_manager.gd  →  Zeile 24:  var server_ip: String = "192.168.1.100"
 ```
 
 **APK bauen:**
@@ -64,16 +64,18 @@ Beide Controller sind gleichwertig.
 ## Ordnerstruktur
 
 ```
-_anleitungen/       ← Dokumentation für alle Gruppen
-_scenes/            ← Alle Szenen — nur Design Teams arbeiten hier
-  team_template/    ← Vorlage: duplizieren für jeden Team-Ordner
-  team_X/           ← Team-Ordner: scene_info.cfg + Szene + Assets
-  scene_registry.gd ← Ausstellungsreihenfolge (nur Dev Team)
-avatar/             ← Avatar-Varianten (Core)
-networking/         ← Netzwerk-Autoloads (Core)
-player/             ← FPS + XR Player (Core)
-main.gd / main.tscn ← Root (Core)
-scene_manager.gd    ← Autoload (Core)
-openxr_action_map.tres ← Controller-Belegung (Core)
-project.godot       ← Godot Projektdatei
+_anleitungen/            ← Dokumentation für alle Gruppen
+_scenes/                 ← Alle Szenen — nur Design Teams arbeiten hier
+  team_template/         ← Vorlage: duplizieren für jeden Team-Ordner
+  team_X/                ← Team-Ordner: scene_info.cfg + Szene + Assets
+  scene_registry.gd      ← Ausstellungsreihenfolge (nur Dev Team)
+SYSTEM/                  ← Core-System (nur Dev Team)
+  avatar/                ← Avatar-Varianten
+  networking/            ← Netzwerk-Autoloads (GameState, NetworkManager)
+  player/                ← FPS + XR Player
+  cam_dolly.gd
+  main.gd / main.tscn    ← Root-Szene
+  openxr_action_map.tres ← Controller-Belegung
+  scene_manager.gd       ← Autoload SceneManager
+project.godot            ← Godot Projektdatei
 ```

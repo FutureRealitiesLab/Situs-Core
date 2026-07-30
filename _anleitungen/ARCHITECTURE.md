@@ -113,25 +113,25 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 ### Core (do not modify unless you are the developer)
 | File | Role | Lines |
 |------|------|-------|
-| `main.gd` | Root node: menu, mode selection, HUD, VR fade overlay | ~330 |
-| `main.tscn` | Root scene: containers, HUD, cameras, XRWalkArea | — |
-| `scene_manager.gd` | **Autoload**: scene loader, scene_info.cfg reader, avatar manager, timer, shadow softening, standalone mode | ~490 |
-| `networking/game_state.gd` | **Autoload**: mode, peer IDs, colors | 44 |
-| `networking/network_manager.gd` | **Autoload**: ENet relay, RPC chain | 183 |
-| `player/fps_player.gd` | FPS camera+movement controller | 92 |
-| `player/fps_player.tscn` | FPS player scene | — |
-| `player/xr_player.gd` | OpenXR tracking + thumbstick locomotion + button handling | ~115 |
-| `player/xr_player.tscn` | XR player scene (XROrigin3D + LeftHand + RightHand + debug spheres) | — |
-| `openxr_action_map.tres` | OpenXR action bindings (Quest + Focus3/Vision + khr/simple profiles) | — |
-| `cam_dolly.gd` | Rotations-Node (Y-Achse, 2°/s) — rotiert ServerCamera in main.tscn | ~11 |
-| `avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
-| `avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
-| `avatar/variants/avatar_dynamic_cone.gd` | DynamicCone avatar script | ~196 |
-| `avatar/variants/avatar_dynamic_cone.tscn` | DynamicCone scene | — |
-| `avatar/variants/avatar_box.tscn` | Box avatar variant | — |
-| `avatar/variants/avatar_capsule.tscn` | Capsule avatar variant | — |
-| `avatar/variants/avatar_sphere.tscn` | Sphere avatar variant | — |
-| `avatar/variants/avatar_ghost.tscn` | Ghost avatar variant | — |
+| `SYSTEM/main.gd` | Root node: menu, mode selection, HUD, VR fade overlay | ~330 |
+| `SYSTEM/main.tscn` | Root scene: containers, HUD, cameras, XRWalkArea | — |
+| `SYSTEM/scene_manager.gd` | **Autoload**: scene loader, scene_info.cfg reader, avatar manager, timer, shadow softening, standalone mode | ~490 |
+| `SYSTEM/networking/game_state.gd` | **Autoload**: mode, peer IDs, colors | 44 |
+| `SYSTEM/networking/network_manager.gd` | **Autoload**: ENet relay, RPC chain | 183 |
+| `SYSTEM/player/fps_player.gd` | FPS camera+movement controller | 92 |
+| `SYSTEM/player/fps_player.tscn` | FPS player scene | — |
+| `SYSTEM/player/xr_player.gd` | OpenXR tracking + thumbstick locomotion + button handling | ~115 |
+| `SYSTEM/player/xr_player.tscn` | XR player scene (XROrigin3D + LeftHand + RightHand + debug spheres) | — |
+| `SYSTEM/openxr_action_map.tres` | OpenXR action bindings (Quest + Focus3/Vision + khr/simple profiles) | — |
+| `SYSTEM/cam_dolly.gd` | Rotations-Node (Y-Achse, 2°/s) — rotiert ServerCamera in main.tscn | ~11 |
+| `SYSTEM/avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
+| `SYSTEM/avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
+| `SYSTEM/avatar/variants/avatar_dynamic_cone.gd` | DynamicCone avatar script | ~196 |
+| `SYSTEM/avatar/variants/avatar_dynamic_cone.tscn` | DynamicCone scene | — |
+| `SYSTEM/avatar/variants/avatar_box.tscn` | Box avatar variant | — |
+| `SYSTEM/avatar/variants/avatar_capsule.tscn` | Capsule avatar variant | — |
+| `SYSTEM/avatar/variants/avatar_sphere.tscn` | Sphere avatar variant | — |
+| `SYSTEM/avatar/variants/avatar_ghost.tscn` | Ghost avatar variant | — |
 | `_deprecated/triggers/interaction_zone.gd` | Area3D trigger template (deaktiviert) | 178 |
 | `_deprecated/triggers/interaction_zone.tscn` | Trigger zone scene (deaktiviert) | — |
 | `project.godot` | Engine configuration | — |
@@ -166,7 +166,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 
 ## MODULE SPECIFICATIONS
 
-### `main.gd` + `main.tscn`
+### `SYSTEM/main.gd` + `SYSTEM/main.tscn`
 
 **Purpose:** Persistent root. Always loaded. Manages startup flow, contains all containers, VR fade overlay.
 
@@ -225,7 +225,7 @@ Do NOT remove either setting — both are needed.
 
 ---
 
-### `scene_manager.gd` (Autoload: SceneManager)
+### `SYSTEM/scene_manager.gd` (Autoload: SceneManager)
 
 **Purpose:** Central coordinator. Manages scene lifecycle, player spawning, avatar management, timer, shadow softening, and standalone mode.
 
@@ -310,7 +310,7 @@ Matches: Focus 3, Focus Vision, Vive Pro, Vive XR Elite, etc.
 
 ---
 
-### `networking/game_state.gd` (Autoload: GameState)
+### `SYSTEM/networking/game_state.gd` (Autoload: GameState)
 
 **Purpose:** Lightweight global state. No networking logic.
 
@@ -327,7 +327,7 @@ GameState.reset()       # clears colors + id
 
 ---
 
-### `networking/network_manager.gd` (Autoload: NetworkManager)
+### `SYSTEM/networking/network_manager.gd` (Autoload: NetworkManager)
 
 **Purpose:** ENet transport layer. Relay-only server (no game logic on server side, only relay + avatar update).
 
@@ -364,7 +364,7 @@ signal client_disconnected()
 
 ---
 
-### `player/xr_player.gd` + `xr_player.tscn`
+### `SYSTEM/player/xr_player.gd` + `xr_player.tscn`
 
 **Purpose:** OpenXR headset controller. Thumbstick locomotion bounded to XRWalkArea. Both controllers fully symmetric.
 
@@ -414,7 +414,7 @@ var turn: float = _stick_l.x if abs(_stick_l.x) >= abs(_stick_r.x) else _stick_r
 ```
 
 **Boundary (`_clamp_to_walk_area()`):**
-Reads `XRWalkArea` node from `main.tscn` (PlaneMesh, single point of truth).
+Reads `XRWalkArea` node from `SYSTEM/main.tscn` (PlaneMesh, single point of truth).
 Clamps `global_position.x` and `.z` to the plane's half-extents around its center.
 Safe if node is missing or mesh is wrong type — silently skips.
 
@@ -432,7 +432,7 @@ OpenXR compositor sees wrong frames → gray viewport on Focus 3/Vision.
 
 ---
 
-### `openxr_action_map.tres`
+### `SYSTEM/openxr_action_map.tres`
 
 **Purpose:** Defines all OpenXR actions and hardware bindings. Loaded via `project.godot → [xr] openxr/action_map`.
 
@@ -461,7 +461,7 @@ OpenXR compositor sees wrong frames → gray viewport on Focus 3/Vision.
 **Critical note — project.godot:**
 ```ini
 [xr]
-openxr/action_map="res://openxr_action_map.tres"
+openxr/action_map="res://SYSTEM/openxr_action_map.tres"
 ```
 Without this line, Godot never submits the action map to the OpenXR runtime.
 All button and thumbstick inputs are silently ignored. **Do not remove.**
@@ -488,7 +488,7 @@ Color: orange `Color(1.0, 0.45, 0.1)` for visibility in dark rooms.
 
 ---
 
-### `player/fps_player.gd` + `fps_player.tscn`
+### `SYSTEM/player/fps_player.gd` + `fps_player.tscn`
 
 **Purpose:** Desktop FPS controller. Sends position to server.
 
@@ -527,7 +527,7 @@ func set_self_mode(enabled: bool) -> void
 
 SceneManager checks `has_method("set_self_mode")` before calling it.
 
-#### `avatar/variants/avatar_dynamic_cone.gd` (Default)
+#### `SYSTEM/avatar/variants/avatar_dynamic_cone.gd` (Default)
 
 Procedural stacked torus rings avatar.
 
@@ -589,7 +589,7 @@ duration   = 120.0          ; seconds; -1.0 = no auto-advance
 scene_file = "team_a.tscn"  ; required
 team       = "Team A"       ; optional: shown in fade overlay
 info       = "Kurzbeschreibung"
-avatar     = "res://avatar/variants/..."    ; optional: default = avatar_dynamic_cone.tscn
+avatar     = "res://SYSTEM/avatar/variants/..."    ; optional: default = avatar_dynamic_cone.tscn
 player_color = Color(1.0, 1.0, 1.0, 1)    ; optional: forces all players to one color
 ```
 
@@ -652,7 +652,7 @@ openxr/view_configuration=1
 openxr/reference_space=1
 openxr/foveation_level=2
 shaders/enabled=true
-openxr/action_map="res://openxr_action_map.tres"       # CRITICAL: without this, no button/stick input
+openxr/action_map="res://SYSTEM/openxr_action_map.tres" # CRITICAL: without this, no button/stick input
 openxr/extensions/meta/color_space/starting_color_space=3
 ```
 
@@ -693,7 +693,7 @@ pending:
 3. Add folder path to `_scenes/scene_registry.gd`
 
 ### Adding a new avatar variant
-1. Create `avatar/variants/avatar_yourname.gd` extending `CharacterBody3D`
+1. Create `SYSTEM/avatar/variants/avatar_yourname.gd` extending `CharacterBody3D`
 2. Implement: `var peer_id: int` + `func update_transform(body_pos, head_pos, head_rot)`
 3. Optionally: `func set_self_mode(enabled: bool)`
 4. Create `avatar_yourname.tscn` with `CollisionShape3D` (layer=4, mask=0)
@@ -712,8 +712,8 @@ main.gd
       ├── GameState
       ├── NetworkManager
       ├── scene_registry.gd (loaded at runtime)
-      ├── fps_player.tscn / xr_player.tscn
-      └── avatar/*.tscn (per scene, from registry)
+      ├── SYSTEM/player/fps_player.tscn / xr_player.tscn
+      └── SYSTEM/avatar/*.tscn (per scene, from registry)
 
 xr_player.gd
  └── SceneManager (standalone_mode, activate_standalone, advance_scene)

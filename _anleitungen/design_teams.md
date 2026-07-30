@@ -78,7 +78,7 @@ team       = "Team A"                  ← Euer Teamname
 
 ; Optional:
 info         = "Kurzbeschreibung der Installation"    ← erscheint im Fade-Overlay
-avatar       = "res://avatar/variants/avatar_box.tscn" ← Standard: avatar_dynamic_cone
+avatar       = "res://SYSTEM/avatar/variants/avatar_box.tscn" ← Standard: avatar_dynamic_cone
 player_color = Color(1.0, 0.0, 0.5, 1)               ← alle Spieler gleiche Farbe
 													  ;  weglassen = individuelle Farben
 ```
@@ -99,7 +99,7 @@ Ihr wollt sehen wie eure Szene aussieht, Objekte platzieren, Sound hören.
    Beenden: Escape oder Fenster schließen
 ```
 
-> **F5** startet immer `main.tscn` (mit Netzwerk und Menü) — das braucht ihr nicht.
+> **F5** startet immer `SYSTEM/main.tscn` (mit Netzwerk und Menü) — das braucht ihr nicht.
 > **F6** startet die gerade geöffnete Szene direkt — das ist euer Test-Werkzeug.
 
 ---

@@ -77,7 +77,7 @@ Checkliste pro Team-Szene:
 
 **Muss vor dem APK-Build passieren — die IP wird in die APK eingebacken.**
 
-`networking/network_manager.gd` in Godot öffnen → Zeile 24:
+`SYSTEM/networking/network_manager.gd` in Godot öffnen → Zeile 24:
 
 ```gdscript
 var server_ip: String = "192.168.50.29"
@@ -171,7 +171,7 @@ hyper3_server.exe
 
 ## Checkliste vor der Ausstellung
 
-- [ ] Server-IP in `networking/network_manager.gd` Zeile 24 auf Ausstellungs-IP gesetzt (nicht `127.0.0.1`!)
+- [ ] Server-IP in `SYSTEM/networking/network_manager.gd` Zeile 24 auf Ausstellungs-IP gesetzt (nicht `127.0.0.1`!)
 - [ ] `export_presets.cfg` aus Template kopiert (`include_filter` enthält `*.cfg`)
 - [ ] Alle Team-Szenen in `_scenes/scene_registry.gd` eingetragen, Platzhalter entfernt
 - [ ] Reihenfolge in `scene_registry.gd` korrekt, `duration` mit Teams abgestimmt
