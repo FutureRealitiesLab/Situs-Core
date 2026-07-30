@@ -92,7 +92,8 @@ Win+R → cmd → ipconfig → „IPv4-Adresse" unter dem LAN/WLAN-Adapter ables
 
 ## D) APKs für Headsets bauen
 
-Es gibt **zwei separate APKs** (Quest und Focus 3 haben unterschiedliche Plugins).
+Es gibt **zwei separate APKs** (Quest und Focus 3/Vision haben unterschiedliche Plugins).
+**HTC Vive Focus Vision** verwendet denselben APK wie Focus 3.
 
 ### Einmalige Vorbereitung
 - Android SDK installiert und in Godot verknüpft
@@ -172,7 +173,8 @@ hyper3_server.exe
 - [ ] Reihenfolge in `scene_registry.gd` korrekt, `duration` mit Teams abgestimmt
 - [ ] Alle Szenen einzeln getestet (kein Importfehler, Sounds hörbar)
 - [ ] Quest-APK auf alle Meta Quest Headsets installiert (`_apks/Hyper-Irrealismus-III-Quest.apk`)
-- [ ] Focus3-APK auf alle HTC Focus 3 Headsets installiert (`_apks/Hyper-Irrealismus-III-Focus3.apk`)
+- [ ] Focus3-APK auf alle HTC Focus 3 / Focus Vision Headsets installiert (`_apks/Hyper-Irrealismus-III-Focus3.apk`)
+- [ ] Standalone-Modus getestet: Brille ohne Server starten, beliebigen Button drücken → Szenen laufen durch
 - [ ] `hyper3_server.exe` + `start_server.bat` auf Server-PC Desktop
 - [ ] Headsets voll geladen
 - [ ] Venue Team eingewiesen (→ `_anleitungen/venue_team.md`)

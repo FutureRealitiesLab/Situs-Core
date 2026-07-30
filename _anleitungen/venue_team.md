@@ -8,7 +8,7 @@
 |-------|-------------|---------|
 | **WLAN-Router** | Verbindet alle Geräte miteinander | Muss **als erstes** an sein |
 | **Server-PC** | Läuft die Ausstellungssoftware | Startet nach dem Router |
-| **HTC Vive Focus 3** | VR-Brillen | Über Nacht an Ladekabel! |
+| **HTC Vive Focus Vision** | VR-Brillen | Über Nacht an Ladekabel! |
 
 ---
 
@@ -31,7 +31,7 @@
 
 ### 4. VR-Brillen einschalten
 - Jede Brille: Power-Knopf seitlich **3 Sekunden** gedrückt halten
-- Brille startet, erkennt den Raum automatisch (LBE Room Setup)
+- Brille startet, erkennt den Raum automatisch
 - Nach ca. 30 Sekunden ist die erste Ausstellungsszene sichtbar
 - Andere Brillen erscheinen als farbige Figuren im Raum
 
@@ -67,6 +67,24 @@ Alle Brillen wechseln gleichzeitig.
 
 ---
 
+## Brille ohne Server betreiben (Standalone-Modus)
+
+Die Brillen können auch **ohne Server-PC** laufen — nützlich für Tests oder wenn der Server nicht verfügbar ist.
+
+**Standalone aktivieren:**
+1. Brille einschalten, App starten
+2. Orange Board erscheint: „Keine Verbindung"
+3. **Beliebigen Controller-Button drücken** → Board verschwindet, Standalone-Modus ist aktiv
+4. Szenen wechseln jetzt automatisch nach dem eingestellten Timer
+
+**Manuell zur nächsten Szene springen:**
+→ **B-Taste** (rechter Controller) oder **Y-Taste** (linker Controller) drücken
+
+> Im Standalone-Modus sehen die Brillen keine anderen Spieler — jede läuft für sich allein.
+> Für die Ausstellung mit mehreren Besuchern immer den Server verwenden.
+
+---
+
 ## Troubleshooting
 
 ### Brille zeigt keine anderen Spieler / ist allein in der Szene
@@ -77,6 +95,18 @@ Prüfen:
 
 Lösung:
   → Brille ausschalten, 10 Sekunden warten, wieder einschalten
+```
+
+### Brille zeigt oranges Board „Keine Verbindung"
+```
+Bedeutet: Brille hat keinen Server gefunden.
+Lösung A (mit Server):
+  → Server prüfen (läuft start_server.bat? Szene sichtbar?)
+  → Warten — Brille versucht alle 5 Sekunden neu zu verbinden
+  → Bei Erfolg: Board verschwindet automatisch
+
+Lösung B (ohne Server, Demo-Betrieb):
+  → Beliebigen Controller-Button drücken → Standalone-Modus startet
 ```
 
 ### Eine Brille hängt in einer falschen Szene
@@ -142,5 +172,9 @@ SZENE WECHSELN:
 
 BRILLE HÄNGT:
   → Aus- und einschalten → landet automatisch richtig
+
+KEIN SERVER (Standalone):
+  → Beliebigen Button drücken → läuft alleine durch
+  → B / Y drücken → nächste Szene überspringen
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

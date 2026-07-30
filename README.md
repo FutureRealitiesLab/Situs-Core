@@ -1,9 +1,11 @@
 # Hyper-Irrealismus III
 
-Multiplayer VR Ausstellungstemplate. Bis zu 8 XR-Clients (Meta Quest 2/3/Pro, HTC Vive Focus 3)
+Multiplayer VR Ausstellungstemplate. Bis zu 8 XR-Clients (HTC Vive Focus Vision, HTC Focus 3, Meta Quest 2/3/Pro)
 + Desktop-Server, verbunden über LAN via ENet UDP.
 
 Gebaut mit **Godot 4.6** — GL Compatibility Renderer, OpenXR.
+
+**Standalone-Modus:** Brillen laufen auch ohne Server — Szenenwechsel automatisch per Timer, manuell per B/Y-Button.
 
 ---
 
@@ -42,6 +44,20 @@ server_ip.txt  →  IP des Server-PCs eintragen, z. B.  192.168.1.100
 Project → Export → „Android – Meta Quest"   → Hyper-Irrealismus-III-Quest.apk
 Project → Export → „Android – HTC Focus 3"  → Hyper-Irrealismus-III-Focus3.apk
 ```
+(Focus Vision verwendet denselben APK wie Focus 3.)
+
+---
+
+## Controller-Belegung (HTC Vive Focus Vision)
+
+| Taste | Funktion |
+|-------|---------|
+| A oder X (Face Button Primary) | Standalone-Modus aktivieren |
+| B oder Y (Face Button Secondary) | Nächste Szene |
+| Thumbstick Y (vor/zurück) | Bewegung in Blickrichtung |
+| Thumbstick X (links/rechts) | Drehung |
+
+Beide Controller sind gleichwertig.
 
 ---
 
@@ -56,8 +72,8 @@ _scenes/            ← Alle Szenen — nur Design Teams arbeiten hier
 avatar/             ← Avatar-Varianten (Core)
 networking/         ← Netzwerk-Autoloads (Core)
 player/             ← FPS + XR Player (Core)
-triggers/           ← Trigger-Vorlage (Design Teams kopieren in _scenes/team_X/)
 main.gd / main.tscn ← Root (Core)
 scene_manager.gd    ← Autoload (Core)
+openxr_action_map.tres ← Controller-Belegung (Core)
 project.godot       ← Godot Projektdatei
 ```
