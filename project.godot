@@ -13,13 +13,13 @@ config_version=5
 config/name="Hyper-Irrealismus-III"
 run/main_scene="uid://cbmain0001"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/main_scene="res://main.tscn"
+config/main_scene="res://SYSTEM/main.tscn"
 
 [autoload]
 
-GameState="*res://networking/game_state.gd"
-NetworkManager="*res://networking/network_manager.gd"
-SceneManager="*res://scene_manager.gd"
+GameState="*res://SYSTEM/networking/game_state.gd"
+NetworkManager="*res://SYSTEM/networking/network_manager.gd"
+SceneManager="*res://SYSTEM/scene_manager.gd"
 
 [display]
 
@@ -63,5 +63,5 @@ openxr/view_configuration=1
 openxr/reference_space=1
 openxr/foveation_level=2
 shaders/enabled=true
-openxr/action_map="res://openxr_action_map.tres"
+openxr/action_map="res://SYSTEM/openxr_action_map.tres"
 openxr/extensions/meta/color_space/starting_color_space=3
