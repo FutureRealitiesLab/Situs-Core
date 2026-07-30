@@ -63,6 +63,11 @@ func _physics_process(delta: float) -> void:
 
 	# WASD-Bewegung (ui_left/right/up/down = A/D/W/S per Default)
 	var input_dir: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	input_dir += Vector2(
+		float(Input.is_key_pressed(KEY_D)) - float(Input.is_key_pressed(KEY_A)),
+		float(Input.is_key_pressed(KEY_S)) - float(Input.is_key_pressed(KEY_W))
+	)
+	input_dir = input_dir.clamp(Vector2(-1, -1), Vector2(1, 1))
 	var direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
 	if direction:
 		velocity.x = direction.x * SPEED
