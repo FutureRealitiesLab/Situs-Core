@@ -28,21 +28,28 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		# Horizontale Drehung am Körper, vertikale am Kopf
 		rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
 		head.rotate_x(-event.relative.y * MOUSE_SENSITIVITY)
 		head.rotation.x = clamp(head.rotation.x, -PI * 0.45, PI * 0.45)
 
-	# ESC → Maus freigeben (Fenster bedienbar)
 	if event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	# Klick ins Fenster → Maus wieder einfangen und View-Steuerung aktiv
 	if event is InputEventMouseButton \
 			and event.pressed \
 			and event.button_index == MOUSE_BUTTON_LEFT \
 			and Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+	# Q / E → Szene wechseln (aktiviert Standalone-Modus falls nötig)
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_Q or event.keycode == KEY_E:
+			if not SceneManager.standalone_mode:
+				SceneManager.activate_standalone()
+			if event.keycode == KEY_E:
+				SceneManager.advance_scene()
+			else:
+				SceneManager.retreat_scene()
 
 
 func _physics_process(delta: float) -> void:
@@ -65,12 +72,25 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0.0, SPEED)
 
 	move_and_slide()
+	_clamp_to_walk_area()
 
 	# Position senden
 	_send_timer += delta
 	if _send_timer >= SEND_RATE:
 		_send_timer = 0.0
 		_broadcast_position()
+
+
+func _clamp_to_walk_area() -> void:
+	var walk_area := get_tree().root.find_child("XRWalkArea", true, false) as MeshInstance3D
+	if not walk_area or not walk_area.mesh is PlaneMesh:
+		return
+	var plane := walk_area.mesh as PlaneMesh
+	var half_x := plane.size.x * 0.5 * walk_area.scale.x
+	var half_z := plane.size.y * 0.5 * walk_area.scale.z
+	var center := walk_area.global_position
+	global_position.x = clamp(global_position.x, center.x - half_x, center.x + half_x)
+	global_position.z = clamp(global_position.z, center.z - half_z, center.z + half_z)
 
 
 func _broadcast_position() -> void:

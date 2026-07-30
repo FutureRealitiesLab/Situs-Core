@@ -178,8 +178,18 @@ func advance_scene() -> void:
 	scene_about_to_change.emit(next)
 
 
+## Lädt die vorherige Szene — analog zu advance_scene().
+func retreat_scene() -> void:
+	if not multiplayer.is_server() and not standalone_mode:
+		return
+	_timer = 0.0
+	var prev: int = (current_index - 1 + scenes_list.size()) % scenes_list.size()
+	print("[SceneManager] Szenenwechsel ← Index %d" % prev)
+	scene_about_to_change.emit(prev)
+
+
 ## Aktiviert den lokalen Standalone-Modus (kein Server nötig).
-## Wird von xr_player.gd via A-Taste ausgelöst.
+## Wird von xr_player.gd via A-Taste und fps_player.gd via Q/E ausgelöst.
 func activate_standalone() -> void:
 	standalone_mode = true
 	_timer = 0.0
