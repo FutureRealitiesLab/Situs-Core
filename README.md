@@ -90,7 +90,7 @@ SYSTEM/                  ← Core-System (nur Dev Team)
   player/                ← FPS + XR Player
   cam_dolly.gd
   main.gd / main.tscn    ← Root-Szene
-  openxr_action_map.tres ← Controller-Belegung
+openxr_action_map.tres   ← Controller-Belegung (von Godot verwaltet)
   scene_manager.gd       ← Autoload SceneManager
 project.godot            ← Godot Projektdatei
 ```

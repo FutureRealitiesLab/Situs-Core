@@ -122,7 +122,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 | `SYSTEM/player/fps_player.tscn` | FPS player scene | — |
 | `SYSTEM/player/xr_player.gd` | OpenXR tracking + thumbstick locomotion + button handling | ~115 |
 | `SYSTEM/player/xr_player.tscn` | XR player scene (XROrigin3D + LeftHand + RightHand + debug spheres) | — |
-| `SYSTEM/openxr_action_map.tres` | OpenXR action bindings (Quest + Focus3/Vision + khr/simple profiles) | — |
+| `openxr_action_map.tres` | OpenXR action bindings (Quest + Focus3/Vision + khr/simple profiles) — wird von Godot im Root-Verzeichnis verwaltet | — |
 | `SYSTEM/cam_dolly.gd` | Rotations-Node (Y-Achse, 2°/s) — rotiert ServerCamera in main.tscn | ~11 |
 | `SYSTEM/avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
 | `SYSTEM/avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
@@ -434,7 +434,7 @@ OpenXR compositor sees wrong frames → gray viewport on Focus 3/Vision.
 
 ---
 
-### `SYSTEM/openxr_action_map.tres`
+### `openxr_action_map.tres`
 
 **Purpose:** Defines all OpenXR actions and hardware bindings. Loaded via `project.godot → [xr] openxr/action_map`.
 
@@ -463,7 +463,7 @@ OpenXR compositor sees wrong frames → gray viewport on Focus 3/Vision.
 **Critical note — project.godot:**
 ```ini
 [xr]
-openxr/action_map="res://SYSTEM/openxr_action_map.tres"
+openxr/action_map="res://openxr_action_map.tres"
 ```
 Without this line, Godot never submits the action map to the OpenXR runtime.
 All button and thumbstick inputs are silently ignored. **Do not remove.**
@@ -656,7 +656,7 @@ openxr/view_configuration=1
 openxr/reference_space=1
 openxr/foveation_level=2
 shaders/enabled=true
-openxr/action_map="res://SYSTEM/openxr_action_map.tres" # CRITICAL: without this, no button/stick input
+openxr/action_map="res://openxr_action_map.tres" # CRITICAL: without this, no button/stick input
 openxr/extensions/meta/color_space/starting_color_space=3
 ```
 
@@ -739,7 +739,7 @@ scene_hooks.gd
 
 | Date | Change | Files |
 |------|--------|-------|
-| 2026-07-30 | SYSTEM/-Ordner: Core-Dateien aus Root in SYSTEM/ verschoben (networking/, player/, avatar/, main.gd/.tscn, scene_manager.gd, cam_dolly.gd, openxr_action_map.tres, net_info_board.gd); alle res://-Pfade aktualisiert | multiple |
+| 2026-07-30 | SYSTEM/-Ordner: Core-Dateien aus Root in SYSTEM/ verschoben (networking/, player/, avatar/, main.gd/.tscn, scene_manager.gd, cam_dolly.gd, net_info_board.gd); alle res://-Pfade aktualisiert | multiple |
 | 2026-07-30 | scene_hooks.gd: team_scene.gd umbenannt und vereinfacht; Boilerplate (F6-Erkennung, ServerCamera) nach SceneManager.on_team_scene_ready() verschoben | `_scenes/team_template/scene_hooks.gd`, `SYSTEM/scene_manager.gd` |
 | 2026-07-30 | retreat_scene() hinzugefügt (analog advance_scene, mit leerem-Liste-Guard) | `SYSTEM/scene_manager.gd` |
 | 2026-07-30 | fps_player: Q/E → Szene vor/zurück + Standalone-Aktivierung; WASD zusätzlich zu Pfeiltasten; XRWalkArea-Clamp | `SYSTEM/player/fps_player.gd` |
@@ -748,7 +748,7 @@ scene_hooks.gd
 | 2026-07-30 | xr_player: LeftHand + RightHand XRController3D hinzugefügt; button_pressed + input_vector2_changed auf beiden verbunden; SphereMesh Debug-Visuals | `player/xr_player.tscn`, `player/xr_player.gd` |
 | 2026-07-30 | xr_player Button-Mapping: beliebiger Button → standalone; by_button (B/Y) → nächste Szene; beide Controller identisch | `player/xr_player.gd` |
 | 2026-07-30 | openxr_action_map: Quest-Profil + Focus3/Vision-Profil hinzugefügt (ax_button, by_button, primary thumbstick, poses, haptic, trigger, grip/squeeze) | `openxr_action_map.tres` |
-| 2026-07-30 | project.godot: openxr/action_map="res://openxr_action_map.tres" hinzugefügt — ohne diesen Eintrag ignoriert Godot die Action Map komplett | `project.godot` |
+| 2026-07-30 | project.godot: openxr/action_map="res://openxr_action_map.tres" — Godot verwaltet diese Datei automatisch im Root; ohne den Eintrag ignoriert Godot die Action Map komplett | `project.godot` |
 | 2026-07-30 | main.tscn: XRWalkArea (MeshInstance3D, PlaneMesh 3.5×6m, visible=false) als single point of truth für Locomotion-Grenzen | `main.tscn` |
 | 2026-07-30 | net_info_board: Board verschwindet wenn standalone_mode=true (nicht erst bei echter Serververbindung) | `_scenes/team_template/net_info_board.gd` |
 | 2026-07-30 | advance_scene(): _timer=0.0 direkt im Aufruf — verhindert wiederholtes Emittieren von scene_about_to_change in jedem Frame während des Fade-Outs | `scene_manager.gd` |
