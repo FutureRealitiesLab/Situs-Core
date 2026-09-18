@@ -38,11 +38,11 @@ func _ready() -> void:
 
 
 func _on_button(button_name: String) -> void:
-	# Beliebiger Button → Standalone aktivieren (falls noch nicht aktiv)
-	if not SceneManager.standalone_mode:
+	# Standalone nur aktivieren, wenn KEINE Server-Verbindung besteht
+	if not NetworkManager.client_connected_flag and not SceneManager.standalone_mode:
 		SceneManager.activate_standalone()
-	# Secondary Button (B/Y) → nächste Szene
-	if button_name == "by_button":
+	# Secondary Button (B/Y) → nächste Szene (nur im Standalone-Modus; im Multiplayer steuert der Server)
+	if button_name == "by_button" and SceneManager.standalone_mode:
 		SceneManager.advance_scene()
 
 
@@ -63,6 +63,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _do_locomotion(delta: float) -> void:
+	# Im Multiplayer (mit Server verbunden): KEINE Thumbstick-Bewegung erlaubt!
+	# Verhindert Virtual/Physical Offset in Co-located VR – Besucher bewegen sich rein physisch.
+	# Nur im Offline- / Standalone-Modus für Einzelnutzer aktiv.
+	if not SceneManager.standalone_mode or NetworkManager.client_connected_flag:
+		return
+
 	# Vor/Zurück: Controller mit größtem Y-Betrag gewinnt
 	var fwd: float = _stick_l.y if abs(_stick_l.y) >= abs(_stick_r.y) else _stick_r.y
 	# Rotation: Controller mit größtem X-Betrag gewinnt

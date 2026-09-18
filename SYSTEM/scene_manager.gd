@@ -59,8 +59,12 @@ var remote_avatars: Dictionary = {}
 ## Standalone-Modus: Szenen laufen lokal durch ohne Server (aktiviert via A-Taste am Headset)
 var standalone_mode: bool = false
 
+## Automatischer Szenenwechsel auf dem Server (an/aus via L-Taste oder Button)
+var auto_advance: bool = true
+
 signal scene_changed(index: int, scene_name: String)
 signal timer_tick(remaining: float, total: float)
+signal auto_advance_toggled(enabled: bool)
 
 ## Wird vor dem Szenenwechsel emittiert. main.gd startet den Fade-Out
 ## und ruft danach confirm_scene_load(index) auf.
@@ -160,6 +164,9 @@ func _process(delta: float) -> void:
 	if duration <= 0.0:
 		return  # Kein Auto-Advance für diese Szene
 
+	if not auto_advance:
+		return  # Auto-Advance pausiert (Loop deaktiviert via L-Taste)
+
 	_timer += delta
 	timer_tick.emit(duration - _timer, duration)
 
@@ -204,6 +211,13 @@ func activate_standalone() -> void:
 	print("[SceneManager] Standalone-Modus aktiviert.")
 
 
+## Schaltet den automatischen Szenenwechsel auf dem Server um (Taste L oder Button).
+func toggle_auto_advance() -> void:
+	auto_advance = not auto_advance
+	auto_advance_toggled.emit(auto_advance)
+	print("[SceneManager] Auto-Szenenwechsel: %s" % ("AN" if auto_advance else "AUS"))
+
+
 ## Lädt eine spezifische Szene nach ihrem Index (Server-only).
 func go_to_scene(index: int) -> void:
 	if not multiplayer.is_server():
@@ -246,10 +260,15 @@ func _load_scene_local(index: int) -> void:
 		_current_scene.queue_free()
 		_current_scene = null
 
-	# Lokalen Spieler entladen (wird neu gespawnt, Position reset)
+	# Lokaler Spieler bleibt persistent in PlayersContainer.
+	# FPS: Position & Rotation bleiben erhalten; Restgeschwindigkeit nullen (verhindert Driften während Fade).
+	# XR Multiplayer: XROrigin3D immer auf (0,0,0) fixieren, um Co-Location mit dem physischen Raum zu garantieren.
 	if is_instance_valid(local_player):
-		local_player.queue_free()
-		local_player = null
+		if local_player is CharacterBody3D:
+			local_player.velocity = Vector3.ZERO
+		elif GameState.mode == GameState.Mode.XR and not standalone_mode:
+			local_player.global_position = Vector3.ZERO
+			local_player.global_rotation = Vector3.ZERO
 
 	if is_instance_valid(self_avatar):
 		self_avatar.queue_free()
@@ -273,10 +292,16 @@ func _load_scene_local(index: int) -> void:
 	if _is_focus3():
 		_soften_shadows(_current_scene)
 
-	# Lokalen Spieler spawnen (nicht auf Server)
+	# Lokalen Spieler spawnen falls noch nicht vorhanden (nicht auf Server)
 	if GameState.mode != GameState.Mode.SERVER:
-		_spawn_local_player()
+		_disable_scene_cameras(_current_scene)
+		if not is_instance_valid(local_player):
+			_spawn_local_player()
+		else:
+			_activate_local_player_camera()
+		call_deferred("_activate_local_player_camera")
 		_spawn_self_avatar()
+		_update_self_avatar()
 
 	# Bereits verbundene Remote-Avatare mit dem Avatar-Typ dieser Szene neu spawnen
 	_respawn_all_remote_avatars()
@@ -377,12 +402,25 @@ func _spawn_remote_avatar(peer_id: int) -> void:
 ## Wird nach jedem Szenenwechsel aufgerufen.
 func _respawn_all_remote_avatars() -> void:
 	var peer_ids: Array = remote_avatars.keys()
+	var cached_states: Dictionary = {}
 	for pid in peer_ids:
-		if is_instance_valid(remote_avatars[pid]):
-			remote_avatars[pid].queue_free()
+		var av = remote_avatars[pid]
+		if is_instance_valid(av):
+			var head_node: Node3D = av.get_node_or_null("Head")
+			var hpos: Vector3 = head_node.global_position if head_node else av.global_position + Vector3(0.0, 1.6, 0.0)
+			var hrot: Vector3 = head_node.global_rotation if head_node else av.global_rotation
+			cached_states[pid] = {
+				"body_pos": av.global_position,
+				"head_pos": hpos,
+				"head_rot": hrot
+			}
+			av.queue_free()
 	remote_avatars.clear()
 	for pid in peer_ids:
 		_spawn_remote_avatar(pid)
+		if cached_states.has(pid) and remote_avatars.has(pid):
+			var s: Dictionary = cached_states[pid]
+			remote_avatars[pid].update_transform(s["body_pos"], s["head_pos"], s["head_rot"])
 
 
 # ── Netzwerk-Callbacks ───────────────────────────────────────────
@@ -439,13 +477,38 @@ func on_team_scene_ready(scene_root: Node3D) -> void:
 		print("[SceneManager] F6-Testmodus: FPS-Player gespawnt.")
 		print("               WASD = Bewegen  |  Maus = Umsehen  |  ESC = Maus freigeben")
 	else:
-		# Spielbetrieb: ServerCamera robust per look_at() ausrichten.
-		# look_at() verhindert Transform-Korruption die beim .tscn-Speichern auftreten kann.
+		# Spielbetrieb: ServerCamera nur auf dem Server aktivieren und per look_at() ausrichten.
+		# Auf Clients (FPS/XR) bleibt sie inaktiv, damit sie nicht die Spielerkamera kapert.
 		var cam := scene_root.get_node_or_null("ServerCamera") as Camera3D
 		if cam:
-			cam.global_position = Vector3(0.0, 5.0, 5.0)
-			cam.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
+			if GameState.mode == GameState.Mode.SERVER:
+				cam.current = true
+				cam.global_position = Vector3(0.0, 5.0, 5.0)
+				cam.look_at(Vector3(0.0, 0.5, 0.0), Vector3.UP)
+			else:
+				cam.current = false
 		print("[SceneManager] '%s' im Spielbetrieb geladen." % scene_root.name)
+
+
+## Deaktiviert alle Camera3D-Nodes in einer geladenen Team-Szene (für Clients).
+func _disable_scene_cameras(scene_root: Node) -> void:
+	if not is_instance_valid(scene_root):
+		return
+	for cam in scene_root.find_children("*", "Camera3D", true, false):
+		(cam as Camera3D).current = false
+
+
+## Stellt sicher, dass die Kamera des lokalen Spielers (FPS oder XR) aktiv ist.
+func _activate_local_player_camera() -> void:
+	if not is_instance_valid(local_player):
+		return
+	var cam := local_player.get_node_or_null("Head/Camera3D") as Camera3D
+	if cam:
+		cam.current = true
+		return
+	var xr_cam := local_player.get_node_or_null("XRCamera3D") as XRCamera3D
+	if xr_cam:
+		xr_cam.make_current()
 
 
 ## Injiziert eine Label3D-Verbindungsstatusanzeige in die aktuelle Szene.
@@ -470,7 +533,7 @@ func _spawn_net_info_board() -> void:
 
 
 # ══════════════════════════════════════════════════════════════════
-#  Server: N-Taste für manuellen Szenenwechsel
+#  Server: N-Taste für manuellen Szenenwechsel & L-Taste für Loop-Toggle
 # ══════════════════════════════════════════════════════════════════
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -481,6 +544,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("scene_next"):
 		print("[Server] Manueller Szenenwechsel via Taste N.")
 		advance_scene()
+	elif event.is_action_pressed("scene_loop_toggle") or (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_L):
+		toggle_auto_advance()
 
 
 # ══════════════════════════════════════════════════════════════════

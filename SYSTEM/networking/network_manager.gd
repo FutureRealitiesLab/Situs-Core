@@ -82,7 +82,9 @@ func start_server() -> void:
 	print("[NetworkManager] Server läuft auf Port %d" % PORT)
 
 
-func start_client() -> void:
+func start_client(target_ip: String = "") -> void:
+	if not target_ip.is_empty():
+		server_ip = target_ip
 	_is_client = true
 	_reconnect_pending = false
 	_reconnect_timer = 0.0

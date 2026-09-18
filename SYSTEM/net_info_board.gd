@@ -45,4 +45,12 @@ func _update() -> void:
 		lines.append("Versuch %d …" % attempts)
 	else:
 		lines.append("Verbinde …")
+
+	if GameState.mode == GameState.Mode.FPS:
+		lines.append("")
+		lines.append("Auf PC: Drücke Q/E für Standalone-Modus")
+	elif GameState.mode == GameState.Mode.XR:
+		lines.append("")
+		lines.append("VR: Beliebigen Button drücken für Standalone-Modus")
+
 	text = "\n".join(lines)

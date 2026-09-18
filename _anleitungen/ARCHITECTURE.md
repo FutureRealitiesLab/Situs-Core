@@ -67,14 +67,15 @@ SceneManager.advance_scene()             SceneManager.advance_scene()
                    SceneManager.confirm_scene_load(index)
                                 │
                                 ▼
-                   _load_scene_local(index)
-                        ├── free old scene
-                        ├── free local_player + self_avatar
-                        ├── instantiate new scene → SceneContainer
-                        ├── spawn local player (FPS or XR)
-                        ├── spawn self_avatar (if avatar supports set_self_mode)
-                        ├── _soften_shadows(scene_root)  ← Focus 3/Vision only
-                        └── respawn all remote avatars (new avatar variant)
+                    _load_scene_local(index)
+                         ├── free old scene
+                         ├── free self_avatar (avatar variant may change)
+                         ├── zero local_player velocity (position & rotation preserved)
+                         ├── instantiate new scene → SceneContainer
+                         ├── spawn local player if not yet spawned (FPS or XR)
+                         ├── spawn self_avatar (if avatar supports set_self_mode) + update transform
+                         ├── _soften_shadows(scene_root)  ← Focus 3/Vision only
+                         └── respawn all remote avatars (preserving cached transforms)
 ```
 
 ### Standalone Mode (kein Server)
@@ -182,13 +183,15 @@ Main (Node, main.gd)
 │   └── Panel → VBox
 │       ├── NetworkLabel         ← IP addresses shown on start
 │       ├── SceneLabel           ← "Szene: <name>"
-│       ├── TimerLabel           ← "Timer: <remaining>s"
+│       ├── TimerLabel           ← "Timer: <remaining>s" / "Auto-Wechsel: AUS [L]"
 │       ├── TimerBar (ProgressBar)
-│       └── BtnNext ("Nächste Szene [N]")
+│       ├── BtnNext ("Nächste Szene [N]")
+│       └── BtnToggleAuto ("Auto-Wechsel: AN/AUS [L]")
 ├── Menu (CanvasLayer, initially visible on PC)
 │   └── Center → VBox
-│       ├── BtnFPS  → GameState.Mode.FPS  + NetworkManager.start_client()
-│       └── BtnServer → GameState.Mode.SERVER + NetworkManager.start_server()
+│       ├── BtnFPS       → GameState.Mode.FPS + NetworkManager.start_client() (LAN)
+│       ├── BtnFPSLocal  → GameState.Mode.FPS + NetworkManager.start_client("127.0.0.1") (Lokal)
+│       └── BtnServer    → GameState.Mode.SERVER + NetworkManager.start_server()
 ├── FadeOverlay (CanvasLayer, layer=20, initially hidden)  ← FPS/PC only
 │   ├── ColorRect (full-screen, black, alpha=0, mouse_filter=IGNORE)
 │   └── SceneInfoLabel (centered, font_size=28, modulate.a=0)
@@ -238,6 +241,7 @@ SceneManager.go_to_scene(index: int)                          # jump to specific
 SceneManager.confirm_scene_load(index: int)                   # called by main.gd after fade-out
 SceneManager.activate_standalone()                            # called by xr_player.gd on button press
 SceneManager.retreat_scene()                                  # prev scene (server OR standalone)
+SceneManager.toggle_auto_advance()                            # toggle auto-advance on server (L key)
 SceneManager.on_team_scene_ready(scene_root: Node3D)          # called by scene_hooks.gd _ready()
 
 SceneManager.current_index     # int: index of loaded scene (-1 = none)
@@ -246,6 +250,7 @@ SceneManager.local_player      # Node: local FPS or XR player
 SceneManager.remote_avatars    # Dictionary: peer_id → avatar Node
 SceneManager.self_avatar       # Node: own body avatar (FP view)
 SceneManager.standalone_mode   # bool: true = XR client running without server
+SceneManager.auto_advance      # bool: true = timer advances scenes automatically on server
 ```
 
 **Signals:**
@@ -253,6 +258,7 @@ SceneManager.standalone_mode   # bool: true = XR client running without server
 signal scene_about_to_change(index: int)            # fires before swap → triggers fade
 signal scene_changed(index: int, scene_name: String) # fires after swap
 signal timer_tick(remaining: float, total: float)
+signal auto_advance_toggled(enabled: bool)
 ```
 
 **Standalone mode guards in `_process()`:**
@@ -390,29 +396,30 @@ XRPlayer (XROrigin3D, xr_player.gd)
 **Button mapping (beide Controller identisch):**
 | Button | Action | Bedingung |
 |--------|--------|-----------|
-| Beliebiger Button | `SceneManager.activate_standalone()` | nur wenn nicht bereits aktiv |
-| `by_button` (B/Y) | `SceneManager.advance_scene()` | immer (aktiviert Standalone vorher falls nötig) |
+| Beliebiger Button | `SceneManager.activate_standalone()` | nur wenn NICHT mit Server verbunden und nicht bereits aktiv |
+| `by_button` (B/Y) | `SceneManager.advance_scene()` | nur im Standalone-Modus (im Multiplayer steuert Server) |
 
 **Button handler:**
 ```gdscript
 func _on_button(button_name: String) -> void:
-    if not SceneManager.standalone_mode:
+    if not NetworkManager.client_connected_flag and not SceneManager.standalone_mode:
         SceneManager.activate_standalone()
-    if button_name == "by_button":
+    if button_name == "by_button" and SceneManager.standalone_mode:
         SceneManager.advance_scene()
 ```
 Note: name-agnostic approach for standalone activation ensures compatibility across
 OpenXR profiles — the specific button name depends on which interaction profile the
 runtime activates. `by_button` is the action name for B (right) / Y (left) buttons.
 
-**Locomotion:**
+**Locomotion (nur Standalone / Offline):**
 ```gdscript
+# Im Multiplayer vollständig deaktiviert – Besucher bewegen sich rein physisch in Co-Location
+if not SceneManager.standalone_mode or NetworkManager.client_connected_flag:
+    return
+
 # Beide Controller: "max-Betrag gewinnt" — unabhängige Inputs, kein Konflikt
 var fwd:  float = _stick_l.y if abs(_stick_l.y) >= abs(_stick_r.y) else _stick_r.y
 var turn: float = _stick_l.x if abs(_stick_l.x) >= abs(_stick_r.x) else _stick_r.x
-
-# Bewegung: Kamera-Forward-Vektor (Y=0, normiert) × fwd × move_speed × delta
-# Rotation: rotate_y(deg_to_rad(-turn * rotation_speed * delta))
 ```
 
 **Boundary (`_clamp_to_walk_area()`):**
@@ -505,7 +512,7 @@ FPSPlayer (CharacterBody3D, fps_player.gd)
 **Controls:**
 | Input | Action |
 |-------|--------|
-| WASD / Pfeiltasten | Move (4.0 m/s) |
+| WASD / Pfeiltasten | Move (1.2 m/s) |
 | Mouse | Look (sensitivity 0.003) |
 | Space | Jump (velocity 4.5) |
 | Escape | Release mouse capture |
@@ -739,6 +746,7 @@ scene_hooks.gd
 
 | Date | Change | Files |
 |------|--------|-------|
+| 2026-09-09 | PC-Menü: Lokaler Client (127.0.0.1) Button hinzugefügt; Server Auto-Szenenwechsel Umschaltung via Taste L / ServerHUD; FPS-Spieler-Positionierung & Rotation über Szenenwechsel persistent gehalten; XR Co-Location Sicherung: Thumbstick im Multiplayer gesperrt & XROrigin3D strikt auf (0,0,0) fixiert | `main.tscn`, `main.gd`, `network_manager.gd`, `scene_manager.gd`, `project.godot`, `xr_player.gd` |
 | 2026-07-30 | SYSTEM/-Ordner: Core-Dateien aus Root in SYSTEM/ verschoben (networking/, player/, avatar/, main.gd/.tscn, scene_manager.gd, cam_dolly.gd, net_info_board.gd); alle res://-Pfade aktualisiert | multiple |
 | 2026-07-30 | scene_hooks.gd: team_scene.gd umbenannt und vereinfacht; Boilerplate (F6-Erkennung, ServerCamera) nach SceneManager.on_team_scene_ready() verschoben | `_scenes/team_template/scene_hooks.gd`, `SYSTEM/scene_manager.gd` |
 | 2026-07-30 | retreat_scene() hinzugefügt (analog advance_scene, mit leerem-Liste-Guard) | `SYSTEM/scene_manager.gd` |

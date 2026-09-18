@@ -12,6 +12,7 @@ android/.gradle/
 
 # Export-Artefakte
 _apks/
+_build/
 *.apk
 *.apk.idsig
 *.aab

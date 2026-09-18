@@ -57,6 +57,7 @@ func _ready() -> void:
 		# schwarzem Bildschirm, weil die VRS-Textur vom XR-Compositor fehlt.
 		get_viewport().vrs_mode = Viewport.VRS_DISABLED
 		$Menu.visible = true
+		$Menu/Center/VBox/BtnFPS.text = "Als Spieler starten (LAN: %s)" % NetworkManager.server_ip
 
 
 func _launch() -> void:
@@ -79,6 +80,7 @@ func _launch() -> void:
 	SceneManager.scene_changed.connect(_on_scene_changed)
 	SceneManager.timer_tick.connect(_on_timer_tick)
 	SceneManager.scene_about_to_change.connect(_on_scene_about_to_change)
+	SceneManager.auto_advance_toggled.connect(_on_auto_advance_toggled)
 	SceneManager.start()
 
 
@@ -87,6 +89,12 @@ func _launch() -> void:
 func _on_btn_fps_pressed() -> void:
 	GameState.mode = GameState.Mode.FPS
 	NetworkManager.start_client()
+	_launch()
+
+
+func _on_btn_fps_local_pressed() -> void:
+	GameState.mode = GameState.Mode.FPS
+	NetworkManager.start_client("127.0.0.1")
 	_launch()
 
 
@@ -102,6 +110,32 @@ func _on_btn_next_pressed() -> void:
 	SceneManager.advance_scene()
 
 
+func _on_btn_toggle_auto_pressed() -> void:
+	SceneManager.toggle_auto_advance()
+
+
+func _on_auto_advance_toggled(enabled: bool) -> void:
+	if not $ServerHUD.visible:
+		return
+	$ServerHUD/Panel/VBox/BtnToggleAuto.text = "Auto-Wechsel: %s  [L]" % ("AN" if enabled else "AUS")
+	_update_server_hud_timer_label()
+
+
+func _update_server_hud_timer_label() -> void:
+	if not $ServerHUD.visible:
+		return
+	if SceneManager.current_index < 0 or SceneManager.current_index >= SceneManager.scenes_list.size():
+		return
+	var duration: float = float(SceneManager.scenes_list[SceneManager.current_index].get("duration", -1.0))
+	if duration <= 0.0:
+		$ServerHUD/Panel/VBox/TimerLabel.text = "Kein Auto-Advance (N = manuell)"
+	elif not SceneManager.auto_advance:
+		$ServerHUD/Panel/VBox/TimerLabel.text = "Auto-Wechsel: AUS [L] (N = manuell)"
+	else:
+		var remaining: float = max(0.0, duration - SceneManager._timer)
+		$ServerHUD/Panel/VBox/TimerLabel.text = "Wechsel in: %ds" % int(remaining)
+
+
 func _on_scene_changed(index: int, scene_name: String) -> void:
 	if not $ServerHUD.visible:
 		return
@@ -111,15 +145,14 @@ func _on_scene_changed(index: int, scene_name: String) -> void:
 		scene_name
 	]
 	$ServerHUD/Panel/VBox/TimerBar.value = 100.0
-	var duration: float = float(SceneManager.scenes_list[index].get("duration", -1.0))
-	if duration <= 0.0:
-		$ServerHUD/Panel/VBox/TimerLabel.text = "Kein Auto-Advance (N = manuell)"
-	else:
-		$ServerHUD/Panel/VBox/TimerLabel.text = "Dauer: %ds" % int(duration)
+	_update_server_hud_timer_label()
 
 
 func _on_timer_tick(remaining: float, total: float) -> void:
 	if not $ServerHUD.visible:
+		return
+	if not SceneManager.auto_advance:
+		$ServerHUD/Panel/VBox/TimerLabel.text = "Auto-Wechsel: AUS [L] (N = manuell)"
 		return
 	$ServerHUD/Panel/VBox/TimerLabel.text = "Wechsel in: %ds" % max(0, int(remaining))
 	if total > 0.0:
