@@ -7,9 +7,9 @@ extends CharacterBody3D
 ## Gleiche Netzwerk-Logik wie xr_player.gd – beide senden via NetworkManager.send_player_state().
 
 
-const SPEED: float        = 1.2
-const JUMP_VELOCITY: float = 4.5
-const MOUSE_SENSITIVITY: float = 0.003
+@export var SPEED: float        = 1.2
+@export var JUMP_VELOCITY: float = 4.5
+@export var MOUSE_SENSITIVITY: float = 0.003
 const SEND_RATE: float    = 0.05
 
 @onready var head: Node3D   = $Head
