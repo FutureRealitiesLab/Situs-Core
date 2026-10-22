@@ -21,7 +21,7 @@ Statt pro Brille einen LBE-Scan zu erstellen, soll ein ArUco-Marker auf dem Bode
 
 ## 2. Kurzfazit
 
-Das Ziel ist umsetzbar, aber nicht auf dem Weg, den die Gemini-Skizze beschreibt. Ob der Marker-Weg über OpenXR auf der Focus Vision überhaupt offen ist, entscheidet nur ein Test am Gerät. Dafür ist **keine Migration auf Godot 4.7 nötig**. Die ausrichtende Logik (Alignment-Kern) ist für alle Wege identisch und kann vorab gebaut werden. Der Zwei-Kreuze-Weg (C) braucht weder Kamera noch LBSS und funktioniert auf jeder Brille.
+Das Ziel ist umsetzbar, aber nicht auf dem Weg, den die Gemini-Skizze beschreibt. Ob der Marker-Weg über OpenXR auf der Focus Vision überhaupt offen ist, entscheidet nur ein Test am Gerät. Dafür ist **keine Migration auf Godot 4.7 nötig**. Die ausrichtende Logik (Alignment-Kern) ist für alle Wege identisch und kann vorab gebaut werden. Der Zwei-Kreuze-Weg (C) braucht weder Kamera noch LBSS und funktioniert auf jeder Brille. Seine Kalibrierung gilt aber nur pro Sitzung: Nach Standby, App-Neustart oder Recenter ist vermutlich eine neue nötig (Abschnitt 8).
 
 | Weg | Idee | Aufwand | Stand |
 |---|---|---|---|
@@ -105,7 +105,7 @@ Das Ziel ist umsetzbar, aber nicht auf dem Weg, den die Gemini-Skizze beschreibt
   - `MARKER` (bzw. `KREUZE`): Anzeige "Marker suchen" bzw. "Kreuz A", sammelt etwa 30 stabile Messungen, mittelt, sperrt, blendet die Meldung aus.
   - `AUTO`: startet wie LBE und richtet nur bei bewusster Kalibrierung neu aus, mit Totzone (z. B. unter 3 cm und 1 Grad ignorieren). Sonst würde eine falsch liegende Referenz eine korrekte LBE-Ausrichtung verschlechtern.
 - **Modus-Quelle:** Konfiguration (`command_line/extra_args` im Export-Preset oder Config-Datei) plus Controller-Menü.
-- **Neuzentrieren** (`pose_recentered`, z. B. durch langes Drücken der Home-Taste) ändert den Tracking-Ursprung und löst eine neue Ausrichtung aus. Die Ausrichtung wird **nicht** über App-Neustarts gespeichert, weil im VO-Modus der Ursprung bei jedem Start neu entsteht.
+- **Neuzentrieren** (`pose_recentered`, z. B. durch langes Drücken der Home-Taste) ändert den Tracking-Ursprung und löst eine neue Ausrichtung aus (Details zu Standby, Drift und Statusmaschine in Abschnitt 8). Die Ausrichtung wird **nicht** über App-Neustarts gespeichert, weil im VO-Modus der Ursprung bei jedem Start neu entsteht.
 - **Provider-Schnittstelle:** liefert "Referenzpose(n) im Tracking-Raum". Provider: Fake (PC-Test), Controller-Zwei-Punkt (immer verfügbar), Spatial Marker (nur wenn die Probe positiv ist). B1 (Wave-LBSS) passt nicht in dieses Schema, weil es den Ursprung im System verschiebt.
 - **Venue-Konfiguration** definiert die Weltposition der Referenzen: Marker-ID, Größe und Weltpose bzw. die Weltkoordinaten der beiden Kreuze.
 - **Zu ändern:** Die dokumentierte Invariante "XROrigin3D strikt auf (0,0,0)" in ARCHITECTURE.md. Die Thumbstick-Locomotion ist im Multiplayer ohnehin gesperrt, der Standalone-Clamp an `XRWalkArea` bleibt unberührt.
@@ -140,20 +140,90 @@ Eigener Vorschlag, nicht recherchiert. Er braucht weder Kamera noch LBSS noch Er
 **Grenzen**
 - Der Bediener muss pro Brille 20 bis 30 Sekunden investieren. Beim Marker-Weg ginge es automatisch.
 - Die Genauigkeit (vermutlich 1 bis 2 cm) ist **nicht gemessen**. Der Feldtest ist Pflicht.
-- Nach Tracking-Verlust oder Neuzentrieren muss neu kalibriert werden.
+- Nach Tracking-Verlust oder Neuzentrieren muss neu kalibriert werden. Im VO-Modus vermutlich auch nach Standby und Aufsetzen (Abschnitt 8).
 
-## 8. Reihenfolge und Entscheidungspunkt
+## 8. Drift, Standby und Recenter
+
+**Kernaussage:** Die Kalibrierung ist eine Eigenschaft der laufenden Sitzung, keine dauerhafte Einstellung. Sie gilt nur, solange der Ursprung des Tracking-Raums derselbe bleibt. Recherche vom 2026-10-22. Ob die Focus Vision ihren Ursprung beim Aufwecken oder Aufsetzen im VO-Modus neu setzt, ist **nicht dokumentiert** und wird in Phase 0b am Gerät gemessen (Abschnitt 8.5).
+
+### 8.1 Was HTC dokumentiert
+
+- **VO-Modus:** Das 6DoF-Tracking startet "right after the user puts on their headset", Blickrichtung und Koordinatenursprung werden aus der Ausrichtung des Nutzers gesetzt, und es wird keine Karte gespeichert. Zu Standby, Wake, Recenter und Drift steht auf der Seite nichts. Ein neuer Ursprung bei jedem Aufsetzen ist deshalb LIKELY, aber nicht belegt.
+- **MBLS im VO-Modus:** Bei Tracking-Verlust sollen die Marker erneut gescannt werden ("scan the ArUco markers again to reset your position"). Beim Beenden der App geht die Position verloren. HTC rechnet im VO-Modus also selbst mit einem erneuten Abgleich. CONFIRMED.
+- **LBE mit Karte:** Das Headset relokalisiert sich laufend in der gespeicherten Karte. Im Hybrid-Modus bleiben die Kartendaten nach dem Standby erhalten, und eine Marker-Ausrichtung (Scene Alignment) wird beim Aufwachen angewendet. CONFIRMED. Das ist der Nutzen des Scans: Die Ausrichtung bleibt stabil.
+- **Drift Prevention und Advanced Relocation** sind an LBE- oder Hybrid-Karten gebunden. Advanced Relocation gilt auf der Focus Vision ab Firmware 7.0.999.172. Dass eines von beiden einen VO-Ursprung stabilisiert, ist nirgends belegt. Eine App-API dafür wird nicht genannt (LIKELY: keine nötig). CONFIRMED / UNCERTAIN.
+- **`ClearRecenterXform`** (Wave): "clears the recenter transform for the headset". Wann die Ausrichtung verloren geht, sagt die Doku nicht. Für reine OpenXR-Apps gibt es keinen Gegenpart. UNCERTAIN.
+- **Energie:** Business+ bietet eine Einstellung für die Zeit bis zum Standby (Optionen nicht dokumentiert) und einen Kiosk-Modus. Power-Taste und IPD-Rad lassen sich nicht deaktivieren. Den Näherungssensor kann man laut Forenberichten weder in den Einstellungen noch in Business+ abschalten (Abkleben ist ein bekannter Hack). Ob eine Godot-App beim Absetzen pausiert, überlebt oder beendet wird, ist für die Focus Vision nicht belegt. UNCERTAIN.
+
+### 8.2 Was die App mitbekommt (OpenXR und Godot 4.6/4.7)
+
+- **OpenXR:** `XrEventDataReferenceSpaceChangePending` ist Pflicht bei System-Recenter (LOCAL) und bei Neudefinition des Raums (STAGE). Bei Tracking-Verlust gibt es kein Pflicht-Event, die Runtime darf Posen wieder auf den ursprünglichen Ursprung zurückschnappen lassen. Wie sich der LOCAL-Ursprung bei Relokalisierung in eine neue Karte oder beim Fortsetzen der Session verhält, regelt die Core-Spezifikation nicht. CONFIRMED / UNCERTAIN.
+- **Godot ändert den `XROrigin3D` nie.** Die Alignment-Transform bleibt stehen, stimmt aber nicht mehr, wenn das Tracking darunter wegspringt. CONFIRMED (Quelltext 4.6 und 4.7.2).
+- **`pose_recentered`** feuert einmal für jede Raumänderung (auch bei Boundary-Änderungen), ohne Parameter. `changeTime` und `poseValid` werden ignoriert, das Signal kann deshalb ein bis zwei Frames vor dem Sprung kommen (LIKELY). `XRInterface.play_area_changed` kommt sofort. Ein eigenes Signal für Raumänderungen gibt es nicht.
+- **Positions-Tracking-Verlust** erkennt Godot nicht zuverlässig: das `POSITION_TRACKED`-Bit wird nicht ausgewertet (LIKELY: `tracking_confidence` hilft nicht).
+- **Sitzungssignale:** `session_begun`, `session_synchronized`, `session_visible`, `session_focussed`, `session_stopping`, `session_loss_pending`. Godot beendet die Session nicht selbst. Auf Android löst `onPause` nur `NOTIFICATION_APPLICATION_PAUSED` und die Audio-Pause aus, die Engine läuft weiter. Das Vendors-Plugin hat keine Pause- oder Resume-Handler.
+- **Neu in 4.7.2:** Signal `user_presence_changed(bool)` und `is_user_present()` über das Project Setting `xr/openxr/extensions/user_presence` (Default aus). VIVE nennt `XR_EXT_user_presence` auf der Focus Vision ab ROM 7.0.999.220. Das ist ein Argument für die Migration, sobald Weg C läuft.
+- **Im Projekt heute:** Keines der obigen Signale oder Benachrichtigungen wird behandelt (Suche in allen `.gd`-Dateien).
+
+### 8.3 Drift
+
+- Für Focus Vision gibt es keine veröffentlichten Zahlen. HTC sagt nur qualitativ, Inside-out-Systeme seien anfällig für Skalierungsfehler, weil sie keine Referenz haben.
+- Messungen an der Quest 2: RMSE 2,3 bis 5,3 mm (Maximum bis 13,5 mm) in etwa zwei Minuten gegen OptiTrack. Etwa 3 bis 5 cm ATE-RMSE in einem 7x7-m-Mocap-Raum über zehn Läufe ohne Neuausrichtung. Für die Focus 3 nennt eine Zusammenfassung 0,58 cm, nur aus Suchsnippets (UNCERTAIN).
+- Größe und Häufigkeit von Relokalisierungs-Sprüngen sind nirgends veröffentlicht. Die größere Gefahr sind daher einzelne Sprünge, nicht der langsame Drift.
+- Muster aus Colocation-Apps: Korrektur nur bei Überschreiten eines Schwellwerts, nur Position und Yaw (der Raum bleibt waagerecht), Inhalte nahe an der Referenz, und bei fehlgeschlagener Lokalisierung den Nutzer zum Neuabgleich auffordern.
+
+### 8.4 Folgen für den Alignment-Kern
+
+| Ereignis | Wirkung | Reaktion der App |
+|---|---|---|
+| `pose_recentered`, neue Session (`session_begun` nach einer Kalibrierung), Wake nach Absetzen (`user_presence_changed` ab 4.7) | Ursprung vermutlich neu | Status `UNKALIBRIERT`, Hinweis im Raum, Meldung an den Server |
+| Sprung im Kopf-Tracking (Heuristik: mehr als 0,5 m oder 30 Grad Yaw in einem Frame, am Gerät zu prüfen) | Relokalisierung möglich | Status `PRÜFEN`, Kreuz-Check anbieten |
+| Langsamer Drift | Abweichung wächst unbemerkt | Kreuz-Check auf Knopfdruck, Hinweis nach z. B. 15 Minuten ohne Prüfung |
+
+- **Statusmaschine** im Autoload `Alignment`: `UNKALIBRIERT`, `KALIBRIERT`, `PRÜFEN`. Nur `KALIBRIERT` gilt als gültig.
+- **Kreuz-Check:** Controller auf Kreuz A und B, Trigger. Die App zeigt die Abweichung in cm und Grad. Unter dem Grenzwert (Vorschlag 2 cm und 1 Grad) bleibt alles, darüber wird neu ausgerichtet. Zwei Punkte sind nötig, weil ein Recenter vor allem den Yaw verändert, den ein einzelnes Kreuz nicht sieht.
+- **Server-Meldung:** Der Client meldet seinen Status und das Alter der Kalibrierung. Die Server-Anzeige zeigt grün, gelb oder rot je Brille. Avatare von Clients im Status `UNKALIBRIERT` werden ausgeblendet oder markiert, damit niemand an falscher Stelle erscheint.
+- **Nicht speichern:** Die Kalibrierung wird nicht über App-Neustarts hinweg gespeichert. Der Ursprung kann bei jedem Start neu entstehen.
+- **Venue-Ablauf im VO-Modus:** Bei jedem Aufsetzen durch einen neuen Besucher sind 20 bis 30 Sekunden Kalibrierung einzuplanen, solange Phase 0b nicht zeigt, dass der Ursprung erhalten bleibt.
+- **Alternative LBE:** LBE oder LBE Hybrid mit einmal erstelltem Scan hält die Ausrichtung dauerhaft stabil. Der Scan kauft genau das. Die Kreuze tauschen diesen Aufwand gegen eine kurze Kalibrierung pro Aufsetzen.
+- **Standby-Zeit** in Business+ hochsetzen, wenn die Brillen im Raum bleiben. Für abgesetzte Brillen bleibt der Näherungssensor.
+
+### 8.5 Origin-Stabilitätstest (Phase 0b)
+
+Beantwortet die offene Frage am Gerät, ohne Kalibrier-Logik. Ein temporäres Debug-Skript (nicht einchecken oder hinter einem Debug-Flag) schreibt mit Zeitstempel (`Time.get_ticks_msec()`) per `print()` ins `adb logcat -s godot`:
+
+- bei Trigger-Druck: Position der Controller-Spitze lokal zum `XROrigin3D` (x, y, z) und die Kopfposition,
+- alle Signale `session_begun`, `session_synchronized`, `session_visible`, `session_focussed`, `session_stopping`, `session_loss_pending`, `pose_recentered` und `play_area_changed`,
+- `NOTIFICATION_APPLICATION_PAUSED`, `NOTIFICATION_APPLICATION_RESUMED` und `NOTIFICATION_APPLICATION_FOCUS_IN/OUT`.
+
+Aufbau: Zwei Klebekreuze A und B im Abstand von etwa 4 m. In jedem Szenario beide Kreuze nacheinander antippen. Verglichen werden die Roh-Positionen im Tracking-Raum und der Winkel der Verbindungslinie A nach B.
+
+| Nr. | Szenario | Zweck |
+|---|---|---|
+| 1 | Dreimal A und B innerhalb einer Minute | Grundrauschen (Wiederholgenauigkeit) |
+| 2 | Brille 10 Sekunden absetzen und wieder aufsetzen | Näherungssensor |
+| 3 | Brille mehr als 3 Minuten absetzen | Standby nach Timer (bei der Focus 3 soll `OnApplicationPause` erst nach etwa 3 Minuten feuern, Forum, UNCERTAIN) |
+| 4 | Power-Taste (Suspend) und wieder aufwecken | Expliziter Standby |
+| 5 | App beenden und neu starten | Neuer Start |
+| 6 | Recenter (Home-Taste lang bzw. Reset View) | Explizites Recenter |
+| 7 | Kameras 10 Sekunden verdecken | Tracking-Verlust und Rückkehr |
+| 8 | 10 Minuten durch den Raum gehen | Drift über die Zeit |
+
+Auswertung je Szenario: ΔA in cm, Δ-Winkel der Linie A nach B in Grad, welche Signale gefeuert haben. **Entscheidungsregel:** ΔA bis 2 cm und Δ-Winkel bis 1 Grad: Ursprung erhalten. Darüber: Der Ursprung wurde verändert, das Szenario braucht eine neue Kalibrierung. Zeigen die Szenarien 2 und 4 keine Abweichung, ist die Kalibrierung pro Besucher nicht nötig. Ergebnis als Tabelle im Repo dokumentieren, mit Runtime-Version und Firmware-Stand. Möglichst in beiden Tracking-Zuständen testen (Standard und, falls über Business+ verfügbar, VO).
+
+## 9. Reihenfolge und Entscheidungspunkt
 
 Die Migration ist **keine Voraussetzung** für den Weg-A-Test. Deshalb:
 
-1. **Phase 0:** Extension-Probe auf 4.6.1 (unter einer Stunde, kein Umbau).
+1. **Phase 0 und 0b:** Extension-Probe auf 4.6.1 (unter einer Stunde, kein Umbau) und Origin-Stabilitätstest (Abschnitt 8.5).
 2. **Gate:**
    - **Marker-Erweiterung vorhanden:** erst auf 4.7.2 migrieren, weil die Spatial-Entities-API in 4.7 umgebaut wurde und der Provider sonst zweimal geschrieben würde. Dann Phase 2 und 3.
    - **Marker-Erweiterung fehlt:** Weg C zuerst bauen (billig, geräteunabhängig). Die Migration wird eine eigene Entscheidung (Support-Ende von 4.6.x). B1/B2/D/S nur nach ausdrücklicher Entscheidung, sie sind riskant.
+   - **Ergebnis Phase 0b:** Bleibt der Ursprung bei Absetzen und Standby erhalten, genügt eine Kalibrierung pro Schicht plus Kreuz-Check. Wird er zurückgesetzt, muss jede Brille bei jedem Aufsetzen neu kalibriert werden (Abschnitt 8.4), oder der LBE-Scan lohnt sich doch.
 3. **Die Migration nie kurz vor einer Ausstellung** machen. Termin klären.
 4. **Phase 2 (Alignment-Kern)** kann unabhängig von der Probe am PC begonnen werden, weil er für alle Provider gleich ist.
 
-## 9. Phasen
+## 10. Phasen
 
 ### Phase 0: Extension-Probe (Godot 4.6.1, Weg A)
 1. Lokal in `export_presets.cfg` (gitignored) für das Focus-Preset `command_line/extra_args="--verbose"` setzen, Debug-APK bauen, auf der Focus Vision installieren.
@@ -161,6 +231,12 @@ Die Migration ist **keine Voraussetzung** für den Weg-A-Test. Deshalb:
 3. Gesucht: `XR_EXT_spatial_entity`, `XR_EXT_spatial_marker_tracking`, `XR_EXT_plane_detection`, `XR_HTC_anchor`.
 4. Falls die Liste nicht reicht: in einer Wegwerf-Branch `spatial_entity/enabled` und `enable_marker_tracking` einschalten und nach dem Sessionstart `OpenXRSpatialMarkerTrackingCapability.is_aruco_supported()` loggen (nicht vor der Session-Erstellung aufrufen, sonst `false`).
 5. Ergebnis (Runtime-Version, Extension-Liste) im Repo dokumentieren.
+
+### Phase 0b: Origin-Stabilitätstest (gleiches Gerät, gleicher Build)
+1. Temporäres Debug-Skript laut Abschnitt 8.5 einbauen (loggt Controller-Position lokal zum `XROrigin3D`, alle Session-Signale, `pose_recentered` und die App-Benachrichtigungen mit Zeitstempel). Nicht einchecken oder hinter einem Debug-Flag halten.
+2. Zwei Klebekreuze A und B im Abstand von etwa 4 m. Szenarien 1 bis 8 aus Abschnitt 8.5 durchführen, jeweils beide Kreuze antippen.
+3. Auswerten mit der Entscheidungsregel (ΔA bis 2 cm und Δ-Winkel bis 1 Grad: Ursprung erhalten) und das Ergebnis samt Firmware-Stand im Repo dokumentieren.
+4. Ergebnis fließt in das Gate ein (Abschnitt 9): pro Schicht kalibrieren oder pro Aufsetzen.
 
 ### Phase 1: Migration auf Godot 4.7.2 (eigene Branch)
 1. Git-Tag auf dem 4.6.1-Stand, neue Branch. 4.6.1-Editor und Templates parallel behalten (ein Rückweg über den Editor ist nicht garantiert).
@@ -175,13 +251,16 @@ Die Migration ist **keine Voraussetzung** für den Weg-A-Test. Deshalb:
 - Autoload `Alignment`, Modi, Transform-Mathematik und Fake-Provider (siehe Abschnitt 6).
 - Provider Controller-Zwei-Punkt (Weg C, Abschnitt 7) mit Anzeige im Raum, orientiert am vorhandenen `net_info_board.gd`.
 - Selbsttest per `--headless` für die Mathematik: bekannte Punkte rein, erwarteter Transform raus, Abstandsprüfung.
+- Statusmaschine `UNKALIBRIERT` / `KALIBRIERT` / `PRÜFEN` mit Reaktion auf `pose_recentered`, Session-Signale, `user_presence_changed` (ab 4.7) und die Sprung-Heuristik (Abschnitt 8.4). Selbsttest der Statusübergänge.
+- Kreuz-Check auf Knopfdruck mit Anzeige der Abweichung in cm und Grad, Hinweis nach einer festen Zeit ohne Prüfung.
+- Statusmeldung an den Server (grün, gelb, rot je Brille) und Markierung oder Ausblendung unkalibrierter Avatare.
 
 ### Phase 3: Provider und Feldtest
 - Spatial-Marker-Provider (Weg A), falls Phase 0 positiv war, sonst Weg C als Standard. Alternativen B1/B2/D/S nur nach Entscheidung.
 - Feldtest mit mindestens zwei Brillen. Abweichung an einem dritten Bodenkreuz messen. Vergleich LBE-Modus gegen Kreuze-Modus.
 - Venue-Workflow in `venue_team.md`, Technik in `ARCHITECTURE.md`.
 
-## 10. Kritische Dateien
+## 11. Kritische Dateien
 
 - `SYSTEM/player/xr_player.gd`: Origin-Transform, `_broadcast_position()`, `pose_recentered`
 - `SYSTEM/scene_manager.gd`: Spawn des XR-Players, Szenenwechsel, Standalone-Modus
@@ -190,28 +269,32 @@ Die Migration ist **keine Voraussetzung** für den Weg-A-Test. Deshalb:
 - `export_presets.cfg.template`, `android/build/src/main/AndroidManifest.xml`, `android/build/gradle.properties`, `project.godot`
 - `_anleitungen/ARCHITECTURE.md`, `_anleitungen/venue_team.md`, `_anleitungen/dev_team.md`
 
-## 11. Verifikation
+## 12. Verifikation
 
 - **Phase 0:** Logcat enthält Runtime-Name/-Version und die Extension-Liste. Die Entscheidung ist dokumentiert.
+- **Phase 0b:** Die Tabelle der Szenarien 1 bis 8 (ΔA in cm, Δ-Winkel in Grad, gefeuerte Signale, Runtime- und Firmware-Stand) liegt im Repo. Es ist entschieden, ob pro Aufsetzen neu kalibriert werden muss.
 - **Phase 1:** Auf beiden Headsets läuft die Szenenfolge im Standalone- und im Server-Modus wie vorher. Zehn Minuten Dauerlauf ohne Speicheranstieg. Buttons B/Y auf beiden Controllern.
-- **Phase 2:** Headless-Selbsttest der Mathematik. PC-Simulation: zwei Clients mit unterschiedlichem Tracking-Ursprung sehen sich nach der Kalibrierung an derselben Stelle.
+- **Phase 2:** Headless-Selbsttest der Mathematik. PC-Simulation: zwei Clients mit unterschiedlichem Tracking-Ursprung sehen sich nach der Kalibrierung an derselben Stelle. Simulierter Recenter (Origin-Verschiebung) setzt den Status auf `UNKALIBRIERT`, der Kreuz-Check meldet die künstliche Abweichung korrekt.
 - **Phase 3:** Zwei Brillen, eine Referenz (Marker oder Kreuzpaar). Gemessene Abweichung an einem Kontrollkreuz unter einem selbst gesetzten Grenzwert (Vorschlag: 3 cm und 1 Grad).
 
-## 12. Offene Entscheidungen
+## 13. Offene Entscheidungen
 
 - Wann ist die nächste Ausstellung (Zeitfenster für die Migration)?
 - Gehören die Brillen zu VIVE Business+ (LBSS, Karten, `markers_list.json`)? Das braucht B1 und S.
 - Reihenfolge: Probe zuerst (Empfehlung) oder Migration zuerst?
 - Soll Weg C auch als dauerhafter Fallback bleiben, wenn Weg A klappt?
 - Welche Tasten-Kombination startet die Neukalibrierung?
+- Soll der Server Avatare unkalibrierter Brillen ausblenden oder nur markieren?
+- Wie oft soll der Kreuz-Check angefordert werden (Vorschlag: nach 15 Minuten ohne Prüfung)?
+- Standby-Zeit der Brillen in Business+ hochsetzen (falls vorhanden)? Nur sinnvoll, wenn die Brillen im Raum bleiben.
 
-## 13. Arbeitsablauf und Übergabe
+## 14. Arbeitsablauf und Übergabe
 
 - Diese Datei ist der Stand der Planung. Eine neue Claude-Session auf einem anderen Gerät startet mit `git pull` und dem Auftrag "Lies `_anleitungen/plan_marker_ausrichtung.md`".
 - Laufende lokale Desktop-Sessions wandern nicht von selbst zwischen Geräten. Möglich sind: Plan-Datei im Repo (robust), Cloud-Session ("Continue in cloud", benötigt GitHub-Anbindung, UNCERTAIN ob eingerichtet), private Notion- oder Docs-Seite. Remote Control passt nicht, wenn der Rechner ausgeht.
 - Das Transcript lässt sich als Zip nach Downloads exportieren. Ob ein anderer Client es importieren kann, ist UNCERTAIN.
 
-## 14. Quellen
+## 15. Quellen
 
 - VIVE LBSS: [Visual Odometry Mode](https://business.vive.com/us/support/vive-lbss/category_howto/visual-odometry-(vo)-mode.html), [Marker-Based Location Sharing](https://business.vive.com/us/support/vive-lbss/category_howto/marker-based-location-sharing.html), [MBLS APIs (AIO)](https://business.vive.com/us/support/vive-lbss/category_howto/marker-based-location-sharing-apis-(aio).html), [Scene Alignment APIs (AIO)](https://business.vive.com/us/support/vive-lbss/category_howto/marker-based-scene-alignment-apis-(aio).html), [Requirements](https://business.vive.com/eu/support/vive-lbss/category_howto/requirements.html), [OpenXR Space Calibrator](https://business.vive.com/us/support/vive-lbss/category_howto/openxr-space-calibrator.html)
 - Wave SDK: [WVR Marker](https://hub.vive.com/storage/docs/en-us/Sdk_WvrMarker.html), [Unity Trackable Marker](https://hub.vive.com/storage/docs/en-us/UnityXR/UnityXRTrackableMarker.html)
@@ -220,3 +303,4 @@ Die Migration ist **keine Voraussetzung** für den Weg-A-Test. Deshalb:
 - Khronos: [OpenXR-Inventory](https://github.khronos.org/OpenXR-Inventory/runtime_extension_support.html), [HTC-Runtime](https://raw.githubusercontent.com/KhronosGroup/OpenXR-Inventory/main/runtimes/htc_vive_focus.json), [XR_EXT_spatial_marker_tracking](https://developer.android.com/develop/xr/openxr/extensions/XR_EXT_spatial_marker_tracking)
 - Godot: [Spatial Entities](https://docs.godotengine.org/en/stable/tutorials/xr/openxr_spatial_entities.html), [OpenXRSpatialMarkerTrackingCapability](https://docs.godotengine.org/en/latest/classes/class_openxrspatialmarkertrackingcapability.html), [Upgrade auf 4.7](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.7.html), [4.7.2](https://godotengine.org/article/maintenance-release-godot-4-7-2/), [PR 107391](https://github.com/godotengine/godot/pull/107391), [PR 118128](https://github.com/godotengine/godot/pull/118128), [Issue 124258](https://github.com/godotengine/godot/issues/124258)
 - Vendors-Plugin: [godot_openxr_vendors](https://github.com/GodotVR/godot_openxr_vendors), [Issue 484](https://github.com/GodotVR/godot_openxr_vendors/issues/484)
+- Drift, Standby, Recenter: [Setup MBLS](https://business.vive.com/eu/support/vive-lbss/category_howto/setting-up-marker-based-location-sharing.html), [LBE-Modus](https://business.vive.com/eu/support/vive-lbss/category_howto/location-based-entertainment-(lbe)-mode.html), [LBE Hybrid](https://business.vive.com/eu/support/vive-lbss/category_howto/running-lbe-hybrid-mode.html), [Scene Alignment einrichten](https://business.vive.com/eu/support/vive-lbss/category_howto/setting-up-marker-based-scene-alignment.html), [Drift Prevention](https://business.vive.com/eu/support/vive-lbss/category_howto/marker-based-drift-prevention.html), [Advanced Relocation](https://business.vive.com/eu/support/vive-lbss/category_howto/marker-based-advanced-relocation.html), [OpenXR ReferenceSpaceChangePending](https://registry.khronos.org/OpenXR/specs/1.1/man/html/XrEventDataReferenceSpaceChangePending.html), [Godot-Issue 99157](https://github.com/godotengine/godot/issues/99157), [VIVE User Presence](https://developer.vive.com/resources/openxr/unity/tutorials/fundamental-components/checking-if-player-is-wearing-the-headset/), [Quest-2-Messung](https://arxiv.org/html/2412.06116v1), [Quest-2-Messung 7x7 m](https://arxiv.org/html/2509.06582v1)
