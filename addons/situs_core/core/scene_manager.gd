@@ -27,6 +27,8 @@ extends Node
 ##     • alle: spawnen lokalen Spieler + Remote-Avatare
 
 
+const SitusSettings = preload("res://addons/situs_core/core/situs_settings.gd")
+
 ## Standard-Avatar – wird genutzt wenn die Szene keinen eigenen angibt
 const DEFAULT_AVATAR_PATH = "res://addons/situs_core/avatar/variants/avatar_dynamic_cone.tscn"
 const DEFAULT_SCENE_PATH  = "res://addons/situs_core/templates/team_scene.tscn"
@@ -208,7 +210,7 @@ func _load_scene_local(index: int) -> void:
 			local_player.velocity = Vector3.ZERO
 		elif GameState.mode == GameState.Mode.XR and not standalone_mode:
 			local_player.global_position = Vector3.ZERO
-			local_player.global_rotation = Vector3.ZERO
+			local_player.global_rotation = _room_rotation()
 
 	if is_instance_valid(self_avatar):
 		self_avatar.queue_free()
@@ -263,6 +265,14 @@ func _spawn_local_player() -> void:
 			local_player = FPSPlayer.instantiate()
 	if local_player:
 		_players_container.add_child(local_player)
+		if GameState.mode == GameState.Mode.XR and not standalone_mode:
+			local_player.global_rotation = _room_rotation()
+
+
+## Drehung des XR-Ursprungs: bildet den Tracking-Raum der Brille auf die Spielwelt ab
+## (Project Setting situs_core/room/rotation_deg). Szenen bleiben unverändert.
+func _room_rotation() -> Vector3:
+	return Vector3(0.0, deg_to_rad(SitusSettings.get_room_rotation_deg()), 0.0)
 
 
 ## Spawnt einen Avatar für den eigenen Körper (First-Person-Ansicht).

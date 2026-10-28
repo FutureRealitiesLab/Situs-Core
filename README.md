@@ -65,6 +65,21 @@ git push origin dist
 
 ---
 
+## Einstellungen
+
+Das Plugin legt im Editor unter *Project Settings → Situs Core* diese Felder an. Die Werte stehen in `project.godot` und sind damit in der APK. Sie gelten auch beim Play im Editor, ein Export ist dafür nicht nötig. Nach einer Änderung an Server-IP, Raum oder Drehung muss die APK neu exportiert werden.
+
+| Setting | Bedeutung | Default |
+|---------|-----------|---------|
+| `situs_core/network/server_ip` | IP des Servers, zu der sich Clients verbinden | `127.0.0.1` |
+| `situs_core/room/width_m` | Breite der Spielfläche (Weltachse x) in m | `4.0` |
+| `situs_core/room/length_m` | Länge der Spielfläche (Weltachse z) in m | `8.0` |
+| `situs_core/room/rotation_deg` | Drehung des Tracking-Raums der Brillen gegenüber der Welt, in Grad | `0` |
+
+- **Rotation:** Sie wird auf den XR-Ursprung angewendet, nicht auf die Szenen. Alle Szenen passen sich automatisch an. Damit lässt sich die Ausrichtung des Raums korrigieren, ohne die Brillen neu auszurichten. Ein Wert gilt für alle Brillen.
+- **Andere IP nur für die APK:** Bei der Einstellung *Override For…* → `android` wählen. Dann gilt im Editor weiter der Standardwert.
+- **Spielfläche:** Sie begrenzt die Bewegung (Thumbstick und FPS) und wird aus Breite und Länge erzeugt. Szenen lesen die Werte über `SitusSettings` (`addons/situs_core/core/situs_settings.gd`, z. B. `get_room_size()`).
+
 ## Schnellstart (dieses Repo als Demo-Projekt)
 
 ```
@@ -74,7 +89,7 @@ git push origin dist
 4. Zweite Instanz (Debug → Run Multiple Instances): „Als Spieler starten (First Person)"
 ```
 
-**Server-IP** vor dem APK-Build: `addons/situs_core/networking/network_manager.gd` → `server_ip`.
+**Server-IP** vor dem APK-Export: *Project Settings → Situs Core → Network → Server Ip*.
 
 **APK:** `export_presets.cfg.template` → `export_presets.cfg`, dann *Project → Export → „Android – HTC Focus 3"* (gilt auch für Focus Vision).
 

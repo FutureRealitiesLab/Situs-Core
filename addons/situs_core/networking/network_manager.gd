@@ -6,13 +6,10 @@ extends Node
 ## Schickt die eigene Position und Kopfbewegung an den Server;
 ## empfängt dieselben Daten von anderen Spielern und aktualisiert ihre Avatare.
 ## Der Server-PC leitet nur weiter — er hat keinen eigenen Avatar.
-## Vor dem APK-Build: server_ip auf die LAN-IP des Server-PCs setzen.
-##
-## ┌─────────────────────────────────────────────────────────────┐
-## │  TODO: server_ip auf die LAN-IP eures Gaming-PCs setzen!    │
-## │  Beispiel: "192.168.1.100"                                   │
-## └─────────────────────────────────────────────────────────────┘
+## Server-IP: Project Settings → Situs Core → Network → Server Ip
+## (vor dem APK-Export auf die LAN-IP des Server-PCs setzen).
 
+const SitusSettings := preload("res://addons/situs_core/core/situs_settings.gd")
 
 const PORT: int = 7777
 const MAX_CLIENTS: int = 8
@@ -20,9 +17,8 @@ const MAX_CLIENTS: int = 8
 ## Sekunden zwischen automatischen Verbindungsversuchen (Client-Modus).
 const RECONNECT_INTERVAL: float = 5.0
 
-## IP-Adresse des Server-PCs – hier direkt eintragen.
-## Bei IP-Änderung: diese Zeile anpassen + APK neu exportieren.
-var server_ip: String = "192.168.50.29"
+## IP-Adresse des Servers, aus den Project Settings. Bei Änderung APK neu exportieren.
+var server_ip: String = SitusSettings.get_server_ip()
 
 ## Wird true sobald der Client erfolgreich verbunden hat
 var client_connected_flag: bool = false

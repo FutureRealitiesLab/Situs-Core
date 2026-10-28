@@ -8,6 +8,8 @@ extends Node
 ## Zuständig für: Startmenü, Einblende-Übergang beim Szenenwechsel,
 ## VR-Kamera-Setup, Netzwerk-Diagnose-Overlay und Server-HUD.
 
+const SitusSettings = preload("res://addons/situs_core/core/situs_settings.gd")
+
 ## Fade-Zeiten für Szenenübergänge
 const FADE_OUT_DURATION: float = 1.0
 const TEXT_HOLD_DURATION: float = 2.5
@@ -33,6 +35,10 @@ var _diag_timer: float = 0.0
 
 
 func _ready() -> void:
+	# Spielfläche aus den Project Settings (Mesh ist 1 x 1 m, Größe über scale)
+	var room: Vector2 = SitusSettings.get_room_size()
+	$XRWalkArea.scale = Vector3(room.x, 1.0, room.y)
+
 	var xr_interface: XRInterface = XRServer.find_interface("OpenXR")
 	if xr_interface and xr_interface.is_initialized():
 		print("[Main] OpenXR erkannt – starte direkt als XR-Client.")

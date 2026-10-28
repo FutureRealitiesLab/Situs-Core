@@ -9,6 +9,7 @@ extends EditorPlugin
 ## "situs_core/modules/<modul_name>" auf false setzen.
 
 const CORE_DIR := "res://addons/situs_core/"
+const SitusSettings := preload("res://addons/situs_core/core/situs_settings.gd")
 
 const CORE_AUTOLOADS := {
 	"GameState":      CORE_DIR + "networking/game_state.gd",
@@ -36,6 +37,7 @@ const MODULE_INPUTS := {
 
 ## Autoloads und Inputs landen in project.godot und bleiben dort (der Export braucht sie).
 func _enter_tree() -> void:
+	SitusSettings.register()
 	for autoload_name in CORE_AUTOLOADS:
 		_add_autoload(autoload_name, CORE_AUTOLOADS[autoload_name])
 	_add_inputs(CORE_INPUTS)
