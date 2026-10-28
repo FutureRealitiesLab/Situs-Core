@@ -3,9 +3,13 @@ extends Node
 
 ## scene_manager.gd – Herzstück der Ausstellung.
 ##
-## Entscheidet wann welche Team-Szene geladen wird, hält den Timer,
-## spawnt Spieler-Figuren und Avatare anderer Besucherinnen, und
-## schaltet bei Bedarf in den Standalone-Modus (läuft ohne Server).
+## Lädt die aktuelle Szene, spawnt Spieler-Figuren und Avatare anderer
+## Besucherinnen, und schaltet bei Bedarf in den Standalone-Modus
+## (läuft ohne Server).
+##
+## Welche Szenen es gibt und wann gewechselt wird, bestimmt ein optionales
+## Modul (z. B. modules/modul_scene_loop). Ohne Modul läuft genau eine Szene
+## (ProjectSettings "situs_core/default_scene").
 ##
 ## Architektur-Übersicht:
 ##
@@ -16,15 +20,16 @@ extends Node
 ##     └── ServerHUD      – Timer-Anzeige + "Next"-Button, nur Server
 ##
 ##   SceneManager (Autoload)
-##     • liest Szenen-Liste aus scenes/scene_registry.gd
-##     • Server: steuert Timer, löst Szenenwechsel via RPC aus
+##     • holt die Szenen-Liste vom scene_provider (Modul) oder nutzt die Default-Szene
+##     • Server: löst Szenenwechsel via RPC aus (request_scene)
 ##     • Server: sendet aktuelle Szene an Späteinsteiger (by name/index)
-##     • Server: reagiert auf N-Taste und Button-Druck
 ##     • Clients: empfangen Szenenwechsel-RPC, laden lokal
 ##     • alle: spawnen lokalen Spieler + Remote-Avatare
 
 
 ## Standard-Avatar – wird genutzt wenn die Szene keinen eigenen angibt
+const DEFAULT_AVATAR_PATH = "res://addons/situs_core/avatar/variants/avatar_dynamic_cone.tscn"
+const DEFAULT_SCENE_PATH  = "res://addons/situs_core/templates/team_scene.tscn"
 const DEFAULT_AVATAR = preload("res://addons/situs_core/avatar/remote_avatar.tscn")
 const XRPlayer       = preload("res://addons/situs_core/player/xr_player.tscn")
 const FPSPlayer      = preload("res://addons/situs_core/player/fps_player.tscn")
@@ -32,10 +37,12 @@ const FPSPlayer      = preload("res://addons/situs_core/player/fps_player.tscn")
 ## Index der aktuell laufenden Szene
 var current_index: int = -1
 
-## Laufzeit-Timer der aktuellen Szene (Sekunden)
-var _timer: float = 0.0
+## Optionaler Szenen-Lieferant (ein Modul setzt sich hier in seinem _ready()).
+## Muss get_scene_list() -> Array[Dictionary] anbieten. Einträge:
+##   path (Pflicht), name, duration, avatar, team, info, player_color (optional)
+var scene_provider: Object = null
 
-## Szenen-Liste aus scene_registry.gd
+## Szenen-Liste (vom scene_provider oder Default-Szene)
 var scenes_list: Array = []
 
 ## Referenzen auf Container-Nodes aus main.tscn (gesetzt via initialize())
@@ -59,16 +66,15 @@ var remote_avatars: Dictionary = {}
 ## Standalone-Modus: Szenen laufen lokal durch ohne Server (aktiviert via A-Taste am Headset)
 var standalone_mode: bool = false
 
-## Automatischer Szenenwechsel auf dem Server (an/aus via L-Taste oder Button)
-var auto_advance: bool = true
-
 signal scene_changed(index: int, scene_name: String)
-signal timer_tick(remaining: float, total: float)
-signal auto_advance_toggled(enabled: bool)
 
 ## Wird vor dem Szenenwechsel emittiert. main.gd startet den Fade-Out
 ## und ruft danach confirm_scene_load(index) auf.
 signal scene_about_to_change(index: int)
+
+## Spieler/Controller wünschen Szene vor (+1) oder zurück (-1).
+## Ohne Szenen-Modul hört niemand zu → kein Effekt.
+signal scene_step_requested(direction: int)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -82,19 +88,12 @@ func initialize(scene_container: Node3D, players_container: Node3D) -> void:
 	_scene_container   = scene_container
 	_players_container = players_container
 
-	var registry     = load("res://_scenes/scene_registry.gd").new()
-	var folder_list: Array = registry.get_scenes()
-	scenes_list = []
-	for folder_path in folder_list:
-		var d := _load_scene_info(folder_path)
-		if not d.is_empty():
-			scenes_list.append(d)
-		else:
-			push_warning("[SceneManager] Überspringe '%s' (scene_info.cfg fehlt oder ungültig)" % folder_path)
-
+	if scene_provider != null and scene_provider.has_method("get_scene_list"):
+		scenes_list = scene_provider.get_scene_list()
+		if scenes_list.is_empty():
+			push_warning("[SceneManager] Szenen-Modul lieferte keine Szenen – nutze Default-Szene.")
 	if scenes_list.is_empty():
-		push_warning("[SceneManager] Keine Szenen geladen – scene_registry.gd prüfen!")
-		return
+		scenes_list = [_default_scene_entry()]
 
 	NetworkManager.player_joined.connect(_on_player_joined)
 	NetworkManager.player_left.connect(_on_player_left)
@@ -106,29 +105,17 @@ func initialize(scene_container: Node3D, players_container: Node3D) -> void:
 	print("[SceneManager] %d Szene(n) registriert." % scenes_list.size())
 
 
-## Lädt scene_info.cfg aus einem Szenen-Ordner und gibt das Scene-Dict zurück.
-## Gibt leeres Dict zurück wenn die Datei fehlt oder scene_file nicht gesetzt ist.
-func _load_scene_info(folder_path: String) -> Dictionary:
-	var cfg_path := folder_path + "scene_info.cfg"
-	var cf       := ConfigFile.new()
-	if cf.load(cfg_path) != OK:
-		push_error("[SceneManager] scene_info.cfg nicht gefunden: " + cfg_path)
-		return {}
-	var scene_file: String = cf.get_value("scene", "scene_file", "")
-	if scene_file.is_empty():
-		push_error("[SceneManager] 'scene_file' fehlt in: " + cfg_path)
-		return {}
-	var d := {
-		"path":     folder_path + scene_file,
-		"name":     cf.get_value("scene", "name",     "Unbenannt"),
-		"duration": cf.get_value("scene", "duration", -1.0),
-		"avatar":   cf.get_value("scene", "avatar",   "res://addons/situs_core/avatar/variants/avatar_dynamic_cone.tscn"),
-		"team":     cf.get_value("scene", "team",     ""),
-		"info":     cf.get_value("scene", "info",     ""),
+## Szene ohne Modul: eine einzige Szene, kein automatischer Wechsel.
+## Pfad per Project Setting "situs_core/default_scene" überschreibbar.
+func _default_scene_entry() -> Dictionary:
+	return {
+		"path":     ProjectSettings.get_setting("situs_core/default_scene", DEFAULT_SCENE_PATH),
+		"name":     "Default",
+		"duration": -1.0,
+		"avatar":   DEFAULT_AVATAR_PATH,
+		"team":     "",
+		"info":     "",
 	}
-	if cf.has_section_key("scene", "player_color"):
-		d["player_color"] = cf.get_value("scene", "player_color")
-	return d
 
 
 ## Startet das System nach initialize().
@@ -144,85 +131,39 @@ func start() -> void:
 		_load_scene_local(0)
 
 
-# ══════════════════════════════════════════════════════════════════
-#  Timer  (läuft nur auf dem Server)
-# ══════════════════════════════════════════════════════════════════
-
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	_update_self_avatar()
-
-	if not standalone_mode:
-		if not multiplayer.has_multiplayer_peer():
-			return
-		if not multiplayer.is_server():
-			return
-
-	if current_index < 0 or scenes_list.is_empty():
-		return
-
-	var duration: float = float(scenes_list[current_index].get("duration", -1.0))
-	if duration <= 0.0:
-		return  # Kein Auto-Advance für diese Szene
-
-	if not auto_advance:
-		return  # Auto-Advance pausiert (Loop deaktiviert via L-Taste)
-
-	_timer += delta
-	timer_tick.emit(duration - _timer, duration)
-
-	if _timer >= duration:
-		advance_scene()
 
 
 # ══════════════════════════════════════════════════════════════════
 #  Szenenwechsel  (Server-seitig ausgelöst)
 # ══════════════════════════════════════════════════════════════════
 
-## Lädt die nächste Szene – aufrufbar vom Server per N-Taste oder Button,
-## oder lokal im Standalone-Modus.
+## Löst den Wechsel zu Szene `index` aus (Fade → confirm_scene_load).
+## Erlaubt auf dem Server und im Standalone-Modus. Wird vom Szenen-Modul gerufen.
+func request_scene(index: int) -> void:
+	if not multiplayer.is_server() and not standalone_mode:
+		return
+	if index < 0 or index >= scenes_list.size():
+		return
+	scene_about_to_change.emit(index)
+
+
+## Szene vor / zurück anfordern (Controller-Tasten). Das Szenen-Modul entscheidet,
+## ob und wohin gewechselt wird; ohne Modul passiert nichts.
 func advance_scene() -> void:
-	if not multiplayer.is_server() and not standalone_mode:
-		return
-	if scenes_list.is_empty():
-		return
-	_timer = 0.0
-	var next: int = (current_index + 1) % scenes_list.size()
-	print("[SceneManager] Szenenwechsel → Index %d" % next)
-	scene_about_to_change.emit(next)
+	scene_step_requested.emit(1)
 
 
-## Lädt die vorherige Szene — analog zu advance_scene().
 func retreat_scene() -> void:
-	if not multiplayer.is_server() and not standalone_mode:
-		return
-	if scenes_list.is_empty():
-		return
-	_timer = 0.0
-	var prev: int = (current_index - 1 + scenes_list.size()) % scenes_list.size()
-	print("[SceneManager] Szenenwechsel ← Index %d" % prev)
-	scene_about_to_change.emit(prev)
+	scene_step_requested.emit(-1)
 
 
 ## Aktiviert den lokalen Standalone-Modus (kein Server nötig).
 ## Wird von xr_player.gd via A-Taste und fps_player.gd via Q/E ausgelöst.
 func activate_standalone() -> void:
 	standalone_mode = true
-	_timer = 0.0
 	print("[SceneManager] Standalone-Modus aktiviert.")
-
-
-## Schaltet den automatischen Szenenwechsel auf dem Server um (Taste L oder Button).
-func toggle_auto_advance() -> void:
-	auto_advance = not auto_advance
-	auto_advance_toggled.emit(auto_advance)
-	print("[SceneManager] Auto-Szenenwechsel: %s" % ("AN" if auto_advance else "AUS"))
-
-
-## Lädt eine spezifische Szene nach ihrem Index (Server-only).
-func go_to_scene(index: int) -> void:
-	if not multiplayer.is_server():
-		return
-	scene_about_to_change.emit(index)
 
 
 ## Aufgerufen von main.gd nach Fade-Out.
@@ -253,7 +194,6 @@ func _load_scene_local(index: int) -> void:
 		return
 
 	current_index = index
-	_timer = 0.0
 
 	# Alte Szene entladen
 	if is_instance_valid(_current_scene):
@@ -364,7 +304,7 @@ func _update_self_avatar() -> void:
 
 
 ## Gibt die Avatar-Szene für die aktuelle Team-Szene zurück.
-## Teams tragen optional "avatar": "res://addons/situs_core/avatar/variants/..." in scene_registry.gd ein.
+## Szenen tragen optional "avatar": "res://addons/situs_core/avatar/variants/..." ein (scene_info.cfg im Szenen-Modul).
 ## Fehlt der Eintrag oder ist der Pfad ungültig → DEFAULT_AVATAR.
 func _get_current_avatar_scene() -> PackedScene:
 	if current_index >= 0 and current_index < scenes_list.size():
@@ -380,7 +320,7 @@ func _get_current_avatar_scene() -> PackedScene:
 func _spawn_remote_avatar(peer_id: int) -> void:
 	if remote_avatars.has(peer_id):
 		return
-	# Szene-spezifischer Farb-Override: "player_color" in scene_registry
+	# Szene-spezifischer Farb-Override: "player_color" in der Szenen-Liste
 	#   Color(r,g,b,1) → alle Spieler bekommen in dieser Szene dieselbe Farbe
 	#   nicht gesetzt / null → individuelle Farbe (vom Server zugewiesen)
 	var avatar: Node = _get_current_avatar_scene().instantiate()
@@ -530,22 +470,6 @@ func _spawn_net_info_board() -> void:
 	board.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	board.set_script(load("res://addons/situs_core/core/net_info_board.gd"))
 	_current_scene.add_child(board)
-
-
-# ══════════════════════════════════════════════════════════════════
-#  Server: N-Taste für manuellen Szenenwechsel & L-Taste für Loop-Toggle
-# ══════════════════════════════════════════════════════════════════
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not multiplayer.has_multiplayer_peer():
-		return
-	if not multiplayer.is_server():
-		return
-	if event.is_action_pressed("scene_next"):
-		print("[Server] Manueller Szenenwechsel via Taste N.")
-		advance_scene()
-	elif event.is_action_pressed("scene_loop_toggle") or (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_L):
-		toggle_auto_advance()
 
 
 # ══════════════════════════════════════════════════════════════════
