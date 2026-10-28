@@ -1,13 +1,16 @@
-# Godot – generierte Dateien (nicht committen)
+# Godot - generierte Dateien (nicht committen)
 .godot/
-*.uid
+# *.uid werden bewusst committet (stabile UIDs fuer das geteilte Plugin)
 
-# Android – Build-Artefakte (Gradle-Output und generierte Dateien)
+# Abhaengigkeit, wird pro Projekt installiert (siehe README)
+addons/godotopenxrvendors/
+
+# Android - Build-Artefakte (Gradle-Output und generierte Dateien)
 android/build/
 android/.gradle/
 # Ausnahmen: manuell gepflegte Dateien im Build-Template
 !android/build/src/main/AndroidManifest.xml
-# Daemon + Cache deaktiviert – verhindert Einbetten veralteter PCK (grauer Viewport auf Focus 3)
+# Daemon + Cache deaktiviert - verhindert Einbetten veralteter PCK (grauer Viewport auf Focus 3)
 !android/build/gradle.properties
 
 # Export-Artefakte

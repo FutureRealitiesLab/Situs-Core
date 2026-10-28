@@ -37,7 +37,7 @@ alignment = 1
 [node name="Title" type="Label" parent="Menu/Center/VBox" unique_id=1745180100]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "Hyper-Irrealismus III"
+text = "Situs Core"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Menu/Center/VBox" unique_id=194754703]

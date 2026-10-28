@@ -19,6 +19,9 @@ const VR_OVERLAY_SPEED: float = 4.0   # 1/s; bei 90 Hz ≈ 4 % Annäherung pro F
 
 var _fade_tween: Tween = null
 
+## Autoload "SceneLoop" aus modul_scene_loop, null wenn das Modul nicht aktiv ist
+var _scene_loop: Node = null
+
 ## VR-Fade-Overlay (3D, für XR-Modus – CanvasLayer nicht zuverlässig in OpenXR)
 var _vr_fade_plane: MeshInstance3D = null
 var _vr_plane_mat:  StandardMaterial3D = null
@@ -76,11 +79,18 @@ func _launch() -> void:
 			lines.append("  (keine Netzwerkverbindung?)")
 		$ServerHUD/Panel/VBox/NetworkLabel.text = "\n".join(lines)
 
+	# Optionales Modul modul_scene_loop (Autoload "SceneLoop"): Timer, Auto-Wechsel, Next-Button
+	_scene_loop = get_node_or_null("/root/SceneLoop")
+	if _scene_loop:
+		_scene_loop.timer_tick.connect(_on_timer_tick)
+		_scene_loop.auto_advance_toggled.connect(_on_auto_advance_toggled)
+	else:
+		for n in ["TimerLabel", "TimerBar", "BtnNext", "BtnToggleAuto"]:
+			get_node("ServerHUD/Panel/VBox/" + n).visible = false
+
 	SceneManager.initialize($SceneContainer, $PlayersContainer)
 	SceneManager.scene_changed.connect(_on_scene_changed)
-	SceneManager.timer_tick.connect(_on_timer_tick)
 	SceneManager.scene_about_to_change.connect(_on_scene_about_to_change)
-	SceneManager.auto_advance_toggled.connect(_on_auto_advance_toggled)
 	SceneManager.start()
 
 
@@ -107,11 +117,13 @@ func _on_btn_server_pressed() -> void:
 # ── Server-HUD ──────────────────────────────────────────────────
 
 func _on_btn_next_pressed() -> void:
-	SceneManager.advance_scene()
+	if _scene_loop:
+		_scene_loop.advance_scene()
 
 
 func _on_btn_toggle_auto_pressed() -> void:
-	SceneManager.toggle_auto_advance()
+	if _scene_loop:
+		_scene_loop.toggle_auto_advance()
 
 
 func _on_auto_advance_toggled(enabled: bool) -> void:
@@ -122,18 +134,9 @@ func _on_auto_advance_toggled(enabled: bool) -> void:
 
 
 func _update_server_hud_timer_label() -> void:
-	if not $ServerHUD.visible:
+	if not $ServerHUD.visible or _scene_loop == null:
 		return
-	if SceneManager.current_index < 0 or SceneManager.current_index >= SceneManager.scenes_list.size():
-		return
-	var duration: float = float(SceneManager.scenes_list[SceneManager.current_index].get("duration", -1.0))
-	if duration <= 0.0:
-		$ServerHUD/Panel/VBox/TimerLabel.text = "Kein Auto-Advance (N = manuell)"
-	elif not SceneManager.auto_advance:
-		$ServerHUD/Panel/VBox/TimerLabel.text = "Auto-Wechsel: AUS [L] (N = manuell)"
-	else:
-		var remaining: float = max(0.0, duration - SceneManager._timer)
-		$ServerHUD/Panel/VBox/TimerLabel.text = "Wechsel in: %ds" % int(remaining)
+	$ServerHUD/Panel/VBox/TimerLabel.text = _scene_loop.get_hud_timer_text()
 
 
 func _on_scene_changed(index: int, scene_name: String) -> void:
@@ -151,7 +154,9 @@ func _on_scene_changed(index: int, scene_name: String) -> void:
 func _on_timer_tick(remaining: float, total: float) -> void:
 	if not $ServerHUD.visible:
 		return
-	if not SceneManager.auto_advance:
+	if _scene_loop == null:
+		return
+	if not _scene_loop.auto_advance:
 		$ServerHUD/Panel/VBox/TimerLabel.text = "Auto-Wechsel: AUS [L] (N = manuell)"
 		return
 	$ServerHUD/Panel/VBox/TimerLabel.text = "Wechsel in: %ds" % max(0, int(remaining))

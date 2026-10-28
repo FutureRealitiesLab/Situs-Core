@@ -20,6 +20,14 @@ GameState="*res://addons/situs_core/networking/game_state.gd"
 NetworkManager="*res://addons/situs_core/networking/network_manager.gd"
 SceneManager="*res://addons/situs_core/core/scene_manager.gd"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/situs_core/plugin.cfg")
+
+[situs_core]
+
+modules/modul_scene_loop=false
+
 [display]
 
 window/size/viewport_width=1920
