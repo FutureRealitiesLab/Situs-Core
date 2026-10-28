@@ -36,7 +36,7 @@ _scenes/team_X/team_X.tscn im Editor öffnen → F6
 
 **Server-IP konfigurieren** (vor APK-Build):
 ```
-SYSTEM/networking/network_manager.gd  →  Zeile 24:  var server_ip: String = "192.168.1.100"
+addons/situs_core/networking/network_manager.gd  →  Zeile 24:  var server_ip: String = "192.168.1.100"
 ```
 
 **APK bauen:**
@@ -84,7 +84,7 @@ _scenes/                 ← Alle Szenen — nur Design Teams arbeiten hier
   team_template/         ← Vorlage: duplizieren für jeden Team-Ordner
   team_X/                ← Team-Ordner: scene_info.cfg + Szene + Assets
   scene_registry.gd      ← Ausstellungsreihenfolge (nur Dev Team)
-SYSTEM/                  ← Core-System (nur Dev Team)
+addons/situs_core/                  ← Core-System (nur Dev Team)
   avatar/                ← Avatar-Varianten
   networking/            ← Netzwerk-Autoloads (GameState, NetworkManager)
   player/                ← FPS + XR Player

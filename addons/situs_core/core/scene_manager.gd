@@ -25,9 +25,9 @@ extends Node
 
 
 ## Standard-Avatar – wird genutzt wenn die Szene keinen eigenen angibt
-const DEFAULT_AVATAR = preload("res://SYSTEM/avatar/remote_avatar.tscn")
-const XRPlayer       = preload("res://SYSTEM/player/xr_player.tscn")
-const FPSPlayer      = preload("res://SYSTEM/player/fps_player.tscn")
+const DEFAULT_AVATAR = preload("res://addons/situs_core/avatar/remote_avatar.tscn")
+const XRPlayer       = preload("res://addons/situs_core/player/xr_player.tscn")
+const FPSPlayer      = preload("res://addons/situs_core/player/fps_player.tscn")
 
 ## Index der aktuell laufenden Szene
 var current_index: int = -1
@@ -122,7 +122,7 @@ func _load_scene_info(folder_path: String) -> Dictionary:
 		"path":     folder_path + scene_file,
 		"name":     cf.get_value("scene", "name",     "Unbenannt"),
 		"duration": cf.get_value("scene", "duration", -1.0),
-		"avatar":   cf.get_value("scene", "avatar",   "res://SYSTEM/avatar/variants/avatar_dynamic_cone.tscn"),
+		"avatar":   cf.get_value("scene", "avatar",   "res://addons/situs_core/avatar/variants/avatar_dynamic_cone.tscn"),
 		"team":     cf.get_value("scene", "team",     ""),
 		"info":     cf.get_value("scene", "info",     ""),
 	}
@@ -364,7 +364,7 @@ func _update_self_avatar() -> void:
 
 
 ## Gibt die Avatar-Szene für die aktuelle Team-Szene zurück.
-## Teams tragen optional "avatar": "res://SYSTEM/avatar/variants/..." in scene_registry.gd ein.
+## Teams tragen optional "avatar": "res://addons/situs_core/avatar/variants/..." in scene_registry.gd ein.
 ## Fehlt der Eintrag oder ist der Pfad ungültig → DEFAULT_AVATAR.
 func _get_current_avatar_scene() -> PackedScene:
 	if current_index >= 0 and current_index < scenes_list.size():
@@ -528,7 +528,7 @@ func _spawn_net_info_board() -> void:
 	board.modulate = Color(1.0, 0.45, 0.1)        # Orange – gut sichtbar im Dunkeln
 	board.outline_modulate = Color(0.0, 0.0, 0.0)  # Schwarzer Rand für Lesbarkeit
 	board.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	board.set_script(load("res://SYSTEM/net_info_board.gd"))
+	board.set_script(load("res://addons/situs_core/core/net_info_board.gd"))
 	_current_scene.add_child(board)
 
 

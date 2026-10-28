@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbfpsplay01"]
 
-[ext_resource type="Script" uid="uid://bprvdnekqu0n5" path="res://SYSTEM/player/fps_player.gd" id="1_fpsplaygd"]
+[ext_resource type="Script" uid="uid://bprvdnekqu0n5" path="res://addons/situs_core/player/fps_player.gd" id="1_fpsplaygd"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
 radius = 0.3

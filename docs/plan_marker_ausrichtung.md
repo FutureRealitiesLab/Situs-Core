@@ -99,8 +99,8 @@ Das Ziel ist umsetzbar, aber nicht auf dem Weg, den die Gemini-Skizze beschreibt
 
 - **LBE-Modus:** Der Transform ist die Identität, genau wie heute.
 - **Marker- oder Kreuze-Modus:** Er wird aus gemessenen Referenzpunkten berechnet. Es zählen nur **Position und Yaw**. Die Schwerkraft (Hochrichtung) kommt weiter aus dem Tracking, die Bodenhöhe aus dem Reference Space.
-- **Netzwerk bleibt unverändert**, weil `_broadcast_position()` ([xr_player.gd:102](../SYSTEM/player/xr_player.gd)) schon Weltkoordinaten sendet. Die Avatare der anderen erscheinen automatisch am richtigen Ort.
-- **Autoload `Alignment`** (z. B. `SYSTEM/alignment/alignment_manager.gd`) mit drei Modi:
+- **Netzwerk bleibt unverändert**, weil `_broadcast_position()` ([xr_player.gd:102](../addons/situs_core/player/xr_player.gd)) schon Weltkoordinaten sendet. Die Avatare der anderen erscheinen automatisch am richtigen Ort.
+- **Autoload `Alignment`** (z. B. `addons/situs_core/alignment/alignment_manager.gd`) mit drei Modi:
   - `LBE`: Referenzen werden ignoriert.
   - `MARKER` (bzw. `KREUZE`): Anzeige "Marker suchen" bzw. "Kreuz A", sammelt etwa 30 stabile Messungen, mittelt, sperrt, blendet die Meldung aus.
   - `AUTO`: startet wie LBE und richtet nur bei bewusster Kalibrierung neu aus, mit Totzone (z. B. unter 3 cm und 1 Grad ignorieren). Sonst würde eine falsch liegende Referenz eine korrekte LBE-Ausrichtung verschlechtern.
@@ -262,10 +262,10 @@ Die Migration ist **keine Voraussetzung** für den Weg-A-Test. Deshalb:
 
 ## 11. Kritische Dateien
 
-- `SYSTEM/player/xr_player.gd`: Origin-Transform, `_broadcast_position()`, `pose_recentered`
-- `SYSTEM/scene_manager.gd`: Spawn des XR-Players, Szenenwechsel, Standalone-Modus
-- `SYSTEM/main.gd`: Render-Skalierung, VR-Overlay, Menü
-- `SYSTEM/net_info_board.gd`: Vorlage für eine "Marker suchen" bzw. "Kreuz A"-Anzeige
+- `addons/situs_core/player/xr_player.gd`: Origin-Transform, `_broadcast_position()`, `pose_recentered`
+- `addons/situs_core/core/scene_manager.gd`: Spawn des XR-Players, Szenenwechsel, Standalone-Modus
+- `addons/situs_core/core/main.gd`: Render-Skalierung, VR-Overlay, Menü
+- `addons/situs_core/core/net_info_board.gd`: Vorlage für eine "Marker suchen" bzw. "Kreuz A"-Anzeige
 - `export_presets.cfg.template`, `android/build/src/main/AndroidManifest.xml`, `android/build/gradle.properties`, `project.godot`
 - `_anleitungen/ARCHITECTURE.md`, `_anleitungen/venue_team.md`, `_anleitungen/dev_team.md`
 

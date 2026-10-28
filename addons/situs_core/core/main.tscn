@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cbmain0001"]
 
-[ext_resource type="Script" uid="uid://coxo6qspb3uo3" path="res://SYSTEM/main.gd" id="1_maingd"]
-[ext_resource type="Script" uid="uid://3scmfy3nh6h7" path="res://SYSTEM/cam_dolly.gd" id="2_0xm2m"]
+[ext_resource type="Script" uid="uid://coxo6qspb3uo3" path="res://addons/situs_core/core/main.gd" id="1_maingd"]
+[ext_resource type="Script" uid="uid://3scmfy3nh6h7" path="res://addons/situs_core/core/cam_dolly.gd" id="2_0xm2m"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_walkarea"]
 size = Vector2(1, 1)

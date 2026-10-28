@@ -13,13 +13,13 @@ config_version=5
 config/name="Hyper-Irrealismus-III"
 run/main_scene="uid://cbmain0001"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/main_scene="res://SYSTEM/main.tscn"
+config/main_scene="res://addons/situs_core/core/main.tscn"
 
 [autoload]
 
-GameState="*res://SYSTEM/networking/game_state.gd"
-NetworkManager="*res://SYSTEM/networking/network_manager.gd"
-SceneManager="*res://SYSTEM/scene_manager.gd"
+GameState="*res://addons/situs_core/networking/game_state.gd"
+NetworkManager="*res://addons/situs_core/networking/network_manager.gd"
+SceneManager="*res://addons/situs_core/core/scene_manager.gd"
 
 [display]
 

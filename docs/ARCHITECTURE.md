@@ -114,25 +114,25 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 ### Core (do not modify unless you are the developer)
 | File | Role | Lines |
 |------|------|-------|
-| `SYSTEM/main.gd` | Root node: menu, mode selection, HUD, VR fade overlay | ~330 |
-| `SYSTEM/main.tscn` | Root scene: containers, HUD, cameras, XRWalkArea | — |
-| `SYSTEM/scene_manager.gd` | **Autoload**: scene loader, scene_info.cfg reader, avatar manager, timer, shadow softening, standalone mode | ~490 |
-| `SYSTEM/networking/game_state.gd` | **Autoload**: mode, peer IDs, colors | 44 |
-| `SYSTEM/networking/network_manager.gd` | **Autoload**: ENet relay, RPC chain | 183 |
-| `SYSTEM/player/fps_player.gd` | FPS camera+movement controller | 92 |
-| `SYSTEM/player/fps_player.tscn` | FPS player scene | — |
-| `SYSTEM/player/xr_player.gd` | OpenXR tracking + thumbstick locomotion + button handling | ~115 |
-| `SYSTEM/player/xr_player.tscn` | XR player scene (XROrigin3D + LeftHand + RightHand + debug spheres) | — |
+| `addons/situs_core/core/main.gd` | Root node: menu, mode selection, HUD, VR fade overlay | ~330 |
+| `addons/situs_core/core/main.tscn` | Root scene: containers, HUD, cameras, XRWalkArea | — |
+| `addons/situs_core/core/scene_manager.gd` | **Autoload**: scene loader, scene_info.cfg reader, avatar manager, timer, shadow softening, standalone mode | ~490 |
+| `addons/situs_core/networking/game_state.gd` | **Autoload**: mode, peer IDs, colors | 44 |
+| `addons/situs_core/networking/network_manager.gd` | **Autoload**: ENet relay, RPC chain | 183 |
+| `addons/situs_core/player/fps_player.gd` | FPS camera+movement controller | 92 |
+| `addons/situs_core/player/fps_player.tscn` | FPS player scene | — |
+| `addons/situs_core/player/xr_player.gd` | OpenXR tracking + thumbstick locomotion + button handling | ~115 |
+| `addons/situs_core/player/xr_player.tscn` | XR player scene (XROrigin3D + LeftHand + RightHand + debug spheres) | — |
 | `openxr_action_map.tres` | OpenXR action bindings (Quest + Focus3/Vision + khr/simple profiles) — wird von Godot im Root-Verzeichnis verwaltet | — |
-| `SYSTEM/cam_dolly.gd` | Rotations-Node (Y-Achse, 2°/s) — rotiert ServerCamera in main.tscn | ~11 |
-| `SYSTEM/avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
-| `SYSTEM/avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
-| `SYSTEM/avatar/variants/avatar_dynamic_cone.gd` | DynamicCone avatar script | ~196 |
-| `SYSTEM/avatar/variants/avatar_dynamic_cone.tscn` | DynamicCone scene | — |
-| `SYSTEM/avatar/variants/avatar_box.tscn` | Box avatar variant | — |
-| `SYSTEM/avatar/variants/avatar_capsule.tscn` | Capsule avatar variant | — |
-| `SYSTEM/avatar/variants/avatar_sphere.tscn` | Sphere avatar variant | — |
-| `SYSTEM/avatar/variants/avatar_ghost.tscn` | Ghost avatar variant | — |
+| `addons/situs_core/core/cam_dolly.gd` | Rotations-Node (Y-Achse, 2°/s) — rotiert ServerCamera in main.tscn | ~11 |
+| `addons/situs_core/avatar/remote_avatar.gd` | Base remote avatar: interpolation, color | 66 |
+| `addons/situs_core/avatar/remote_avatar.tscn` | Legacy capsule+sphere avatar | — |
+| `addons/situs_core/avatar/variants/avatar_dynamic_cone.gd` | DynamicCone avatar script | ~196 |
+| `addons/situs_core/avatar/variants/avatar_dynamic_cone.tscn` | DynamicCone scene | — |
+| `addons/situs_core/avatar/variants/avatar_box.tscn` | Box avatar variant | — |
+| `addons/situs_core/avatar/variants/avatar_capsule.tscn` | Capsule avatar variant | — |
+| `addons/situs_core/avatar/variants/avatar_sphere.tscn` | Sphere avatar variant | — |
+| `addons/situs_core/avatar/variants/avatar_ghost.tscn` | Ghost avatar variant | — |
 | `_deprecated/triggers/interaction_zone.gd` | Area3D trigger template (deaktiviert) | 178 |
 | `_deprecated/triggers/interaction_zone.tscn` | Trigger zone scene (deaktiviert) | — |
 | `project.godot` | Engine configuration | — |
@@ -146,7 +146,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 | `_scenes/team_X/scene_info.cfg` | **Design Teams** — per-team metadata: name, duration, scene_file, avatar, … |
 | `_scenes/team_template/scene_hooks.gd` | Team scene lifecycle script — duplicate per team; delegates boilerplate to SceneManager |
 | `_scenes/team_template/team_scene.tscn` | Team scene base — duplicate per team |
-| `SYSTEM/net_info_board.gd` | Injected at runtime into every scene (not in tscn, spawned by SceneManager) |
+| `addons/situs_core/core/net_info_board.gd` | Injected at runtime into every scene (not in tscn, spawned by SceneManager) |
 
 ### Documentation
 | File | Role |
@@ -167,7 +167,7 @@ Every file in the project with role and "TEMPLATE CORE" flag.
 
 ## MODULE SPECIFICATIONS
 
-### `SYSTEM/main.gd` + `SYSTEM/main.tscn`
+### `addons/situs_core/core/main.gd` + `addons/situs_core/core/main.tscn`
 
 **Purpose:** Persistent root. Always loaded. Manages startup flow, contains all containers, VR fade overlay.
 
@@ -228,7 +228,7 @@ Do NOT remove either setting — both are needed.
 
 ---
 
-### `SYSTEM/scene_manager.gd` (Autoload: SceneManager)
+### `addons/situs_core/core/scene_manager.gd` (Autoload: SceneManager)
 
 **Purpose:** Central coordinator. Manages scene lifecycle, player spawning, avatar management, timer, shadow softening, and standalone mode.
 
@@ -318,7 +318,7 @@ Matches: Focus 3, Focus Vision, Vive Pro, Vive XR Elite, etc.
 
 ---
 
-### `SYSTEM/networking/game_state.gd` (Autoload: GameState)
+### `addons/situs_core/networking/game_state.gd` (Autoload: GameState)
 
 **Purpose:** Lightweight global state. No networking logic.
 
@@ -335,7 +335,7 @@ GameState.reset()       # clears colors + id
 
 ---
 
-### `SYSTEM/networking/network_manager.gd` (Autoload: NetworkManager)
+### `addons/situs_core/networking/network_manager.gd` (Autoload: NetworkManager)
 
 **Purpose:** ENet transport layer. Relay-only server (no game logic on server side, only relay + avatar update).
 
@@ -372,7 +372,7 @@ signal client_disconnected()
 
 ---
 
-### `SYSTEM/player/xr_player.gd` + `xr_player.tscn`
+### `addons/situs_core/player/xr_player.gd` + `xr_player.tscn`
 
 **Purpose:** OpenXR headset controller. Thumbstick locomotion bounded to XRWalkArea. Both controllers fully symmetric.
 
@@ -423,7 +423,7 @@ var turn: float = _stick_l.x if abs(_stick_l.x) >= abs(_stick_r.x) else _stick_r
 ```
 
 **Boundary (`_clamp_to_walk_area()`):**
-Reads `XRWalkArea` node from `SYSTEM/main.tscn` (PlaneMesh, single point of truth).
+Reads `XRWalkArea` node from `addons/situs_core/core/main.tscn` (PlaneMesh, single point of truth).
 Clamps `global_position.x` and `.z` to the plane's half-extents around its center.
 Safe if node is missing or mesh is wrong type — silently skips.
 
@@ -479,7 +479,7 @@ All button and thumbstick inputs are silently ignored. **Do not remove.**
 
 ### `_scenes/team_template/net_info_board.gd`
 
-**Purpose:** Connection status Label3D, spawned at runtime by `SceneManager._spawn_net_info_board()` into every team scene. Not part of any .tscn file. Lives in `SYSTEM/` (not team template).
+**Purpose:** Connection status Label3D, spawned at runtime by `SceneManager._spawn_net_info_board()` into every team scene. Not part of any .tscn file. Lives in `addons/situs_core/` (not team template).
 
 **Visibility logic:**
 ```gdscript
@@ -497,7 +497,7 @@ Color: orange `Color(1.0, 0.45, 0.1)` for visibility in dark rooms.
 
 ---
 
-### `SYSTEM/player/fps_player.gd` + `fps_player.tscn`
+### `addons/situs_core/player/fps_player.gd` + `fps_player.tscn`
 
 **Purpose:** Desktop FPS controller. Sends position to server.
 
@@ -538,7 +538,7 @@ func set_self_mode(enabled: bool) -> void
 
 SceneManager checks `has_method("set_self_mode")` before calling it.
 
-#### `SYSTEM/avatar/variants/avatar_dynamic_cone.gd` (Default)
+#### `addons/situs_core/avatar/variants/avatar_dynamic_cone.gd` (Default)
 
 Procedural stacked torus rings avatar.
 
@@ -600,7 +600,7 @@ duration   = 120.0          ; seconds; -1.0 = no auto-advance
 scene_file = "team_a.tscn"  ; required
 team       = "Team A"       ; optional: shown in fade overlay
 info       = "Kurzbeschreibung"
-avatar     = "res://SYSTEM/avatar/variants/..."    ; optional: default = avatar_dynamic_cone.tscn
+avatar     = "res://addons/situs_core/avatar/variants/..."    ; optional: default = avatar_dynamic_cone.tscn
 player_color = Color(1.0, 1.0, 1.0, 1)    ; optional: forces all players to one color
 ```
 
@@ -704,7 +704,7 @@ pending:
 3. Add folder path to `_scenes/scene_registry.gd`
 
 ### Adding a new avatar variant
-1. Create `SYSTEM/avatar/variants/avatar_yourname.gd` extending `CharacterBody3D`
+1. Create `addons/situs_core/avatar/variants/avatar_yourname.gd` extending `CharacterBody3D`
 2. Implement: `var peer_id: int` + `func update_transform(body_pos, head_pos, head_rot)`
 3. Optionally: `func set_self_mode(enabled: bool)`
 4. Create `avatar_yourname.tscn` with `CollisionShape3D` (layer=4, mask=0)
@@ -723,8 +723,8 @@ main.gd
       ├── GameState
       ├── NetworkManager
       ├── scene_registry.gd (loaded at runtime)
-      ├── SYSTEM/player/fps_player.tscn / xr_player.tscn
-      └── SYSTEM/avatar/*.tscn (per scene, from registry)
+      ├── addons/situs_core/player/fps_player.tscn / xr_player.tscn
+      └── addons/situs_core/avatar/*.tscn (per scene, from registry)
 
 xr_player.gd
  └── SceneManager (standalone_mode, activate_standalone, advance_scene, retreat_scene)
@@ -732,7 +732,7 @@ xr_player.gd
 fps_player.gd
  └── SceneManager (standalone_mode, activate_standalone, advance_scene, retreat_scene)
 
-SYSTEM/net_info_board.gd (injected at runtime, not in tscn)
+addons/situs_core/core/net_info_board.gd (injected at runtime, not in tscn)
  ├── NetworkManager (client_connected_flag)
  └── SceneManager (standalone_mode)
 
@@ -747,10 +747,10 @@ scene_hooks.gd
 | Date | Change | Files |
 |------|--------|-------|
 | 2026-09-09 | PC-Menü: Lokaler Client (127.0.0.1) Button hinzugefügt; Server Auto-Szenenwechsel Umschaltung via Taste L / ServerHUD; FPS-Spieler-Positionierung & Rotation über Szenenwechsel persistent gehalten; XR Co-Location Sicherung: Thumbstick im Multiplayer gesperrt & XROrigin3D strikt auf (0,0,0) fixiert | `main.tscn`, `main.gd`, `network_manager.gd`, `scene_manager.gd`, `project.godot`, `xr_player.gd` |
-| 2026-07-30 | SYSTEM/-Ordner: Core-Dateien aus Root in SYSTEM/ verschoben (networking/, player/, avatar/, main.gd/.tscn, scene_manager.gd, cam_dolly.gd, net_info_board.gd); alle res://-Pfade aktualisiert | multiple |
-| 2026-07-30 | scene_hooks.gd: team_scene.gd umbenannt und vereinfacht; Boilerplate (F6-Erkennung, ServerCamera) nach SceneManager.on_team_scene_ready() verschoben | `_scenes/team_template/scene_hooks.gd`, `SYSTEM/scene_manager.gd` |
-| 2026-07-30 | retreat_scene() hinzugefügt (analog advance_scene, mit leerem-Liste-Guard) | `SYSTEM/scene_manager.gd` |
-| 2026-07-30 | fps_player: Q/E → Szene vor/zurück + Standalone-Aktivierung; WASD zusätzlich zu Pfeiltasten; XRWalkArea-Clamp | `SYSTEM/player/fps_player.gd` |
+| 2026-07-30 | addons/situs_core/-Ordner: Core-Dateien aus Root in addons/situs_core/ verschoben (networking/, player/, avatar/, main.gd/.tscn, scene_manager.gd, cam_dolly.gd, net_info_board.gd); alle res://-Pfade aktualisiert | multiple |
+| 2026-07-30 | scene_hooks.gd: team_scene.gd umbenannt und vereinfacht; Boilerplate (F6-Erkennung, ServerCamera) nach SceneManager.on_team_scene_ready() verschoben | `_scenes/team_template/scene_hooks.gd`, `addons/situs_core/core/scene_manager.gd` |
+| 2026-07-30 | retreat_scene() hinzugefügt (analog advance_scene, mit leerem-Liste-Guard) | `addons/situs_core/core/scene_manager.gd` |
+| 2026-07-30 | fps_player: Q/E → Szene vor/zurück + Standalone-Aktivierung; WASD zusätzlich zu Pfeiltasten; XRWalkArea-Clamp | `addons/situs_core/player/fps_player.gd` |
 | 2026-07-30 | Standalone-Modus: XR-Client läuft ohne Server — Timer + Szenen laufen autonom durch; aktiviert via beliebigem Controller-Button | `scene_manager.gd` |
 | 2026-07-30 | xr_player: Thumbstick-Locomotion (beide Controller, max-Betrag, 1.2 m/s, bounded zu XRWalkArea); Rotation via X-Achse (60°/s, aktiviert) | `player/xr_player.gd` |
 | 2026-07-30 | xr_player: LeftHand + RightHand XRController3D hinzugefügt; button_pressed + input_vector2_changed auf beiden verbunden; SphereMesh Debug-Visuals | `player/xr_player.tscn`, `player/xr_player.gd` |

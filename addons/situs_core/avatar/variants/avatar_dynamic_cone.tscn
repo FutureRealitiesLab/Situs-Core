@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bxrws3eeioal7"]
 
-[ext_resource type="Script" uid="uid://bt52a8cakm4qq" path="res://SYSTEM/avatar/variants/avatar_dynamic_cone.gd" id="1_dyncone"]
+[ext_resource type="Script" uid="uid://bt52a8cakm4qq" path="res://addons/situs_core/avatar/variants/avatar_dynamic_cone.gd" id="1_dyncone"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_av"]
 radius = 0.28

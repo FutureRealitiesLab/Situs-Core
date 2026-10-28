@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbxrplay001"]
 
-[ext_resource type="Script" uid="uid://m2n4xtj7xxqu" path="res://SYSTEM/player/xr_player.gd" id="1_xrplaygd"]
+[ext_resource type="Script" uid="uid://m2n4xtj7xxqu" path="res://addons/situs_core/player/xr_player.gd" id="1_xrplaygd"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_ctrl"]
 radius = 0.04
