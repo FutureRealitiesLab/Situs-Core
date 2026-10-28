@@ -63,7 +63,7 @@ func _add_autoload(autoload_name: String, path: String) -> void:
 func _add_inputs(actions: Dictionary) -> void:
 	var changed := false
 	for action_name in actions:
-		var key := "input/" + action_name
+		var key: String = "input/" + str(action_name)
 		if ProjectSettings.has_setting(key):
 			continue
 		var ev := InputEventKey.new()

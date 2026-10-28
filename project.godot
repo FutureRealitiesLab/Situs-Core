@@ -20,19 +20,15 @@ GameState="*res://addons/situs_core/networking/game_state.gd"
 NetworkManager="*res://addons/situs_core/networking/network_manager.gd"
 SceneManager="*res://addons/situs_core/core/scene_manager.gd"
 
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/situs_core/plugin.cfg")
-
-[situs_core]
-
-modules/modul_scene_loop=false
-
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/situs_core/plugin.cfg")
 
 [filesystem]
 
@@ -66,6 +62,10 @@ lights_and_shadows/directional_shadow/soft_shadow_filter_quality.mobile=2
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality.mobile=2
 anti_aliasing/quality/msaa_3d=1
 vrs/mode=2
+
+[situs_core]
+
+modules/modul_scene_loop=false
 
 [xr]
 
