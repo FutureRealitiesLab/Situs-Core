@@ -1,0 +1,163 @@
+<title>HI-III Migrationsplan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: single readable column, numbered steps are a real sequence, risk table at the end */
+:root {
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --fg: #1d2420;
+  --muted: #5d6a63;
+  --line: #d9dfda;
+  --accent: #1f6f5c;
+  --accent-soft: #e0efe9;
+  --code-bg: #eef1ee;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121714; --surface: #1a211d; --fg: #e6ebe7; --muted: #9aa7a0; --line: #2b352f;
+    --accent: #6cc4aa; --accent-soft: #1c332b; --code-bg: #0e1310; --warn: #e8b560; --warn-soft: #33290f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121714; --surface: #1a211d; --fg: #e6ebe7; --muted: #9aa7a0; --line: #2b352f;
+  --accent: #6cc4aa; --accent-soft: #1c332b; --code-bg: #0e1310; --warn: #e8b560; --warn-soft: #33290f;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+header { display: flex; flex-direction: column; gap: 12px; }
+.status { align-self: flex-start; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  background: var(--warn-soft); color: var(--warn); padding: 4px 10px; border-radius: 4px; }
+h1 { font-size: clamp(28px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+.lede { color: var(--muted); margin: 0; max-width: 62ch; }
+h2 { font-size: 20px; margin: 0 0 12px; text-wrap: balance; }
+section { display: flex; flex-direction: column; gap: 8px; }
+p, ul { margin: 0; }
+ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+pre { font-family: var(--font-mono); font-size: 13px; line-height: 1.55; background: var(--code-bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 12px 14px; margin: 6px 0 0; overflow-x: auto; }
+pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+ol.steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 24px; counter-reset: s; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); column-gap: 12px; }
+ol.steps > li::before { content: counter(s); grid-row: 1 / span 3; width: 2rem; height: 2rem; display: grid; place-items: center;
+  font-weight: 600; font-size: 14px; background: var(--accent-soft); color: var(--accent); border-radius: 50%; }
+ol.steps h3 { margin: 0 0 4px; font-size: 17px; }
+ol.steps > li > * { grid-column: 2; min-width: 0; }
+ol.steps > li > h3 { grid-row: 1; }
+.facts { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+a { color: var(--accent); }
+</style>
+
+<main>
+  <header>
+    <span class="status">Nicht ausgeführt</span>
+    <h1>Hyper-Irrealismus III auf Situs Core umstellen</h1>
+    <p class="lede">Hyper-Irrealismus III bleibt vorerst auf dem aktuellen Stand (Godot 4.6, <code>SYSTEM/</code>). Dieser Plan gilt, sobald Situs Core in Godot 4.7 getestet und als <code>v1.0.0</code> getaggt ist.</p>
+  </header>
+
+  <section class="facts">
+    <h2>Befund</h2>
+    <ul>
+      <li>Team-Szenen unter <code>_scenes/</code> rufen keine Core-API direkt auf (per grep geprüft). Sie hängen nur an <code>scene_hooks.gd</code> und damit an <code>SceneManager.on_team_scene_ready()</code>. Diese Methode gibt es im neuen Core weiter.</li>
+      <li>Außerhalb von <code>SYSTEM/</code> verweisen nur <code>project.godot</code>, <code>README.md</code>, <code>_anleitungen/*.md</code> und Kommentare in <code>_scenes/team_template/scene_info.cfg</code> auf <code>res://SYSTEM/</code>.</li>
+      <li><code>_scenes/team_template/</code> und <code>scene_registry.gd</code> bleiben unverändert. Die Team-Szenen verweisen per UID auf <code>scene_hooks.gd</code> in diesem Ordner.</li>
+      <li>Aus <code>SceneManager</code> nach <code>SceneLoop</code> verschoben: <code>timer_tick</code>, <code>auto_advance</code>, <code>toggle_auto_advance</code>, <code>go_to_scene</code>. Team-Code nutzt sie nicht.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Ablauf</h2>
+    <p>Alles auf einem eigenen Branch. <code>master</code> bleibt unberührt, bis alle Tests grün sind.</p>
+    <ol class="steps" style="margin-top:16px">
+      <li>
+        <h3>Branch und Remote anlegen</h3>
+        <pre><code>git checkout -b migrate/situs-core
+git remote add situs-core https://github.com/FutureRealitiesLab/Situs-Core.git</code></pre>
+      </li>
+      <li>
+        <h3>Alten Core entfernen, neuen als Subtree einbinden</h3>
+        <pre><code>git rm -r SYSTEM/
+git commit -m "chore: SYSTEM/ entfernt (ersetzt durch Situs Core)"
+git subtree add --prefix=addons/situs_core situs-core dist --squash</code></pre>
+      </li>
+      <li>
+        <h3>Meta Quest entfernen</h3>
+        <ul>
+          <li><code>addons/godot_meta_toolkit/</code> löschen</li>
+          <li><code>openxr_action_map.tres</code>: <code>oculus/touch_controller</code> samt Bindings entfernen</li>
+          <li><code>export_presets.cfg.template</code>: Meta-Quest-Preset und <code>meta_*</code>-Optionen entfernen</li>
+          <li><code>project.godot</code>: <code>openxr/extensions/meta/...</code> entfernen</li>
+          <li><code>addons/godotopenxrvendors/</code> bleibt (HTC)</li>
+        </ul>
+      </li>
+      <li>
+        <h3><code>project.godot</code> anpassen</h3>
+        <ul>
+          <li><code>config/features</code>: <code>("4.7", "GL Compatibility")</code></li>
+          <li><code>run/main_scene="res://addons/situs_core/core/main.tscn"</code>, die Zeile <code>config/main_scene=</code> entfällt</li>
+          <li>Autoloads <code>GameState</code>, <code>NetworkManager</code>, <code>SceneManager</code> auf <code>addons/situs_core/...</code></li>
+          <li>Danach <code>SceneLoop</code> eintragen. Der Autoload muss <strong>nach</strong> <code>SceneManager</code> stehen.</li>
+          <li><code>[editor_plugins]</code>: <code>res://addons/situs_core/plugin.cfg</code> aktivieren</li>
+        </ul>
+        <pre><code>SceneLoop="*res://addons/situs_core/modules/modul_scene_loop/scene_loop.gd"</code></pre>
+      </li>
+      <li>
+        <h3>Pfade in Doku und Kommentaren</h3>
+        <p><code>res://SYSTEM/avatar/...</code> wird zu <code>res://addons/situs_core/avatar/...</code>. In <code>README.md</code> und <code>_anleitungen/*.md</code> ersetzt du <code>SYSTEM/</code> durch die neuen Pfade (<code>core/</code> für main, scene_manager, cam_dolly, net_info_board) und entfernst die Quest-Hinweise.</p>
+      </li>
+      <li>
+        <h3>In Godot 4.7 öffnen</h3>
+        <p>Migrationsdialog bestätigen und das Output-Panel auf Deprecations prüfen. Dabei entstehen <code>.uid</code>-Dateien. In HI-III steht <code>*.uid</code> in der <code>.gitignore</code>; entscheide, ob das so bleibt.</p>
+      </li>
+      <li>
+        <h3>Testen</h3>
+        <ul>
+          <li>F5: Startmenü, Server und FPS-Spieler, Szenen laufen im Loop (Timer, N, L)</li>
+          <li>F6 auf einer Team-Szene</li>
+          <li>Alle Szenen aus <code>scene_registry.gd</code> einmal durchschalten</li>
+          <li>Standalone am Desktop mit Q und E</li>
+          <li>APK „Android – HTC Focus 3" bauen und auf der Focus Vision prüfen: Co-Location, Avatare, Szenenwechsel</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Nach <code>master</code> mergen</h3>
+        <p>Erst wenn der Test in Schritt 7 grün ist.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Updates später</h2>
+    <pre><code>git subtree pull --prefix=addons/situs_core situs-core dist --squash</code></pre>
+    <p>Änderungen am Core entstehen im Situs-Core-Repo, danach wird <code>dist</code> neu erzeugt. Wer lokal in <code>addons/situs_core/</code> von HI-III ändert, bekommt beim nächsten Pull Konflikte.</p>
+  </section>
+
+  <section>
+    <h2>Risiken</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Risiko</th><th>Gegenmaßnahme</th></tr></thead>
+        <tbody>
+          <tr><td>Godot 4.6 auf 4.7 bricht Szenen oder Skripte</td><td>Eigener Branch, Output-Panel prüfen, <code>master</code> unverändert</td></tr>
+          <tr><td>Szenen im Loop laden nicht (Pfad, UID)</td><td>Registry-Szenen einzeln mit F6 öffnen, Output lesen</td></tr>
+          <tr><td><code>scene_hooks</code>-UID wird nicht gefunden</td><td><code>_scenes/team_template/</code> unverändert lassen</td></tr>
+          <tr><td>Repo mit 4,5 GiB wird beim Clonen zum Problem</td><td>Unabhängig von dieser Migration, später ggf. Git LFS</td></tr>
+          <tr><td>Core driftet durch lokale Änderungen</td><td>Änderungen immer zuerst im Situs-Core-Repo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
