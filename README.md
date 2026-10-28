@@ -5,6 +5,8 @@ Bis zu 8 XR-Clients im selben physischen Raum plus Desktop-Server, verbunden üb
 
 **Hardware:** HTC Vive Focus Vision, HTC Focus 3 · *Pico 4 Ultimate: geplant* · Meta Quest wird nicht mehr unterstützt.
 
+**Neu auf einem Rechner?** Siehe [Installation und Konfiguration](docs/INSTALL.md).
+
 Situs Core entstand aus dem Projekt [Hyper-Irrealismus III](https://github.com/FutureRealitiesLab/Hyper-Irrealismus-III) und ist ein Godot-Plugin (`addons/situs_core/`), das in beliebige Projekte eingebunden wird.
 
 ---
@@ -46,8 +48,8 @@ Das Plugin trägt die Autoloads ein. Außerdem im Projekt nötig:
 1. `project.godot`: `Rendering → Renderer: GL Compatibility`, OpenXR aktivieren, `openxr/action_map="res://openxr_action_map.tres"`.
    Außerdem `XR → OpenXR → Startup Alert` ausschalten (`openxr/startup_alert=false`), sonst erscheint am PC ohne Headset bei jedem Start eine Fehlermeldung.
 2. `openxr_action_map.tres` ins Projekt-Root kopieren (Godot verlangt sie dort).
-3. `export_presets.cfg.template` als `export_presets.cfg` kopieren.
-4. Plugin [Godot OpenXR Vendors](https://github.com/GodotVR/godot_openxr_vendors) nach `addons/godotopenxrvendors/` installieren (HTC-Support).
+3. `export_presets.cfg.template` als `export_presets.cfg` kopieren (das Setup-Skript macht das, siehe [docs/INSTALL.md](docs/INSTALL.md)).
+4. Plugin [Godot OpenXR Vendors](https://github.com/GodotVR/godot_openxr_vendors) nach `addons/godotopenxrvendors/` installieren (HTC-Support). Das Setup-Skript erledigt das.
 5. Hauptszene: `res://addons/situs_core/core/main.tscn`.
 
 **Update einspielen:**
@@ -80,90 +82,13 @@ Das Plugin legt im Editor unter *Project Settings → Situs Core* diese Felder a
 - **Andere IP nur für die APK:** Bei der Einstellung *Override For…* → `android` wählen. Dann gilt im Editor weiter der Standardwert.
 - **Spielfläche:** Sie begrenzt die Bewegung (Thumbstick und FPS) und wird aus Breite und Länge erzeugt. Szenen lesen die Werte über `SitusSettings` (`addons/situs_core/core/situs_settings.gd`, z. B. `get_room_size()`).
 
-## Schnellstart (dieses Repo als Demo-Projekt)
+## Installation und Konfiguration
 
-```
-1. Godot 4.7 starten, project.godot öffnen
-2. addons/godotopenxrvendors/ installieren (siehe oben), sonst fehlt der Android/OpenXR-Support
-3. F5 → „Als Server starten"
-4. Zweite Instanz (Debug → Run Multiple Instances): „Als Spieler starten (First Person)"
-```
+Einrichtung auf einem neuen Rechner (Godot, Android-Export, Brille) und was das Setup-Skript installiert: **[docs/INSTALL.md](docs/INSTALL.md)**.
 
-**Server-IP** vor dem APK-Export: *Project Settings → Situs Core → Network → Server Ip*.
+Kurz: Godot 4.7.2 installieren, `tools/setup_android.ps1` ausführen, Projekt öffnen, F5. Für die Brille zusätzlich Server-IP setzen und die APK exportieren (Preset „Android – HTC Focus 3“, gilt auch für Focus Vision).
 
-**APK:** `export_presets.cfg.template` → `export_presets.cfg`, dann *Project → Export → „Android – HTC Focus 3"* (gilt auch für Focus Vision). Was dafür einmalig installiert sein muss, steht im nächsten Abschnitt.
-
-## APK-Export für HTC Vive Focus 3 und Focus Vision
-
-Die Einstellungen stammen aus Projekten, in denen der Export auf der Focus Vision funktioniert hat (Godot 4.7.2).
-
-### 1. Einmalig pro Rechner
-
-| Was | Wie |
-|-----|-----|
-| **Export-Vorlagen** | Godot: *Editor → Export-Vorlagen verwalten → Herunterladen und installieren*. Die Version muss zur Godot-Version passen (z. B. 4.7.2 stable, etwa 1,3 GB). Offline: `Godot_v4.7.2-stable_export_templates.tpz` von [godot-builds](https://github.com/godotengine/godot-builds/releases) laden und dort *Aus Datei installieren*. Seit Godot 4.7 wählst du die Vorlagen einzeln aus: Für die Brille genügt der Haken bei **Mobil → Android → `android_source.zip`** (wir nutzen den Gradle-Build). `android_debug.apk` und `android_release.apk` brauchst du nur ohne Gradle-Build. Windows-Vorlagen brauchst du nur, wenn du den Server als `.exe` exportierst. |
-| **JDK 17** | `winget install --id Microsoft.OpenJDK.17 -e` |
-| **Android SDK** | Command-line Tools von Google, dann `platform-tools`, `build-tools;36.1.0`, `platforms;android-36`, `ndk;29.0.14206865`, `cmake;3.22.1` per `sdkmanager` installieren und die Lizenzen akzeptieren. Die Versionen gelten für Godot 4.7.2, bei anderen Godot-Versionen in der Godot-Doku nachsehen. |
-| **Debug-Keystore** | Einmal erzeugen (Pfad und Passwörter unten bei den Editor-Einstellungen). |
-| **Editor-Einstellungen** | *Editor → Editor-Einstellungen → Export → Android*: *Java SDK Path* (JDK-Ordner), *Android SDK Path* (z. B. `%LOCALAPPDATA%\Android\Sdk`), *Debug Keystore* (die erzeugte Datei), *Debug Keystore User* `androiddebugkey`, *Debug Keystore Pass* `android`. |
-| **OpenXR-Vendors-Plugin** | [Godot OpenXR Vendors](https://github.com/GodotVR/godot_openxr_vendors/releases) (verwendet: `5.1.0-stable`) laden, den Ordner `asset/addons/godotopenxrvendors` nach `addons/godotopenxrvendors/` im Projekt kopieren. Dieses Plugin liegt nicht im Repo. |
-| **Android-Build-Vorlage** | Im Projekt: *Projekt → Android-Build-Vorlage installieren*. Es entsteht der Ordner `android/`. |
-| **Brille** | Entwicklermodus aktivieren und per USB (oder WLAN-`adb`) verbinden. `adb devices` muss sie anzeigen. |
-
-Debug-Keystore erzeugen (Pfad anpassen, `JAVA_HOME` zeigt auf das JDK):
-
-```powershell
-& "$env:JAVA_HOME\bin\keytool.exe" -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore "$env:APPDATA\Godot\keystores\debug.keystore" -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
-```
-
-Das Skript `tools/setup_android.ps1` im Repo [MatLab_CommTest](https://github.com/FutureRealitiesLab/MatLab_CommTest) erledigt alle diese Schritte automatisch (JDK, SDK, Vorlagen, Build-Vorlage, Plugin, Keystore, Editor-Einstellungen).
-
-### 2. Project Settings
-
-| Setting | Wert |
-|---------|------|
-| Rendering → Renderer → Rendering Method (und `.mobile`) | `gl_compatibility` |
-| Rendering → Textures → VRAM Compression → Import ETC2 ASTC | an |
-| XR → OpenXR → Enabled | an |
-| XR → Shaders → Enabled | an |
-| XR → OpenXR → Startup Alert | aus (sonst erscheint am PC ohne Headset eine Fehlermeldung) |
-| Situs Core → Network → Server Ip | IP des Server-PCs |
-
-### 3. Export-Preset (*Projekt → Exportieren → Hinzufügen → Android*)
-
-Das Preset „Android – HTC Focus 3“ in `export_presets.cfg.template` enthält Gradle, Architektur, XR und Berechtigungen bereits. *Runnable* ist dort aus (nur nötig für den Ein-Klick-Start auf der Brille), und *Unique Name* ist ein Platzhalter, den du anpasst. Falls du das Preset selbst anlegst:
-
-| Bereich | Einstellung |
-|---------|-------------|
-| Allgemein | *Runnable* an, *Erweiterte Optionen* an, Exportfilter *Alle Ressourcen* |
-| Gradle Build | *Use Gradle Build* **an**, Export Format *APK* |
-| Architekturen | nur **arm64-v8a** |
-| Paket | *Unique Name* je Projekt eindeutig (z. B. `org.firma.projekt`), *Signed* an |
-| XR Features | *XR Mode* **OpenXR**, *Enable Khronos Plugin* **an** |
-| Khronos XR Features | im Situs-Template zusätzlich `vendors=1` (HTC) |
-| Bildschirm | *Immersive Mode* an |
-| Berechtigungen | *Internet*, *Access Network State*, *Access Wifi State* an (nötig für ENet und UDP) |
-| Meta | *Enable Meta Plugin* aus |
-
-Hinweis: Auf der Focus Vision hat auch ein Preset nur mit *Enable Khronos Plugin* und ohne den Vendors-Wert funktioniert.
-
-### 4. Exportieren und installieren
-
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.20.101-hotspot"
-```
-
-```powershell
-Godot --headless --path . --export-debug "Android – HTC Focus 3" build/SitusCore-Focus3.apk
-```
-
-```powershell
-adb install -r build/SitusCore-Focus3.apk
-```
-
-Alternativ im Editor: *Projekt → Exportieren → Exportieren*. Die APK ist ein Debug-Build mit dem Debug-Keystore. Eine geänderte Server-IP, Raumgröße oder Drehung wirkt erst nach einem neuen Export.
-
-**Wenn der Export fehlschlägt:** Die Meldung nennt meist den fehlenden Teil (Export-Vorlagen nicht installiert, *Android SDK Path* leer, Build-Vorlage fehlt, `addons/godotopenxrvendors` fehlt). Prüfe diese Punkte in der Reihenfolge aus Abschnitt 1.
+**Lokal testen:** F5, *Als Server starten*. Zweite Instanz (*Debug → Run Multiple Instances*): *Als Spieler starten (First Person)*.
 
 ## Steuerung
 
@@ -185,7 +110,8 @@ addons/situs_core/
   templates/                ← scene_hooks.gd, team_scene.tscn (kopieren)
   modules/
     modul_scene_loop/       ← optionales Modul
-docs/                       ← Architektur und Anleitungen (stammen aus Hyper-Irrealismus III)
+docs/                       ← INSTALL.md sowie Architektur und Anleitungen (stammen aus Hyper-Irrealismus III)
+tools/setup_android.ps1     ← richtet einen Rechner für den Android-Export ein
 project.godot               ← Demo-Host
 openxr_action_map.tres      ← Controller-Belegung (muss im Projekt-Root liegen)
 ```
