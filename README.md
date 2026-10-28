@@ -44,6 +44,7 @@ Dann in Godot: *Project → Project Settings → Plugins → Situs Core → Enab
 Das Plugin trägt die Autoloads ein. Außerdem im Projekt nötig:
 
 1. `project.godot`: `Rendering → Renderer: GL Compatibility`, OpenXR aktivieren, `openxr/action_map="res://openxr_action_map.tres"`.
+   Außerdem `XR → OpenXR → Startup Alert` ausschalten (`openxr/startup_alert=false`), sonst erscheint am PC ohne Headset bei jedem Start eine Fehlermeldung.
 2. `openxr_action_map.tres` ins Projekt-Root kopieren (Godot verlangt sie dort).
 3. `export_presets.cfg.template` als `export_presets.cfg` kopieren.
 4. Plugin [Godot OpenXR Vendors](https://github.com/GodotVR/godot_openxr_vendors) nach `addons/godotopenxrvendors/` installieren (HTC-Support).

@@ -70,6 +70,7 @@ modules/modul_scene_loop=false
 [xr]
 
 openxr/enabled=true
+openxr/startup_alert=false
 openxr/form_factor=0
 openxr/view_configuration=1
 openxr/reference_space=1
