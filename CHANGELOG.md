@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Lokale Controller im XR-Spieler sind jetzt Quader (wie im Avatar) statt Kugeln. Sprung-Erkennung überarbeitet (funktioniert mit Tracking-Raum am Boden oder am Kopf, Log mit `jump_debug`).
 - Avatar `avatar_dynamic_cone` nach dem Vorbild von Spatial Encounters (Lizenz in `docs/THIRD_PARTY.md`): lineare Schleppe mit trägem Bodenpunkt (`trail_mode`, der gedämpfte Modus bleibt zum Vergleich), flache unbeleuchtete Bänder (`flat_rings`), Farbverlauf (`color_gradient`).
 - Sprung-Effekt: Erkennung (Hocke, dann Hochspringen) in `xr_player.gd`, RPC `send_jump()`, Avatar fliegt und wächst, ein durchsichtiger Geist bleibt an der echten Position. Project Setting `situs_core/avatar/jump_enabled`.
 - Avatar `avatar_dynamic_cone`: Kopfkugel mit Brillen-Würfel davor (Blickrichtung), Controller als Quader (`update_hands()`). `NetworkManager.send_player_state()` überträgt optional zwei Controller-Posen und eine Tracking-Maske. **Die RPC-Signatur hat sich geändert: alle Geräte müssen denselben Stand haben.**
