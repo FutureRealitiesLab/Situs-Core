@@ -4,6 +4,9 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 
 ## [Unreleased]
 
+### Entfernt
+- Sprung-Effekt (Erkennung, Controller-Taste, Ghost, RPC `send_jump`, Project Settings `jump_enabled` und `jump_button`) wieder entfernt. Wird als Boost-Jump neu konzipiert.
+
 ### Hinzugefügt
 - Sprung: Rückmeldung für den Springenden selbst (Vibration beider Controller). Mit `jump_debug` zeigt ein Hinweis im Blickfeld Anstieg, Sprung und den Namen jeder gedrückten Taste.
 - Controller in Spielerfarbe (Avatar und eigene Controller). Controller werden nur gezeigt, wenn sie aktiv getrackt sind (ausgeschaltete lagen in der Raummitte).

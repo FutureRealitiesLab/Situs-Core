@@ -2,7 +2,7 @@
 
 ## Spatial Encounters, Player-Avatar
 
-Schleppe (träger Bodenpunkt mit gleichmäßig verteilten Ringen), flache unbeleuchtete Ringe, Farbverlauf und Sprung-Effekt in `addons/situs_core/avatar/variants/avatar_dynamic_cone.gd` folgen dem Avatar aus dem Projekt Spatial Encounters (neu in GDScript geschrieben, zeitbasiert statt pro Frame).
+Schleppe (träger Bodenpunkt mit gleichmäßig verteilten Ringen), flache unbeleuchtete Ringe und Farbverlauf in `addons/situs_core/avatar/variants/avatar_dynamic_cone.gd` folgen dem Avatar aus dem Projekt Spatial Encounters (neu in GDScript geschrieben, zeitbasiert statt pro Frame).
 
 - Quelle: https://github.com/digitaldthg/Web-XR-Spatial-Encounters-Client (Stand: Commit 45b29d59412557b89f543bf21ce874d9cc3f444a)
 - Aufbereitung der Teile: https://github.com/FutureRealitiesLab/SpatialEncounters_player-avatar
