@@ -33,7 +33,7 @@ Siehe `MatLab_CommTest/docs/plan.md`. Davon hängen hier ab:
 
 - [ ] `tools/setup_android.ps1` auf einem frischen Rechner komplett durchlaufen lassen.
 - [ ] Das Skript nur an einer Stelle pflegen. Aktuell gibt es Kopien in Situs und in MatLab_CommTest. Idee: Kopie im Plugin, Projekte rufen sie auf.
-- [ ] `docs/` (ARCHITECTURE, dev_team, venue_team, design_teams) stammt aus Hyper-Irrealismus III und ist nicht auf die Modul-Struktur überarbeitet.
+- [ ] Neue, kurze Architekturbeschreibung für Situs schreiben (Autoloads, Netzwerk, Szenen-Hooks, Settings, Module). Die alten HI-III-Anleitungen sind entfernt.
 
 ### Neue Module und Funktionen
 
@@ -59,10 +59,6 @@ Stand: Die Kopfrotation (`head_rot`) wird schon an alle Clients übertragen, der
 - [ ] Würfel an der Kopfposition (dort, wo die Brille sitzt), damit man die Blickrichtung sieht. Rotation kommt aus `head_rot`.
 - [ ] Controller sehen und übertragen: zwei kleine längliche Quader (ca. 15 cm lang, 4 cm breit und tief). Das Protokoll in `network_manager.gd` (`send_player_state`) braucht zwei Controller-Posen.
 - [ ] Schleppe (nachziehende Ringe in `avatar_dynamic_cone.gd`) verbessern. Infos aus einem anderen Projekt liegen vor.
-
-### Aufräumen
-
-- [ ] Meta-Quest-Reste aus `docs/ARCHITECTURE.md` (u. a. Zeilen 40, 126, 466, 634 ff., 758) und `docs/dev_team.md` (Zeilen 102, 130 ff.) entfernen.
 
 ### Neue Module (werden in MatLab_CommTest integriert)
 

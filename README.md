@@ -9,7 +9,7 @@ Bis zu 8 XR-Clients im selben physischen Raum plus Desktop-Server, verbunden üb
 
 **Neu auf einem Rechner?** Siehe [Installation und Konfiguration](docs/INSTALL.md).
 
-Situs Core entstand aus dem Projekt [Hyper-Irrealismus III](https://github.com/FutureRealitiesLab/Hyper-Irrealismus-III) und ist ein Godot-Plugin (`addons/situs_core/`), das in beliebige Projekte eingebunden wird.
+Situs Core ist ein Godot-Plugin (`addons/situs_core/`), das in beliebige Projekte eingebunden wird.[^1]
 
 ---
 
@@ -113,10 +113,10 @@ addons/situs_core/
   templates/                ← scene_hooks.gd, team_scene.tscn (kopieren)
   modules/
     modul_scene_loop/       ← optionales Modul
-docs/                       ← INSTALL.md sowie Architektur und Anleitungen (stammen aus Hyper-Irrealismus III)
+docs/                       ← INSTALL.md, plan.md, Migrationsplan, Marker-Ausrichtung
 tools/setup_android.ps1     ← richtet einen Rechner für den Android-Export ein
 project.godot               ← Demo-Host
 openxr_action_map.tres      ← Controller-Belegung (muss im Projekt-Root liegen)
 ```
 
-> **Hinweis zu `docs/`:** Die Dokumente stammen aus dem Ursprungsprojekt. Pfade wurden mechanisch angepasst, die Texte sind noch nicht auf die Modul-Struktur überarbeitet.
+[^1]: Situs Core entstand aus dem Projekt [Hyper-Irrealismus III](https://github.com/FutureRealitiesLab/Hyper-Irrealismus-III). Deren Anleitungen (Architektur, Design-, Dev- und Venue-Team) wurden entfernt, weil sie nicht zur Plugin-Struktur passen. Sie bleiben in der Git-Historie und im Ursprungsrepo.
