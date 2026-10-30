@@ -5,6 +5,8 @@ Bis zu 8 XR-Clients im selben physischen Raum plus Desktop-Server, verbunden üb
 
 **Hardware:** HTC Vive Focus Vision, HTC Focus 3 · *Pico 4 Ultimate: geplant* · Meta Quest wird nicht mehr unterstützt.
 
+**Status:** Im Einsatz getestet (MatLab_CommTest): Server plus Brillen im Netzwerk, Avatare sichtbar, Daten werden verteilt. Offen sind Tests mit 4 bis 8 Brillen, siehe [docs/plan.md](docs/plan.md).
+
 **Neu auf einem Rechner?** Siehe [Installation und Konfiguration](docs/INSTALL.md).
 
 Situs Core entstand aus dem Projekt [Hyper-Irrealismus III](https://github.com/FutureRealitiesLab/Hyper-Irrealismus-III) und ist ein Godot-Plugin (`addons/situs_core/`), das in beliebige Projekte eingebunden wird.
@@ -78,6 +80,7 @@ Das Plugin legt im Editor unter *Project Settings → Situs Core* diese Felder a
 | `situs_core/room/length_m` | Länge der Spielfläche (Weltachse z) in m | `8.0` |
 | `situs_core/room/rotation_deg` | Drehung des Tracking-Raums der Brillen gegenüber der Welt, in Grad | `0` |
 
+- **Server-IP für Brillen:** Der Standard `127.0.0.1` zeigt auf die Brille selbst. Vor dem Export die LAN-IP des Server-PCs eintragen, sonst meldet die Brille „keine Verbindung“.
 - **Rotation:** Sie wird auf den XR-Ursprung angewendet, nicht auf die Szenen. Alle Szenen passen sich automatisch an. Damit lässt sich die Ausrichtung des Raums korrigieren, ohne die Brillen neu auszurichten. Ein Wert gilt für alle Brillen.
 - **Andere IP nur für die APK:** Bei der Einstellung *Override For…* → `android` wählen. Dann gilt im Editor weiter der Standardwert.
 - **Spielfläche:** Sie begrenzt die Bewegung (Thumbstick und FPS) und wird aus Breite und Länge erzeugt. Szenen lesen die Werte über `SitusSettings` (`addons/situs_core/core/situs_settings.gd`, z. B. `get_room_size()`).
