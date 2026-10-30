@@ -59,7 +59,11 @@ Stand: Die Kopfrotation (`head_rot`) wird schon an alle Clients übertragen, der
 
 - [x] Kopf bleibt eine Kugel (abstrahierter Kopf), davor sitzt ein Würfel als Brille (HMD), damit man die Blickrichtung sieht. Rotation kommt aus `head_rot` (`avatar_dynamic_cone.gd`). Auf der Brille noch zu sichten.
 - [x] Controller sehen und übertragen: zwei kleine längliche Quader (15 cm lang, 4 cm breit und tief). `send_player_state` überträgt zwei Controller-Posen plus Tracking-Maske, Avatare mit `update_hands()` zeigen sie. Auf der Brille noch zu sichten. Achtung: Die RPC-Signatur hat sich geändert, alle Geräte brauchen denselben Stand.
-- [ ] Schleppe (nachziehende Ringe in `avatar_dynamic_cone.gd`) verbessern. Infos aus einem anderen Projekt liegen vor.
+- [x] Schleppe nach dem Vorbild von Spatial Encounters: ein träger Bodenpunkt folgt dem Kopf, die Ringe liegen gleichmäßig dazwischen (`trail_mode = LINEAR`, zeitbasiert). Dazu flache unbeleuchtete Bänder und Farbverlauf (unten dunkler), beides im Inspektor abschaltbar (`flat_rings`, `color_gradient`).
+- [ ] **Prüfen auf der Brille:** Sieht LINEAR besser aus als DAMPED? Wenn ja, den gedämpften Modus (`TrailMode.DAMPED`, `damping_*`) komplett entfernen.
+- [x] Sprung-Effekt: Hocke, dann Hochspringen (Erkennung in `xr_player.gd`, Werte `jump_crouch_drop` und `jump_speed`). Der Avatar fliegt nach oben und wächst, an der echten Position bleibt ein durchsichtiger Geist. Abschaltbar über Project Settings *Situs Core → Avatar → Jump Enabled* und `jump_enabled` am Avatar. Schwellen auf der Brille noch zu justieren.
+- [ ] Explodierender Ring als Effekt (aus Spatial Encounters, `explodingRing.js`): ein Ring dehnt sich aus und verblasst, z. B. beim Beitritt oder Sprung.
+- Quelle und Lizenz der Vorlage: `docs/THIRD_PARTY.md`.
 
 ### Neue Module (werden in Spatial_Insights integriert)
 

@@ -19,6 +19,7 @@ Situs Core ist ein Godot-Plugin (`addons/situs_core/`), das in beliebige Projekt
 - Netzwerk: ENet-Relay, Spieler-Positionen, Farben, automatischer Reconnect
 - Spieler: XR-Player (Thumbstick-Bewegung, Walk-Area) und FPS-Player (Desktop)
 - Avatare: Remote-Avatare mit Varianten (Dynamic Cone, Box, Capsule, Sphere, Ghost)
+  - Dynamic Cone: Schleppe, Farbverlauf und Sprung-Effekt nach dem Vorbild von Spatial Encounters, siehe [docs/THIRD_PARTY.md](docs/THIRD_PARTY.md)
 - Fade-Übergang zwischen Szenen, Server-HUD, Netzwerk-Diagnose (Tab)
 - Ohne Module läuft **eine** Szene (`situs_core/default_scene`, Standard: `templates/team_scene.tscn`)
 
