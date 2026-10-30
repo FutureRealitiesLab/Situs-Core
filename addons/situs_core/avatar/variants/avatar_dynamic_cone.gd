@@ -18,7 +18,9 @@ extends CharacterBody3D
 ## Durchmesser des obersten Rings – direkt unter dem Kopf (Meter)
 @export var top_diameter: float = 0.18
 
-## Durchmesser der Kopfkugel (Meter)
+## Kantenlänge des Kopf-Würfels (Meter). Der Würfel sitzt an der Brillenposition,
+## die kleine Nase auf seiner Vorderseite zeigt die Blickrichtung.
+## Der Kopf-Collider bleibt eine Kugel mit diesem Durchmesser.
 @export var head_diameter: float = 0.25
 
 ## Dicke des Donut-Schlauchs (Meter) – wie "fett" jeder Ring ist
@@ -30,7 +32,7 @@ extends CharacterBody3D
 ## Y-Abstand des untersten Rings vom Boden (Meter)
 @export var base_y_offset: float = 0.05
 
-## Abstand zwischen oberstem Ring und Kopfkugel (Meter)
+## Abstand zwischen oberstem Ring und Kopf-Würfel (Meter)
 @export var top_ring_gap: float = 0.05
 
 ## Responsivität des untersten Rings (1/Sekunde). Halbwertszeit ≈ ln(2)/Wert.
@@ -65,10 +67,13 @@ var peer_id: int = 0:
 var _rings:          Array = []   # MeshInstance3D pro Ring
 var _ring_pos_cur:   Array = []   # aktuelle (gedämpfte) Weltposition
 var _ring_pos_tgt:   Array = []   # Zielposition (vom Netzwerk)
-var _head_sphere:    MeshInstance3D = null
+var _head_mesh:      MeshInstance3D = null   # Würfel, folgt Position und Rotation des Kopfes
+var _head_nose:      MeshInstance3D = null   # Blickrichtung (Vorderseite = -Z)
 var _head_collider:  StaticBody3D = null   # Kopf-Collider, Layer 4, Gruppe "avatar_heads"
 var _head_cur:       Vector3 = Vector3.ZERO
 var _head_tgt:       Vector3 = Vector3.ZERO
+var _head_basis_cur: Basis = Basis.IDENTITY
+var _head_basis_tgt: Basis = Basis.IDENTITY
 var _ready_done:     bool = false
 var _first_update:   bool = true  # beim ersten Netzwerk-Update sofort einrasten
 
@@ -104,14 +109,19 @@ func _build_rings() -> void:
 		_ring_pos_cur.append(Vector3.ZERO)
 		_ring_pos_tgt.append(Vector3.ZERO)
 
-	# Kopfkugel
-	_head_sphere = MeshInstance3D.new()
-	var sph        := SphereMesh.new()
-	sph.radius      = head_diameter / 2.0
-	sph.height      = head_diameter
-	sph.radial_segments = 24
-	_head_sphere.mesh = sph
-	add_child(_head_sphere)
+	# Kopf-Würfel mit Nase auf der Vorderseite (-Z, wie die Blickrichtung der Kamera)
+	_head_mesh = MeshInstance3D.new()
+	var box        := BoxMesh.new()
+	box.size        = Vector3.ONE * head_diameter
+	_head_mesh.mesh = box
+	add_child(_head_mesh)
+
+	_head_nose = MeshInstance3D.new()
+	var nose       := BoxMesh.new()
+	nose.size       = Vector3.ONE * head_diameter * 0.3
+	_head_nose.mesh = nose
+	_head_nose.position = Vector3(0.0, 0.0, -head_diameter * 0.5)
+	_head_mesh.add_child(_head_nose)
 
 	# Kopf-Collider: StaticBody3D auf Layer 4, Gruppe "avatar_heads"
 	# Folgt _head_cur in _process() → Area3D-Trigger können gezielt auf den Kopf reagieren.
@@ -136,13 +146,14 @@ func update_transform(body_pos: Vector3, head_pos: Vector3, head_rot: Vector3) -
 	var back_offset := back_dir * body_back_offset
 
 	var base        = body_pos + Vector3(0.0, base_y_offset, 0.0) + back_offset
-	# Ringe enden top_ring_gap unterhalb der Kopfkugel.
+	# Ringe enden top_ring_gap unterhalb des Kopf-Würfels.
 	var ring_top    = head_pos - Vector3(0.0, top_ring_gap, 0.0) + back_offset
 	for i in range(_rings.size()):
 		var t = float(i) / float(max(_rings.size() - 1, 1))
 		_ring_pos_tgt[i] = base.lerp(ring_top, t)
 
 	_head_tgt = head_pos + back_offset
+	_head_basis_tgt = Basis.from_euler(head_rot)
 
 	# Beim allerersten Update: Positionen sofort einrasten (kein Slide von 0,0,0)
 	if _first_update:
@@ -150,6 +161,7 @@ func update_transform(body_pos: Vector3, head_pos: Vector3, head_rot: Vector3) -
 		for i in range(_rings.size()):
 			_ring_pos_cur[i] = _ring_pos_tgt[i]
 		_head_cur = head_pos + back_offset
+		_head_basis_cur = _head_basis_tgt
 
 
 # ── Smooth-Update pro Frame (delta-basiert, framerate-unabhängig) ─
@@ -169,12 +181,14 @@ func _process(delta: float) -> void:
 		_ring_pos_cur[i] = _ring_pos_cur[i].lerp(_ring_pos_tgt[i], smooth)
 		_rings[i].global_position = _ring_pos_cur[i]
 
-	if is_instance_valid(_head_sphere):
+	if is_instance_valid(_head_mesh):
 		# Kopf ist etwas responsiver als der oberste Ring (Faktor 1.5),
 		# um den "Lead" zu behalten, aber fließend zum Rest.
 		var head_resp = damping_top * 1.5
 		_head_cur = _head_cur.lerp(_head_tgt, 1.0 - exp(-head_resp * delta))
-		_head_sphere.global_position = _head_cur
+		_head_mesh.global_position = _head_cur
+		_head_basis_cur = _head_basis_cur.slerp(_head_basis_tgt, 1.0 - exp(-head_resp * delta))
+		_head_mesh.global_basis = _head_basis_cur
 		if is_instance_valid(_head_collider):
 			_head_collider.global_position = _head_cur
 
@@ -182,7 +196,7 @@ func _process(delta: float) -> void:
 # ── Selbst-Ansicht (eigener Körper in First-Person) ─────────────
 
 ## Schaltet den Avatar in den Selbst-Modus:
-##   • Kopfkugel wird ausgeblendet (würde FPS-Kamera verdecken)
+##   • Kopf-Würfel wird ausgeblendet (würde FPS-Kamera verdecken)
 ##   • collision_layer = 0  (löst keine Area3D-Trigger aus)
 ## Wird von SceneManager nach add_child() aufgerufen.
 func set_self_mode(enabled: bool) -> void:
@@ -190,8 +204,8 @@ func set_self_mode(enabled: bool) -> void:
 		return
 	body_back_offset = 0.1  # Ringe 10 cm hinter Brille → Hals-Position
 	collision_layer = 0
-	if is_instance_valid(_head_sphere):
-		_head_sphere.visible = false
+	if is_instance_valid(_head_mesh):
+		_head_mesh.visible = false
 	if is_instance_valid(_head_collider):
 		_head_collider.collision_layer = 0
 
@@ -221,9 +235,14 @@ func _apply_color() -> void:
 		if is_instance_valid(ring):
 			ring.set_surface_override_material(0, mat)
 
-	if is_instance_valid(_head_sphere):
+	if is_instance_valid(_head_mesh):
 		var hmat := StandardMaterial3D.new()
 		hmat.albedo_color = color.lightened(0.3)
 		hmat.roughness    = 0.3
 		hmat.metallic     = 0.4
-		_head_sphere.set_surface_override_material(0, hmat)
+		_head_mesh.set_surface_override_material(0, hmat)
+
+		var nmat := StandardMaterial3D.new()
+		nmat.albedo_color = color.lightened(0.7)
+		nmat.roughness    = 0.3
+		_head_nose.set_surface_override_material(0, nmat)

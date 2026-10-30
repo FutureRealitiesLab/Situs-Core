@@ -57,7 +57,7 @@ Siehe `Spatial_Insights/docs/plan.md`. Davon hängen hier ab:
 
 Stand: Die Kopfrotation (`head_rot`) wird schon an alle Clients übertragen, der Kopf ist aber eine Kugel und zeigt die Blickrichtung nicht.
 
-- [ ] Würfel an der Kopfposition (dort, wo die Brille sitzt), damit man die Blickrichtung sieht. Rotation kommt aus `head_rot`.
+- [x] Würfel an der Kopfposition (dort, wo die Brille sitzt) mit Nase auf der Vorderseite, damit man die Blickrichtung sieht. Rotation kommt aus `head_rot` (`avatar_dynamic_cone.gd`). Auf der Brille noch zu sichten.
 - [ ] Controller sehen und übertragen: zwei kleine längliche Quader (ca. 15 cm lang, 4 cm breit und tief). Das Protokoll in `network_manager.gd` (`send_player_state`) braucht zwei Controller-Posen.
 - [ ] Schleppe (nachziehende Ringe in `avatar_dynamic_cone.gd`) verbessern. Infos aus einem anderen Projekt liegen vor.
 
