@@ -106,4 +106,16 @@ func _broadcast_position() -> void:
 	if not is_instance_valid(cam):
 		return
 	var body_floor := Vector3(cam.global_position.x, global_position.y, cam.global_position.z)
-	NetworkManager.send_player_state(body_floor, cam.global_position, cam.global_rotation)
+	var hands := PackedVector3Array()
+	var mask := 0
+	for i in 2:
+		var ctrl := get_node_or_null("LeftHand" if i == 0 else "RightHand") as XRController3D
+		var tracked: bool = ctrl != null and ctrl.get_is_active() and ctrl.get_has_tracking_data()
+		if tracked:
+			mask |= 1 << i
+			hands.append(ctrl.global_position)
+			hands.append(ctrl.global_rotation)
+		else:
+			hands.append(Vector3.ZERO)
+			hands.append(Vector3.ZERO)
+	NetworkManager.send_player_state(body_floor, cam.global_position, cam.global_rotation, hands, mask)
