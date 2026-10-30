@@ -13,9 +13,9 @@ Stand 2026-10-30. Version im Repo: 1.1.0 (noch nicht getaggt).
 - Setup-Skript und Anleitung: `tools/setup_android.ps1`, `docs/INSTALL.md`.
 - Erster echter Einsatz: Spatial Insights (Repo `Spatial_Insights`, ehemals MatLab_CommTest, `main`). Dort ist ein Datenkanal-Modul entstanden, das später hierher wandert.
 
-**Auf Hardware bestätigt:** Verbindung Brille ↔ Server über die Server-IP aus den Project Settings, Avatare, Datenverteilung (im CommTest-Projekt).
+**Auf Hardware bestätigt:** Verbindung Brille ↔ Server über die Server-IP aus den Project Settings, Avatare, Datenverteilung (in Spatial Insights), Controller als Quader in Spielerfarbe, lineare Schleppe, Körpersprung (Hocke, Hochspringen).
 
-**Noch nicht geprüft:** Rotationsvorzeichen, Android-Override der Server-IP, Betrieb mit 4 und 8 Brillen, das Setup-Skript im Situs-Repo (nur Syntax geprüft, das CommTest-Original lief).
+**Noch nicht geprüft:** Rotationsvorzeichen, Android-Override der Server-IP, Betrieb mit 4 und 8 Brillen, das Setup-Skript im Situs-Repo (nur Syntax geprüft, das Original aus Spatial Insights lief), Sprungtaste B (Tastenname), Gefühl des überarbeiteten Boost-Sprungs.
 
 ## TODO-Liste
 
@@ -55,13 +55,19 @@ Siehe `Spatial_Insights/docs/plan.md`. Davon hängen hier ab:
 
 ### Avatar (Cone-Avatar, Paket für sich)
 
-Stand: Die Kopfrotation (`head_rot`) wird schon an alle Clients übertragen, der Kopf ist aber eine Kugel und zeigt die Blickrichtung nicht.
+Stand 2026-10-30: Kopfkugel mit Brillen-Würfel, Controller als Quader in Spielerfarbe (nur sichtbar, wenn aktiv getrackt, blitzen bei Tastendruck weiß auf), lineare Schleppe mit trägem Bodenpunkt, flache unbeleuchtete Ringe mit Farbverlauf, Boost-Sprung. Controller-Farbe und Schleppe auf der Brille bestätigt. Der gedämpfte Schleppen-Modus ist entfernt.
 
-- [x] Kopf bleibt eine Kugel (abstrahierter Kopf), davor sitzt ein Würfel als Brille (HMD), damit man die Blickrichtung sieht. Rotation kommt aus `head_rot` (`avatar_dynamic_cone.gd`). Auf der Brille noch zu sichten.
-- [x] Controller sehen und übertragen: zwei kleine längliche Quader (15 cm lang, 4 cm breit und tief). `send_player_state` überträgt zwei Controller-Posen plus Tracking-Maske, Avatare mit `update_hands()` zeigen sie. Auf der Brille noch zu sichten. Achtung: Die RPC-Signatur hat sich geändert, alle Geräte brauchen denselben Stand.
-- [x] Schleppe nach dem Vorbild von Spatial Encounters: ein träger Bodenpunkt folgt dem Kopf, die Ringe liegen gleichmäßig dazwischen (`trail_mode = LINEAR`, zeitbasiert). Dazu flache unbeleuchtete Bänder und Farbverlauf (unten dunkler), beides im Inspektor abschaltbar (`flat_rings`, `color_gradient`).
-- [ ] **Prüfen auf der Brille:** Sieht LINEAR besser aus als DAMPED? Wenn ja, den gedämpften Modus (`TrailMode.DAMPED`, `damping_*`) komplett entfernen.
-- [x] **Boost-Sprung:** B-Taste (nur rechter Controller) oder Hocke und Hochspringen (erste Erkennungsversion). Eigene Sicht: schneller Aufstieg (0,4 s) auf einstellbare Höhe (Standard 5 m), danach langsames Herabgleiten (5 s), in der Luft gesperrt. Andere sehen die Person hochspringen: der unterste Ring bleibt an der echten Position am Boden (Kollisionsschutz), die Ringe sind bis zum Kopf gestaffelt, mit der Höhe kommen Ringe dazu. Gilt auch für den eigenen Körper beim Hinunterschauen. Einstellungen: Project Settings *Situs Core → Jump*. Auf der Brille noch zu prüfen. Fallbacks für die Körpererkennung: `docs/JUMP_FALLBACKS.md`.
+- [x] Kopf bleibt eine Kugel (abstrahierter Kopf), davor sitzt ein Würfel als Brille (HMD), damit man die Blickrichtung sieht (`avatar_dynamic_cone.gd`).
+- [x] Controller als Quader (15 × 4 × 4 cm) in Spielerfarbe, übertragen über `send_player_state` (zwei Posen plus Tracking-Maske), nur sichtbar wenn aktiv getrackt. Auf der Brille bestätigt. Die RPC-Signatur hat sich geändert, alle Geräte brauchen denselben Stand.
+- [x] Schleppe nach dem Vorbild von Spatial Encounters (`lazy_follow_rate` 1.0), flache Bänder (`flat_rings`), Farbverlauf (`color_gradient`). Auf der Brille bestätigt, gedämpfter Modus entfernt.
+- [x] Controller-Quader blitzt bei Tastendruck weiß auf (Kontrolle, nur lokal).
+- [x] **Boost-Sprung umgesetzt** (`xr_player.gd`, `start_boost()`): Auslöser Sprungtaste (Standard B, nur rechter Controller, einstellbar) oder Hocke und Hochspringen. Eigene Sicht: Aufstieg wie ein Wurf (1,2 s, Energie läuft nach oben aus) auf 4 m, danach langsames Herabsinken (6,8 s, zusammen rund 8 s Flug), in der Luft gesperrt. Andere sehen die Person hochspringen: der unterste Ring bleibt am echten Boden (Kollisionsschutz), die Ringe sind bis zum Kopf gestaffelt, mit der Höhe kommen Ringe dazu. Gilt auch für den eigenen Körper beim Hinunterschauen. Einstellungen: Project Settings *Situs Core → Jump* (Ein/Aus, Höhe, Aufstieg, Gleiten, Taste, Tastennamen anzeigen).
+- [ ] **Test nächste Session (Boost-Sprung):**
+  - Körpersprung (Hocke, Hochspringen) löst aus (bestätigt, Gefühl der Bewegung wurde überarbeitet: prüfen, ob Aufstieg und Sinken jetzt realistisch wirken, ggf. Höhe, Aufstieg und Gleiten in den Settings nachstellen).
+  - Sprungtaste B löst **nicht** aus, obwohl die Taste erkannt wird (Controller blitzt). Vermutlich kommt die Taste mit einem anderen Namen an. Beim Drücken zeigt ein Hinweis im Blickfeld den Namen (Setting *Show Button Names*), diesen unter *Situs Core → Jump → Button* eintragen.
+  - Die Flugzeit „… sek" in der Anforderung war abgeschnitten, 8 s sind angenommen: Gefühl prüfen.
+  - Andere Brille: Stauchung der Ringsäule bei 4 m Höhe und der Ringanzahl (`max_ring_spacing`, `max_rings`) beurteilen.
+  - Fallbacks für die Körpererkennung: `docs/JUMP_FALLBACKS.md`.
 - [ ] Explodierender Ring als Effekt (aus Spatial Encounters, `explodingRing.js`): ein Ring dehnt sich aus und verblasst, z. B. beim Beitritt oder Sprung.
 - Quelle und Lizenz der Vorlage: `docs/THIRD_PARTY.md`.
 

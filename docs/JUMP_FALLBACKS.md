@@ -5,7 +5,7 @@ Stand 2026-10-30. Der Boost-Sprung (`xr_player.gd`: `start_boost()`) wird von zw
 1. B-Taste, nur rechter Controller (`_on_right_button`).
 2. Hocke, dann Hochspringen (`_detect_jump`, erste Version).
 
-Die Körpererkennung der ersten Version konnte auf der Brille nicht bestätigt werden, weil der Sprung damals nur für die anderen sichtbar war (der eigene Avatar ist in VR ausgeblendet). Mit dem Boost-Sprung sieht man ihn selbst. Falls die Hocke nicht zuverlässig auslöst, stehen diese Ansätze bereit. Der Code liegt in der Git-Historie (`git show <Commit>:addons/situs_core/player/xr_player.gd`).
+Stand nach dem ersten Brillentest des Boost-Sprungs: Die Körpererkennung (Hocke, Hochspringen) löst aus, die B-Taste nicht, obwohl der Controller beim Drücken weiß aufblitzt, die Taste also ankommt. Vermutlich hat die Taste auf der Brille einen anderen Namen als `by_button`. Beim Drücken zeigt ein Hinweis im Blickfeld den Namen (Setting *Situs Core → Jump → Show Button Names*), der Name wird unter *Situs Core → Jump → Button* eingetragen. Falls die Hocke später nicht zuverlässig auslöst, stehen diese Ansätze bereit. Der Code liegt in der Git-Historie (`git show <Commit>:addons/situs_core/player/xr_player.gd`).
 
 ## Bekannte Schwächen der ersten Version (aktuell aktiv)
 
