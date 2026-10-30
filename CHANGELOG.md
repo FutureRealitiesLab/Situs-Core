@@ -4,8 +4,12 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 
 ## [Unreleased]
 
+### Hinzugefügt
+- Boost-Sprung: B-Taste (rechts) oder Hocke und Hochspringen hebt die eigene Sicht auf einstellbare Höhe (Project Settings *Situs Core → Jump*: Höhe 5 m, Aufstieg 0,4 s, Gleiten 5 s) und gleitet langsam zurück, in der Luft gesperrt. Der Körper des Avatars bleibt am Boden, die Ringsäule streckt sich bis zum Kopf, Ringe kommen mit der Höhe dazu (`max_ring_spacing`, `max_rings`). Kein Netzwerk-Ereignis nötig. Fallbacks der Erkennung: `docs/JUMP_FALLBACKS.md`.
+
 ### Entfernt
-- Sprung-Effekt (Erkennung, Controller-Taste, Ghost, RPC `send_jump`, Project Settings `jump_enabled` und `jump_button`) wieder entfernt. Wird als Boost-Jump neu konzipiert.
+- Gedämpfter Schleppen-Modus (`TrailMode.DAMPED`, `damping_bottom`, `damping_curve`): Die lineare Schleppe passt.
+- Erster Sprung-Ansatz mit Ghost und RPC (siehe Git-Historie).
 
 ### Hinzugefügt
 - Sprung: Rückmeldung für den Springenden selbst (Vibration beider Controller). Mit `jump_debug` zeigt ein Hinweis im Blickfeld Anstieg, Sprung und den Namen jeder gedrückten Taste.
