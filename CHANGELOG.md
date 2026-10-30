@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Hinweis im Blickfeld beim Tastendruck zeigt jetzt Hand, Aktionsname und aktives OpenXR-Profil.
 - Boost-Sprung überarbeitet: Aufstieg wie ein Wurf (1,2 s, läuft nach oben aus), Höhe 4 m, Herabsinken 6,8 s. Neue Settings *Situs Core → Jump → Button* (Sprungtaste, Standard `by_button`) und *Show Button Names* (zeigt den Namen der gedrückten Taste im Blickfeld).
 - Kontrolle: Beim Drücken einer Controller-Taste blitzt der eigene Controller-Quader kurz weiß auf.
 - Boost-Sprung: B-Taste (rechts) oder Hocke und Hochspringen hebt die eigene Sicht auf einstellbare Höhe (Project Settings *Situs Core → Jump*: Höhe 5 m, Aufstieg 0,4 s, Gleiten 5 s) und gleitet langsam zurück, in der Luft gesperrt. Der Körper des Avatars bleibt am Boden, die Ringsäule streckt sich bis zum Kopf, Ringe kommen mit der Höhe dazu (`max_ring_spacing`, `max_rings`). Kein Netzwerk-Ereignis nötig. Fallbacks der Erkennung: `docs/JUMP_FALLBACKS.md`.
