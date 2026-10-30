@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Sprung: Rückmeldung für den Springenden selbst (Vibration beider Controller). Mit `jump_debug` zeigt ein Hinweis im Blickfeld Anstieg, Sprung und den Namen jeder gedrückten Taste.
 - Controller in Spielerfarbe (Avatar und eigene Controller). Controller werden nur gezeigt, wenn sie aktiv getrackt sind (ausgeschaltete lagen in der Raummitte).
 - Sprung: zusätzlicher Auslöser per Controller-Taste (Project Setting `situs_core/avatar/jump_button`, Standard `by_button`), Körpererkennung neu (Anstieg und Abstieg des Kopfes, ohne Hocke und ohne Wartezeit). Schleppe dreimal länger (`lazy_follow_rate` 1.0).
 - Lokale Controller im XR-Spieler sind jetzt Quader (wie im Avatar) statt Kugeln. Sprung-Erkennung überarbeitet (funktioniert mit Tracking-Raum am Boden oder am Kopf, Log mit `jump_debug`).
