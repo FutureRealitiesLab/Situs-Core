@@ -112,5 +112,6 @@ Die Werte stammen aus Projekten, in denen der Export auf der Focus Vision funkti
 | Meldung | Bedeutung |
 |---------|-----------|
 | `Unable to open Android 'build-tools' directory` beim Start von Godot | Der Android-SDK-Pfad in den Editor-Einstellungen zeigt auf einen Ordner ohne SDK. Skript ausführen oder den Pfad leeren. Betrifft nur den Export, nicht das Spielen am PC |
+| Brille meldet keine Verbindung und versucht `127.0.0.1:7777` | Die APK enthält noch die Standard-IP. *Project Settings → Situs Core → Network → Server Ip* auf die LAN-IP des Server-PCs setzen (`ipconfig`), APK neu exportieren und installieren |
 | Export bricht ab | Meist fehlt ein Teil: Export-Vorlagen, *Android SDK Path*, *Java SDK Path*, Build-Vorlage (`android/`) oder `addons/godotopenxrvendors` |
 | `OpenXR was requested but failed to start` | Kein Headset am PC. Mit *Startup Alert* aus erscheint der Dialog nicht mehr |

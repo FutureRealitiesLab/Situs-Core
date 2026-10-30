@@ -1,6 +1,8 @@
 # Situs Core: Plan und TODO
 
-Stand 2026-10-28. Version im Repo: 1.1.0 (noch nicht getaggt).
+Stand 2026-10-30. Version im Repo: 1.1.0 (noch nicht getaggt).
+
+**Meilenstein 2026-10-30:** In MatLab_CommTest läuft Situs Core auf den Brillen im Netzwerk. Ein Server verteilt MATLAB-Daten, die Brille verbindet sich über die konfigurierte Server-IP und sieht die zweite Brille.
 
 ## Stand
 
@@ -11,7 +13,9 @@ Stand 2026-10-28. Version im Repo: 1.1.0 (noch nicht getaggt).
 - Setup-Skript und Anleitung: `tools/setup_android.ps1`, `docs/INSTALL.md`.
 - Erster echter Einsatz: MatLab_CommTest (Branch `feature/situs-core`). Dort ist ein Datenkanal-Modul entstanden, das später hierher wandert.
 
-**Nicht an echter Hardware geprüft:** Rotationsvorzeichen, Android-Override der Server-IP, Betrieb mit mehreren Brillen im WLAN, das Setup-Skript im Situs-Repo (nur Syntax geprüft).
+**Auf Hardware bestätigt:** Verbindung Brille ↔ Server über die Server-IP aus den Project Settings, Avatare, Datenverteilung (im CommTest-Projekt).
+
+**Noch nicht geprüft:** Rotationsvorzeichen, Android-Override der Server-IP, Betrieb mit 4 und 8 Brillen, das Setup-Skript im Situs-Repo (nur Syntax geprüft, das CommTest-Original lief).
 
 ## TODO-Liste
 
@@ -19,7 +23,8 @@ Stand 2026-10-28. Version im Repo: 1.1.0 (noch nicht getaggt).
 
 Siehe `MatLab_CommTest/docs/plan.md`. Davon hängen hier ab:
 
-- [ ] Multiplayer-Test mit 1, 4 und 8 Brillen bestanden.
+- [x] Test mit 2 Brillen im Netzwerk bestanden (2026-10-30).
+- [ ] Multiplayer-Test mit 4 und 8 Brillen bestanden.
 - [ ] Rotationsvorzeichen und Android-Override bestätigt, Texte in `README.md` angepasst.
 - [ ] Tags `v1.0.0` und `v1.1.0` setzen, `dist` neu bauen (`git subtree split --prefix=addons/situs_core -b dist`, danach pushen).
 - [ ] Uncommittete Änderung an `project.godot` klären (committen oder verwerfen).
