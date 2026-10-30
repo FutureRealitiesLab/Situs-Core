@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Kontrolle: Beim Drücken einer Controller-Taste blitzt der eigene Controller-Quader kurz weiß auf.
 - Boost-Sprung: B-Taste (rechts) oder Hocke und Hochspringen hebt die eigene Sicht auf einstellbare Höhe (Project Settings *Situs Core → Jump*: Höhe 5 m, Aufstieg 0,4 s, Gleiten 5 s) und gleitet langsam zurück, in der Luft gesperrt. Der Körper des Avatars bleibt am Boden, die Ringsäule streckt sich bis zum Kopf, Ringe kommen mit der Höhe dazu (`max_ring_spacing`, `max_rings`). Kein Netzwerk-Ereignis nötig. Fallbacks der Erkennung: `docs/JUMP_FALLBACKS.md`.
 
 ### Entfernt
