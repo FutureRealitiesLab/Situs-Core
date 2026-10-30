@@ -50,3 +50,28 @@ Siehe `MatLab_CommTest/docs/plan.md`. Davon hängen hier ab:
 ### Migration
 
 - [ ] Hyper-Irrealismus III auf Situs umstellen (Plan: `docs/HI3_MIGRATION_PLAN.md`). Bewusst zurückgestellt, HI-III bleibt bis dahin unverändert.
+
+
+### Avatar (Cone-Avatar, Paket für sich)
+
+Stand: Die Kopfrotation (`head_rot`) wird schon an alle Clients übertragen, der Kopf ist aber eine Kugel und zeigt die Blickrichtung nicht.
+
+- [ ] Würfel an der Kopfposition (dort, wo die Brille sitzt), damit man die Blickrichtung sieht. Rotation kommt aus `head_rot`.
+- [ ] Controller sehen und übertragen: zwei kleine längliche Quader (ca. 15 cm lang, 4 cm breit und tief). Das Protokoll in `network_manager.gd` (`send_player_state`) braucht zwei Controller-Posen.
+- [ ] Schleppe (nachziehende Ringe in `avatar_dynamic_cone.gd`) verbessern. Infos aus einem anderen Projekt liegen vor.
+
+### Aufräumen
+
+- [ ] Meta-Quest-Reste aus `docs/ARCHITECTURE.md` (u. a. Zeilen 40, 126, 466, 634 ff., 758) und `docs/dev_team.md` (Zeilen 102, 130 ff.) entfernen.
+
+### Neue Module (werden in MatLab_CommTest integriert)
+
+Beide sind eigene Module unter `addons/situs_core/modules/` und brauchen Controller-Posen aus dem Avatar-Paket. Ansätze existieren in anderen Projekten.
+
+- [ ] **Objekte greifen, skalieren, rotieren, repositionieren** (zuerst die Simulationskörper aus MatLab_CommTest). Zustand muss für alle Brillen synchron sein.
+- [ ] **Kollaboratives Sketching:** gemeinsam im Raum zeichnen, Striche an alle Brillen verteilen, Late Join.
+
+### Branches
+
+- `main`: Entwicklung.
+- `dist`: wird aus `addons/situs_core/` mit `git subtree split` erzeugt und kann nicht in `main` gemergt werden. Projekte ziehen daraus per subtree.
