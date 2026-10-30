@@ -5,7 +5,7 @@ Bis zu 8 XR-Clients im selben physischen Raum plus Desktop-Server, verbunden üb
 
 **Hardware:** HTC Vive Focus Vision, HTC Focus 3 · *Pico 4 Ultimate: geplant* · Meta Quest wird nicht mehr unterstützt.
 
-**Status:** Im Einsatz getestet (MatLab_CommTest): Server plus Brillen im Netzwerk, Avatare sichtbar, Daten werden verteilt. Offen sind Tests mit 4 bis 8 Brillen, siehe [docs/plan.md](docs/plan.md).
+**Status:** Im Einsatz getestet (Spatial_Insights): Server plus Brillen im Netzwerk, Avatare sichtbar, Daten werden verteilt. Offen sind Tests mit 4 bis 8 Brillen, siehe [docs/plan.md](docs/plan.md).
 
 **Neu auf einem Rechner?** Siehe [Installation und Konfiguration](docs/INSTALL.md).
 
