@@ -18,10 +18,15 @@ extends CharacterBody3D
 ## Durchmesser des obersten Rings – direkt unter dem Kopf (Meter)
 @export var top_diameter: float = 0.18
 
-## Kantenlänge des Kopf-Würfels (Meter). Der Würfel sitzt an der Brillenposition,
-## die kleine Nase auf seiner Vorderseite zeigt die Blickrichtung.
-## Der Kopf-Collider bleibt eine Kugel mit diesem Durchmesser.
+## Durchmesser der Kopfkugel (Meter). Die Kugel steht abstrahiert für den Kopf.
 @export var head_diameter: float = 0.25
+
+## Kantenlänge des Würfels, der die Brille (HMD) abstrahiert (Meter).
+@export var hmd_size: float = 0.14
+
+## Wie weit der Brillen-Würfel vor der Kopfmitte sitzt (Meter, entlang der Blickrichtung).
+## Er ragt damit vorn aus der Kugel und zeigt die Blickrichtung.
+@export var hmd_offset: float = 0.08
 
 ## Dicke des Donut-Schlauchs (Meter) – wie "fett" jeder Ring ist
 @export var tube_diameter: float = 0.049
@@ -32,7 +37,7 @@ extends CharacterBody3D
 ## Y-Abstand des untersten Rings vom Boden (Meter)
 @export var base_y_offset: float = 0.05
 
-## Abstand zwischen oberstem Ring und Kopf-Würfel (Meter)
+## Abstand zwischen oberstem Ring und Kopfkugel (Meter)
 @export var top_ring_gap: float = 0.05
 
 ## Responsivität des untersten Rings (1/Sekunde). Halbwertszeit ≈ ln(2)/Wert.
@@ -71,8 +76,8 @@ var peer_id: int = 0:
 var _rings:          Array = []   # MeshInstance3D pro Ring
 var _ring_pos_cur:   Array = []   # aktuelle (gedämpfte) Weltposition
 var _ring_pos_tgt:   Array = []   # Zielposition (vom Netzwerk)
-var _head_mesh:      MeshInstance3D = null   # Würfel, folgt Position und Rotation des Kopfes
-var _head_nose:      MeshInstance3D = null   # Blickrichtung (Vorderseite = -Z)
+var _head_mesh:      MeshInstance3D = null   # Kopfkugel, folgt Position und Rotation des Kopfes
+var _hmd_mesh:       MeshInstance3D = null   # Brillen-Würfel, Kind der Kugel (Vorderseite = -Z)
 var _head_collider:  StaticBody3D = null   # Kopf-Collider, Layer 4, Gruppe "avatar_heads"
 var _head_cur:       Vector3 = Vector3.ZERO
 var _head_tgt:       Vector3 = Vector3.ZERO
@@ -118,19 +123,21 @@ func _build_rings() -> void:
 		_ring_pos_cur.append(Vector3.ZERO)
 		_ring_pos_tgt.append(Vector3.ZERO)
 
-	# Kopf-Würfel mit Nase auf der Vorderseite (-Z, wie die Blickrichtung der Kamera)
+	# Kopfkugel mit Brillen-Würfel davor (-Z, wie die Blickrichtung der Kamera)
 	_head_mesh = MeshInstance3D.new()
-	var box        := BoxMesh.new()
-	box.size        = Vector3.ONE * head_diameter
-	_head_mesh.mesh = box
+	var sph        := SphereMesh.new()
+	sph.radius      = head_diameter / 2.0
+	sph.height      = head_diameter
+	sph.radial_segments = 24
+	_head_mesh.mesh = sph
 	add_child(_head_mesh)
 
-	_head_nose = MeshInstance3D.new()
-	var nose       := BoxMesh.new()
-	nose.size       = Vector3.ONE * head_diameter * 0.3
-	_head_nose.mesh = nose
-	_head_nose.position = Vector3(0.0, 0.0, -head_diameter * 0.5)
-	_head_mesh.add_child(_head_nose)
+	_hmd_mesh = MeshInstance3D.new()
+	var box        := BoxMesh.new()
+	box.size        = Vector3.ONE * hmd_size
+	_hmd_mesh.mesh  = box
+	_hmd_mesh.position = Vector3(0.0, 0.0, -hmd_offset)
+	_head_mesh.add_child(_hmd_mesh)
 
 	# Controller: zwei schmale Quader, Länge entlang Z
 	for i in 2:
@@ -165,7 +172,7 @@ func update_transform(body_pos: Vector3, head_pos: Vector3, head_rot: Vector3) -
 	var back_offset := back_dir * body_back_offset
 
 	var base        = body_pos + Vector3(0.0, base_y_offset, 0.0) + back_offset
-	# Ringe enden top_ring_gap unterhalb des Kopf-Würfels.
+	# Ringe enden top_ring_gap unterhalb der Kopfkugel.
 	var ring_top    = head_pos - Vector3(0.0, top_ring_gap, 0.0) + back_offset
 	for i in range(_rings.size()):
 		var t = float(i) / float(max(_rings.size() - 1, 1))
@@ -240,7 +247,7 @@ func _process(delta: float) -> void:
 # ── Selbst-Ansicht (eigener Körper in First-Person) ─────────────
 
 ## Schaltet den Avatar in den Selbst-Modus:
-##   • Kopf-Würfel wird ausgeblendet (würde FPS-Kamera verdecken)
+##   • Kopfkugel samt Brillen-Würfel wird ausgeblendet (würde FPS-Kamera verdecken)
 ##   • collision_layer = 0  (löst keine Area3D-Trigger aus)
 ## Wird von SceneManager nach add_child() aufgerufen.
 func set_self_mode(enabled: bool) -> void:
@@ -295,7 +302,7 @@ func _apply_color() -> void:
 		hmat.metallic     = 0.4
 		_head_mesh.set_surface_override_material(0, hmat)
 
-		var nmat := StandardMaterial3D.new()
-		nmat.albedo_color = color.lightened(0.7)
-		nmat.roughness    = 0.3
-		_head_nose.set_surface_override_material(0, nmat)
+		var bmat := StandardMaterial3D.new()
+		bmat.albedo_color = color.darkened(0.45)
+		bmat.roughness    = 0.4
+		_hmd_mesh.set_surface_override_material(0, bmat)
