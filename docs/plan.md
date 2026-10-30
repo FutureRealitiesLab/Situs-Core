@@ -11,7 +11,7 @@ Stand 2026-10-30. Version im Repo: 1.1.0 (noch nicht getaggt).
 - Optionales Modul `modul_scene_loop`. Ohne Module läuft eine Szene (`situs_core/default_scene`).
 - Einstellungen in den Project Settings: Server-IP, Raumbreite und -länge, Rotation (am XR-Ursprung).
 - Setup-Skript und Anleitung: `tools/setup_android.ps1`, `docs/INSTALL.md`.
-- Erster echter Einsatz: MatLab_CommTest (Branch `feature/situs-core`). Dort ist ein Datenkanal-Modul entstanden, das später hierher wandert.
+- Erster echter Einsatz: MatLab_CommTest (`main`). Dort ist ein Datenkanal-Modul entstanden, das später hierher wandert.
 
 **Auf Hardware bestätigt:** Verbindung Brille ↔ Server über die Server-IP aus den Project Settings, Avatare, Datenverteilung (im CommTest-Projekt).
 
