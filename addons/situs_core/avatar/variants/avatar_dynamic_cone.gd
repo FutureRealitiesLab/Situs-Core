@@ -47,6 +47,10 @@ extends CharacterBody3D
 ## > 1.0 macht untere Ringe träger, < 1.0 macht sie responsiver.
 @export var damping_curve: float = 1.0
 
+## Controller als Quader: Länge (Z), Breite und Höhe (Meter)
+@export var hand_length: float = 0.15
+@export var hand_width: float = 0.04
+
 ## Versatz des gesamten Avatars nach hinten (Rücken-Richtung), Meter.
 ## Folgt der Kopf-Yaw-Richtung. 0.0 = kein Versatz (zentriert auf Spieler).
 ## Wird für Remote-Avatare auf 0.0 gelassen; set_self_mode() aktiviert 0.1 für den eigenen Avatar.
@@ -74,6 +78,11 @@ var _head_cur:       Vector3 = Vector3.ZERO
 var _head_tgt:       Vector3 = Vector3.ZERO
 var _head_basis_cur: Basis = Basis.IDENTITY
 var _head_basis_tgt: Basis = Basis.IDENTITY
+var _hands:          Array = []   # 2 MeshInstance3D: links, rechts (nur sichtbar, wenn getrackt)
+var _hand_pos_tgt:   Array = [Vector3.ZERO, Vector3.ZERO]
+var _hand_basis_tgt: Array = [Basis.IDENTITY, Basis.IDENTITY]
+var _hand_snap:      Array = [true, true]  # beim ersten Tracking sofort einrasten
+var _self_mode:      bool = false
 var _ready_done:     bool = false
 var _first_update:   bool = true  # beim ersten Netzwerk-Update sofort einrasten
 
@@ -123,6 +132,16 @@ func _build_rings() -> void:
 	_head_nose.position = Vector3(0.0, 0.0, -head_diameter * 0.5)
 	_head_mesh.add_child(_head_nose)
 
+	# Controller: zwei schmale Quader, Länge entlang Z
+	for i in 2:
+		var hand := MeshInstance3D.new()
+		var hbox := BoxMesh.new()
+		hbox.size = Vector3(hand_width, hand_width, hand_length)
+		hand.mesh = hbox
+		hand.visible = false
+		add_child(hand)
+		_hands.append(hand)
+
 	# Kopf-Collider: StaticBody3D auf Layer 4, Gruppe "avatar_heads"
 	# Folgt _head_cur in _process() → Area3D-Trigger können gezielt auf den Kopf reagieren.
 	# Zugriff auf Spieler-ID: body.get_meta("peer_id") oder body.get_parent().peer_id
@@ -164,6 +183,25 @@ func update_transform(body_pos: Vector3, head_pos: Vector3, head_rot: Vector3) -
 		_head_basis_cur = _head_basis_tgt
 
 
+## Controller-Posen (vom NetworkManager, ~20 Hz). hands = [links_pos, links_rot,
+## rechts_pos, rechts_rot] in Weltkoordinaten, mask: Bit 0 links, Bit 1 rechts getrackt.
+func update_hands(hands: PackedVector3Array, mask: int) -> void:
+	if _self_mode or _hands.size() < 2 or hands.size() < 4:
+		return
+	for i in 2:
+		var tracked: bool = (mask & (1 << i)) != 0
+		_hands[i].visible = tracked
+		if not tracked:
+			_hand_snap[i] = true
+			continue
+		_hand_pos_tgt[i] = hands[i * 2]
+		_hand_basis_tgt[i] = Basis.from_euler(hands[i * 2 + 1])
+		if _hand_snap[i]:
+			_hand_snap[i] = false
+			_hands[i].global_position = _hand_pos_tgt[i]
+			_hands[i].global_basis = _hand_basis_tgt[i]
+
+
 # ── Smooth-Update pro Frame (delta-basiert, framerate-unabhängig) ─
 
 func _process(delta: float) -> void:
@@ -189,6 +227,12 @@ func _process(delta: float) -> void:
 		_head_mesh.global_position = _head_cur
 		_head_basis_cur = _head_basis_cur.slerp(_head_basis_tgt, 1.0 - exp(-head_resp * delta))
 		_head_mesh.global_basis = _head_basis_cur
+		# Controller folgen mit derselben Glättung wie der Kopf
+		var hand_smooth := 1.0 - exp(-head_resp * delta)
+		for i in _hands.size():
+			if _hands[i].visible:
+				_hands[i].global_position = _hands[i].global_position.lerp(_hand_pos_tgt[i], hand_smooth)
+				_hands[i].global_basis = _hands[i].global_basis.slerp(_hand_basis_tgt[i], hand_smooth)
 		if is_instance_valid(_head_collider):
 			_head_collider.global_position = _head_cur
 
@@ -202,6 +246,9 @@ func _process(delta: float) -> void:
 func set_self_mode(enabled: bool) -> void:
 	if not enabled:
 		return
+	_self_mode = true
+	for hand: MeshInstance3D in _hands:
+		hand.visible = false  # eigene Controller sieht man ohnehin direkt
 	body_back_offset = 0.1  # Ringe 10 cm hinter Brille → Hals-Position
 	collision_layer = 0
 	if is_instance_valid(_head_mesh):
@@ -234,6 +281,12 @@ func _apply_color() -> void:
 	for ring in _rings:
 		if is_instance_valid(ring):
 			ring.set_surface_override_material(0, mat)
+
+	var cmat := StandardMaterial3D.new()
+	cmat.albedo_color = color.lightened(0.3)
+	cmat.roughness    = 0.5
+	for hand: MeshInstance3D in _hands:
+		hand.set_surface_override_material(0, cmat)
 
 	if is_instance_valid(_head_mesh):
 		var hmat := StandardMaterial3D.new()

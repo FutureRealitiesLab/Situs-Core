@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Avatar `avatar_dynamic_cone`: Kopf als Würfel mit Nase (Blickrichtung) statt Kugel, Controller als Quader (`update_hands()`). `NetworkManager.send_player_state()` überträgt optional zwei Controller-Posen und eine Tracking-Maske. **Die RPC-Signatur hat sich geändert: alle Geräte müssen denselben Stand haben.**
 - `docs/INSTALL.md` (Einrichtung auf neuem Rechner, Skript-Inhalt, Referenz für Focus 3/Vision) und `tools/setup_android.ps1`.
 - `docs/plan.md` (Stand und TODO-Liste), `docs/HI3_MIGRATION_PLAN.md` und `.html` (Plan für die spätere Umstellung von Hyper-Irrealismus III, dort wird bis dahin nichts geändert).
 - `docs/ai-chat-log.md` (Entwicklungsprotokoll) und dieser Changelog.

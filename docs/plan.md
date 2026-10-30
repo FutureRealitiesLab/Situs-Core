@@ -58,7 +58,7 @@ Siehe `Spatial_Insights/docs/plan.md`. Davon hängen hier ab:
 Stand: Die Kopfrotation (`head_rot`) wird schon an alle Clients übertragen, der Kopf ist aber eine Kugel und zeigt die Blickrichtung nicht.
 
 - [x] Würfel an der Kopfposition (dort, wo die Brille sitzt) mit Nase auf der Vorderseite, damit man die Blickrichtung sieht. Rotation kommt aus `head_rot` (`avatar_dynamic_cone.gd`). Auf der Brille noch zu sichten.
-- [ ] Controller sehen und übertragen: zwei kleine längliche Quader (ca. 15 cm lang, 4 cm breit und tief). Das Protokoll in `network_manager.gd` (`send_player_state`) braucht zwei Controller-Posen.
+- [x] Controller sehen und übertragen: zwei kleine längliche Quader (15 cm lang, 4 cm breit und tief). `send_player_state` überträgt zwei Controller-Posen plus Tracking-Maske, Avatare mit `update_hands()` zeigen sie. Auf der Brille noch zu sichten. Achtung: Die RPC-Signatur hat sich geändert, alle Geräte brauchen denselben Stand.
 - [ ] Schleppe (nachziehende Ringe in `avatar_dynamic_cone.gd`) verbessern. Infos aus einem anderen Projekt liegen vor.
 
 ### Neue Module (werden in Spatial_Insights integriert)
