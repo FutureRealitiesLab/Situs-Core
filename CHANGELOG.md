@@ -5,6 +5,8 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- PC-Versionen: Startmenü mit IP-Feld (zuletzt benutzte IP in `user://situs_client.cfg`), Button *Als Spieler lokal*, *Einzelspieler* (startet denselben Programmcode als minimierten Server-Prozess und verbindet sich als Spieler mit 127.0.0.1, standardmäßig nur lokal, Häkchen *Für andere im LAN öffnen*) und *Als Server starten*. Startparameter nach `--`: `--server [--local]`, `--client=<IP>`, `--solo [--lan]`. `GameState.local_only` bindet den ENet-Server an 127.0.0.1.
+- Boost-Sprung für PC-Spieler auf der Leertaste (`fps_player.gd`): nur der Kopf hebt ab, der Körper bleibt am Boden. Die Sprunglogik liegt jetzt in `player/jump_boost.gd` und wird von XR- und FPS-Spieler genutzt.
 - Hinweis im Blickfeld beim Tastendruck zeigt jetzt Hand, Aktionsname und aktives OpenXR-Profil.
 - Boost-Sprung überarbeitet: Aufstieg wie ein Wurf (1,2 s, läuft nach oben aus), Höhe 4 m, Herabsinken 6,8 s. Neue Settings *Situs Core → Jump → Button* (Sprungtaste, Standard `by_button`) und *Show Button Names* (zeigt den Namen der gedrückten Taste im Blickfeld).
 - Kontrolle: Beim Drücken einer Controller-Taste blitzt der eigene Controller-Quader kurz weiß auf.

@@ -115,3 +115,13 @@ Die Werte stammen aus Projekten, in denen der Export auf der Focus Vision funkti
 | Brille meldet keine Verbindung und versucht `127.0.0.1:7777` | Die APK enthält noch die Standard-IP. *Project Settings → Situs Core → Network → Server Ip* auf die LAN-IP des Server-PCs setzen (`ipconfig`), APK neu exportieren und installieren |
 | Export bricht ab | Meist fehlt ein Teil: Export-Vorlagen, *Android SDK Path*, *Java SDK Path*, Build-Vorlage (`android/`) oder `addons/godotopenxrvendors` |
 | `OpenXR was requested but failed to start` | Kein Headset am PC. Mit *Startup Alert* aus erscheint der Dialog nicht mehr |
+
+## PC-Version starten (ohne Brille)
+
+Ohne Headset zeigt die Hauptszene ein Startmenü:
+
+- **Als Spieler verbinden:** Server-IP eintragen (zuletzt benutzte wird gemerkt), du läufst mit WASD und Maus, die Leertaste ist der Boost-Sprung. *Als Spieler lokal* verbindet mit 127.0.0.1.
+- **Einzelspieler:** startet denselben Programmcode als minimierten Server-Prozess und verbindet sich als Spieler. Standardmäßig nur lokal (kein Windows-Firewall-Dialog); mit dem Häkchen *Für andere im LAN öffnen* können Brillen und weitere PCs beitreten. Beim Schließen des Spielerfensters endet auch der Server-Prozess.
+- **Als Server starten:** Server ohne eigenen Spieler (Orbit-Ansicht, Server-HUD).
+
+Startparameter (nach `--`, überspringen das Menü): `--server [--local]`, `--client=<IP>`, `--solo [--lan]`. Beispiel: `spatial_insights_pc.exe -- --server`.

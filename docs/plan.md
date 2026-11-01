@@ -71,6 +71,17 @@ Stand 2026-10-30: Kopfkugel mit Brillen-Würfel, Controller als Quader in Spiele
 - [ ] Explodierender Ring als Effekt (aus Spatial Encounters, `explodingRing.js`): ein Ring dehnt sich aus und verblasst, z. B. beim Beitritt oder Sprung.
 - Quelle und Lizenz der Vorlage: `docs/THIRD_PARTY.md`.
 
+### PC-Versionen (Situs-Seite)
+
+Plan und Logik: `Spatial_Insights/docs/plan_pc_versionen.md`.
+
+- [x] Boost-Sprung auf Leertaste für den FPS-Spieler (gemeinsame Komponente `player/jump_boost.gd`). Ungetestet.
+- [x] Startmenü am PC: IP-Feld mit Merken, *Als Spieler lokal*, *Einzelspieler*, Häkchen *Für andere im LAN öffnen*. Ungetestet.
+- [x] Startparameter `--server [--local]`, `--client=<IP>`, `--solo [--lan]`. Ungetestet.
+- [x] Server lokal gebunden (`GameState.local_only`). Ungetestet.
+- [ ] Test PC: Einzelspieler startet Server minimiert und verbindet, Sprung auf Leertaste, Beenden schließt den Server-Prozess, PC-Client und Brille sehen sich.
+- [ ] Automatische Server-Suche im LAN (siehe Hardware).
+
 ### Neue Module (werden in Spatial_Insights integriert)
 
 Beide sind eigene Module unter `addons/situs_core/modules/` und brauchen Controller-Posen aus dem Avatar-Paket. Ansätze existieren in anderen Projekten.
