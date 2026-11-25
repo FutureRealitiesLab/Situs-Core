@@ -23,11 +23,12 @@ powershell -ExecutionPolicy Bypass -File tools\setup_android.ps1
 
 Damit läuft das Projekt auf dem PC. Für die Brille:
 
-6. **Server-IP eintragen:** *Project Settings → Situs Core → Network → Server Ip* auf die LAN-IP des Server-PCs setzen (`ipconfig`).
-7. **Firewall am Server-PC freigeben** (Admin-PowerShell), damit sich die Brillen verbinden können:
+6. **Server finden:** Die Clients suchen den Server im LAN selbst (UDP-Broadcast, Port 7778, Setting *Situs Core → Network → Discovery*). Die feste IP unter *Server Ip* (`ipconfig`) wird bevorzugt, wenn sie antwortet, und dient als Rückfall.
+7. **Firewall am Server-PC freigeben** (Admin-PowerShell), 7777 für die Verbindung und 7778 für die Serversuche:
 
 ```powershell
 New-NetFirewallRule -DisplayName "Situs ENet 7777" -Direction Inbound -Protocol UDP -LocalPort 7777 -Action Allow
+New-NetFirewallRule -DisplayName "Situs Discovery 7778" -Direction Inbound -Protocol UDP -LocalPort 7778 -Action Allow
 ```
 
 8. **Brille vorbereiten:** Entwicklermodus aktivieren, per USB verbinden, `adb devices` muss sie anzeigen.

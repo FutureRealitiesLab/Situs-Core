@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Serversuche im LAN: Clients finden den Server per UDP-Broadcast (Port 7778) und verbinden sich selbst, das Startmenü am PC trägt den gefundenen Server ins IP-Feld ein. Setting *Network → Discovery* (Standard an). Die feste IP wird bevorzugt, wenn sie antwortet, und dient als Rückfall.
 - PC-Versionen: Startmenü mit IP-Feld (zuletzt benutzte IP in `user://situs_client.cfg`), Button *Als Spieler lokal*, *Einzelspieler* (startet denselben Programmcode als minimierten Server-Prozess und verbindet sich als Spieler mit 127.0.0.1, standardmäßig nur lokal, Häkchen *Für andere im LAN öffnen*) und *Als Server starten*. Startparameter nach `--`: `--server [--local]`, `--client=<IP>`, `--solo [--lan]`. `GameState.local_only` bindet den ENet-Server an 127.0.0.1.
 - Boost-Sprung für PC-Spieler auf der Leertaste (`fps_player.gd`): nur der Kopf hebt ab, der Körper bleibt am Boden. Die Sprunglogik liegt jetzt in `player/jump_boost.gd` und wird von XR- und FPS-Spieler genutzt.
 - Hinweis im Blickfeld beim Tastendruck zeigt jetzt Hand, Aktionsname und aktives OpenXR-Profil.
