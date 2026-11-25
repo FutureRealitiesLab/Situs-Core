@@ -46,7 +46,7 @@ Siehe `Spatial_Insights/docs/plan.md`. Davon hängen hier ab:
 
 - [x] **Server automatisch im LAN finden** (2026-11-25): `networking/server_discovery.gd`, Client sendet Broadcast auf UDP 7778, Server antwortet. Setting *Network → Discovery*, feste IP als Vorzug und Rückfall. Am PC getestet, auf der Brille noch zu prüfen.
 - [ ] **Serverauswahl in VR:** gefundene Server (`NetworkManager.found_servers()`) als Liste anzeigen und per Controller auswählen.
-- [ ] **Sprung freischaltbar:** Toggle, der den Boost-Sprung erst im Spiel aktiviert (Details folgen, Pablo 2026-11-25).
+- [x] **Sprung freischaltbar** (Long-Press, HUD am Controller). Auf der Brille testen: HUD-Lage und Haltedauer; `by_touch` reagiert schon auf einen aufliegenden Daumen.
 - [ ] Pico 4 Ultimate: Export-Preset und Plugin-Support (Vendors-Plugin).
 - [ ] Marker-Ausrichtung der Brillen (`docs/plan_marker_ausrichtung.md`).
 

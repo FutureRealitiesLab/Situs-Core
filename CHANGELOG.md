@@ -5,6 +5,7 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionen 
 ## [Unreleased]
 
 ### Hinzugefügt
+- Super Jump muss freigeschaltet werden: Sprungtaste lange halten (Setting *Jump → Hold S*, Standard 1,2 s) schaltet ein und aus, kurzes Tippen springt. Auch der Körpersprung wirkt nur dann. Setting *Jump → Requires Activation* (Standard an). Neues lokales HUD am linken Controller (`player/hand_hud.gd`, `set_entry()` für spätere Infos und Menüs). Nur XR, PC-Spieler springen weiter mit der Leertaste.
 - Standalone: nur noch per Trigger (VR), Name über Setting *Standalone → Label*, neues Signal `SceneManager.standalone_changed`. Verbindet sich später doch ein Server, endet der Standalone-Modus.
 - Todo: Der Boost-Sprung soll erst im Spiel freigeschaltet werden (Toggle), Details folgen.
 - Serversuche im LAN: Clients finden den Server per UDP-Broadcast (Port 7778) und verbinden sich selbst, das Startmenü am PC trägt den gefundenen Server ins IP-Feld ein. Setting *Network → Discovery* (Standard an). Die feste IP wird bevorzugt, wenn sie antwortet, und dient als Rückfall.
